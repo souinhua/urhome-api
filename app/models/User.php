@@ -25,9 +25,22 @@ class User extends Eloquent implements UserInterface {
 
     protected $hidden = array('password', 'remember_token');
     
-    
+    /**
+     * Returns the Address of the User
+     *
+     * @return ACL Object
+     */
     public function address() {
         return $this->hasOne('Address','id','address_id');
+    }
+    
+    /**
+     * Returns the ACL of the User
+     *
+     * @return ACL Onject
+     */
+    public function acl() {
+        return $this->hasOne('ACL','id','acl_id');
     }
 
 }

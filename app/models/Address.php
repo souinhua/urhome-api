@@ -14,4 +14,5 @@
 class Address extends Eloquent{
     
     protected $table = 'address';
+    public $timestamps = false;
 }

@@ -8,7 +8,7 @@ class UserController extends \BaseController {
      * @return Response
      */
     public function index() {
-        $users = User::with('address')->get();
+        $users = User::with(array('address','acl'))->get();
         return $this->makeSuccessResponse("All users fetched", $users->toArray());
     }
 
@@ -49,7 +49,7 @@ class UserController extends \BaseController {
      * @return Response
      */
     public function show($id) {
-        if ($user = User::with('address')->find($id)) {
+        if ($user = User::with(array('address','acl'))->find($id)) {
             return $this->makeSuccessResponse("User (ID = $user->id) fetched", $user->toArray());
         } else {
             return $this->makeFailResponse("User (ID = $id) does not exist.");
@@ -102,8 +102,60 @@ class UserController extends \BaseController {
      * @return Response
      */
     public function getEmail($email) {
-        $user = User::where('email', '=', $email)->first();
-        return $this->makeSuccessResponse("User (Email = $email) fetched.", $user->toArray());
+        if ($user = User::where('email', '=', $email)->first()) {
+            return $this->makeSuccessResponse("User (Email = $email) fetched.", $user->toArray());
+        } else {
+            return $this->makeFailResponse("User (Email = $email) does not exist.");
+        }
+    }
+
+    /**
+     * Store the new address resource to a user.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function setAddress($id) {
+        $rules = array(
+            "address" => "required|max:256",
+            "city" => "required|max:64",
+            "province" => "required|max:64",
+            "zip" => "required|max:32",
+            "lng" => "numeric",
+            "lat" => "numeric",
+            "zoom" => "numeric",
+        );
+        $validation = Validator::make(Input::all(), $rules);
+        if ($validation->fails()) {
+            return $this->makeFailResponse("Address creation of User (ID = $id) failed due to validation errors.", $validation->messages()->getMessages());
+        } else {
+            if ($user = User::find($id)) {
+                if (is_null($user->address)) {
+                    $address = new Address();
+                } else {
+                    $address = $user->address;
+                }
+
+                $address->address = Input::get('address');
+                $address->city = Input::get('city');
+                $address->province = Input::get('province');
+                $address->zip = Input::get('zip');
+
+                $address->lng = Input::get('lng', null);
+                $address->lat = Input::get('lat', null);
+                $address->zoom = Input::get('zoom', null);
+
+                $address->accessibility = Input::get('accessibility', null);
+                $address->save();
+
+                $user->address_id = $address->id; // Attach the Address ID to the User
+                $user->save();
+                
+                return $this->makeSuccessResponse("Address creation/update for User (ID = $id) successful.", $address->toArray());
+            } else {
+                return $this->makeFailResponse("User (ID = $id) does not exist.");
+            }
+        }
     }
 
 }

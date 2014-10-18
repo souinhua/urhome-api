@@ -12,7 +12,8 @@
  * @author User
  */
 class ACL extends Eloquent {
+    
     protected $table = 'acl';
-    
-    
+    public $timestamps = false;
+
 }

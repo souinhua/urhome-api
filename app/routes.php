@@ -20,11 +20,11 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     /*
      * Users Resource Routes
      */
+    Route::resource('user', 'UserController');
     Route::get('users', 'UserController@index');
     Route::get('user/email/{name}', 'UserController@getEmail');
-    Route::resource('user', 'UserController');
-    
-    
+    Route::post('user/{id}/address', 'UserController@setAddress');
+    Route::put('user/{id}/address', 'UserController@setAddress');
 });
 
 Route::post('oauth/token', function() {
