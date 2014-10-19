@@ -25,7 +25,7 @@ App::singleton('oauth2', function() {
     $storage = new OAuth2\Storage\Pdo(array('dsn' => 'mysql:dbname=urhome_api_db;host=localhost', 'username' => 'root', 'password' => ''));
     $server = new OAuth2\Server($storage);
     
-//    $server->addGrantType(new OAuth2\GrantType\ClientCredentials($storage));
+    $server->addGrantType(new OAuth2\GrantType\ClientCredentials($storage));
     
     $userStorage = new UserStorage();
     $server->addGrantType(new OAuth2\GrantType\UserCredentials($userStorage));
