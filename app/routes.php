@@ -16,7 +16,13 @@ Route::get('/', function() {
 });
 
 Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), function() {
-
+    
+    /*
+     * ACL Resource Routes
+     */
+    Route::resource('acl','AclController');
+    
+    
     /*
      * Users Resource Routes
      */
@@ -24,7 +30,17 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::get('users', 'UserController@index');
     Route::get('user/email/{name}', 'UserController@getEmail');
     Route::post('user/{id}/address', 'UserController@setAddress');
+    Route::post('user/{id}/photo', 'UserController@postPhoto');
     Route::put('user/{id}/address', 'UserController@setAddress');
+    Route::get('user/exists/{email}/{password}', 'UserController@exists');
+    Route::get('users/count','UserController@count');
+    
+    /*
+     * Photos Resource Routes
+     */
+    Route::resource('photo','PhotoController');
+    Route::get('photo/{id}/display', 'PhotoController@display');
+    
 });
 
 Route::post('oauth/token', function() {

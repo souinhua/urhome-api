@@ -19,14 +19,14 @@ class BaseController extends Controller {
      * @param array $data Returned array of requested data
      * @return Response JSON success response
      */
-    protected function makeSuccessResponse($message, array $data = null) {
+    protected function makeSuccessResponse($message, $data = null) {
         $return = array(
             'code' => 'OK',
             'message' => $message
         );
 
         if (isset($data))
-            $return['response'] = $data;
+            $return['data'] = $data;
 
         return Response::json($return, 200);
     }

@@ -23,7 +23,7 @@ class User extends Eloquent implements UserInterface {
      * @var array
      */
 
-    protected $hidden = array('password', 'remember_token');
+//    protected $hidden = array('password', 'remember_token');
     
     /**
      * Returns the Address of the User
@@ -41,6 +41,15 @@ class User extends Eloquent implements UserInterface {
      */
     public function acl() {
         return $this->hasOne('ACL','id','acl_id');
+    }
+    
+    /**
+     * Returns the ACL of the User
+     *
+     * @return ACL Onject
+     */
+    public function photo() {
+        return $this->hasOne('Photo','id','photo_id');
     }
 
 }

@@ -24,9 +24,9 @@ App::singleton('oauth2', function() {
 
     $storage = new OAuth2\Storage\Pdo(array('dsn' => 'mysql:dbname=urhome_api_db;host=localhost', 'username' => 'root', 'password' => ''));
     $server = new OAuth2\Server($storage);
-    
+
     $server->addGrantType(new OAuth2\GrantType\ClientCredentials($storage));
-    
+
     $userStorage = new UserStorage();
     $server->addGrantType(new OAuth2\GrantType\UserCredentials($userStorage));
 
@@ -97,23 +97,10 @@ Route::filter('csrf', function() {
 
 Route::filter('json', function() {
     if (Request::isMethod('post') || Request::isMethod('put')) {
-        // Check for Content-type: application/json header
-        if (!Request::isJson())
-            return Response::json(array(
-                        'code' => 'FAILED',
-                        'message' => "Request content-type is not 'application/json'."
-                            ), 400);
-
-
-        $requestData = Request::instance()->getContent();
-        json_decode($requestData);
-
-        // Check for blank data and malformed JSON
-        if (strlen($requestData) === 0 || !(json_last_error() == JSON_ERROR_NONE))
-            return Response::json(array(
-                        'code' => 'FAILED',
-                        'message' => "Request data is not properly formed JSON."
-                            ), 400);
+        if (Request::isJson()) {
+            $requestData = Request::instance()->getContent();
+            json_decode($requestData);
+        }
     }
 });
 
@@ -125,14 +112,14 @@ Route::filter('oauth', function() {
     if (App::make('oauth2')->verifyResourceRequest($bridgedRequest, $bridgedResponse)) {
 
         $token = App::make('oauth2')->getAccessTokenData($bridgedRequest);
-
-        if ($user = User::find($token['user_id'])) {
-            Auth::login($user);
-        }
-        else {
-            return Response::json(array(
-                    'error' => 'Unauthorized'
-                        ), 400);
+        if (isset($token['user_id'])) {
+            if ($user = User::find($token['user_id'])) {
+                Auth::login($user);
+            } else {
+                return Response::json(array(
+                            'error' => 'Unauthorized'
+                                ), 400);
+            }
         }
     } else {
         return Response::json(array(

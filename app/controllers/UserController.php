@@ -8,7 +8,17 @@ class UserController extends \BaseController {
      * @return Response
      */
     public function index() {
-        $users = User::with(array('address','acl'))->get();
+        if (Input::has("search")) {
+            $search = Input::get('search');
+            $users = User::with(array('address', 'acl','photo'))
+                    ->where('name', 'like', "%$search%")
+                    ->orWhere('email', 'like', "%$search%")
+                    ->orWhere('phone', 'like', "%$search%")
+                    ->orWhere('id', '=', $search)
+                    ->get();
+        } else {
+            $users = User::with(array('address', 'acl','photo'))->get();
+        }
         return $this->makeSuccessResponse("All users fetched", $users->toArray());
     }
 
@@ -35,7 +45,7 @@ class UserController extends \BaseController {
             $user->acl_id = Input::get('acl_id');
 
             $user->password = Hash::make(Input::get("password"));
-
+            $user->created_by = Auth::user()->id;
             $user->save();
 
             return $this->makeSuccessResponse("User creation successful.", $user->toArray());
@@ -49,7 +59,7 @@ class UserController extends \BaseController {
      * @return Response
      */
     public function show($id) {
-        if ($user = User::with(array('address','acl'))->find($id)) {
+        if ($user = User::with(array('address', 'acl','photo'))->find($id)) {
             return $this->makeSuccessResponse("User (ID = $user->id) fetched", $user->toArray());
         } else {
             return $this->makeFailResponse("User (ID = $id) does not exist.");
@@ -72,6 +82,7 @@ class UserController extends \BaseController {
             if (Input::has("password"))
                 $user->password = Hash::make(Input::get("password"));
 
+            $user->updated_by = Auth::user()->id;
             $user->save();
             return $this->makeSuccessResponse("User (ID = $id) updated", $user->toArray());
         }
@@ -88,6 +99,8 @@ class UserController extends \BaseController {
      */
     public function destroy($id) {
         if ($user = User::find($id)) {
+            $user->deleted_by = Auth::user()->id;
+            $user->save();
             $user->delete();
             return $this->makeSuccessResponse("User (ID = $user->id) deleted", $user->toArray());
         } else {
@@ -102,7 +115,7 @@ class UserController extends \BaseController {
      * @return Response
      */
     public function getEmail($email) {
-        if ($user = User::where('email', '=', $email)->first()) {
+        if ($user = User::with(array('address', 'acl'))->where('email', '=', $email)->first()) {
             return $this->makeSuccessResponse("User (Email = $email) fetched.", $user->toArray());
         } else {
             return $this->makeFailResponse("User (Email = $email) does not exist.");
@@ -149,11 +162,83 @@ class UserController extends \BaseController {
                 $address->save();
 
                 $user->address_id = $address->id; // Attach the Address ID to the User
+                $user->updated_by = Auth::user()->id;
                 $user->save();
-                
+
                 return $this->makeSuccessResponse("Address creation/update for User (ID = $id) successful.", $address->toArray());
             } else {
                 return $this->makeFailResponse("User (ID = $id) does not exist.");
+            }
+        }
+    }
+
+    /**
+     * Check if the email and password matches a user's credentials
+     *
+     * @param  $email
+     * @param  $password
+     * @return Response
+     */
+    public function exists($email, $password) {
+        $exist = Auth::validate(array(
+                    "email" => $email,
+                    "password" => $password
+        ));
+
+        if ($exist)
+            return $this->getEmail($email);
+        else
+            return $this->makeFailResponse("User does not exist.");
+    }
+
+    /**
+     * Get the number of active users
+     * 
+     * @return Response
+     */
+    public function count() {
+        $count = User::count();
+        return $this->makeSuccessResponse("Number of Users fethced.", $count);
+    }
+    
+    /**
+     * Store photo for a user
+     * 
+     * @return Response
+     */
+    public function postPhoto($id) {
+        $rules = array(
+            "photo" => "required|image"
+        );
+        $validation = Validator::make(Input::all(), $rules);
+        if($validation->fails()) {
+            return $this->makeFailResponse("Photo upload of User (ID = $id) failed due to validation errors.", $validation->messages()->getMessages());
+        }
+        else {
+            if($user = User::find($id)) {
+                if(!is_null($user->photo)) {
+                    $user->photo->delete();
+                }
+                
+                $extension = Input::file('photo')->getClientOriginalExtension();
+                $fileName = Auth::user()->id . '_' . time() . "." . $extension;
+                
+                $destinationPath = public_path() . "/uploads/users";
+                Input::file('photo')->move($destinationPath, $fileName);
+                
+                $photo = new Photo();
+                $photo->path = "$destinationPath/$fileName";
+                $photo->url = URL::to("uploads/users/$fileName");
+                $photo->uploaded_by = Auth::user()->id;
+                $photo->save();
+                
+                $user->photo_id = $photo->id;
+                $user->save();
+                
+                return $this->makeSuccessResponse("Photo upload of User (ID = $id) was successful", $photo->toArray());
+            }
+            else {
+                return $this->makeFailResponse("User does not exist");
             }
         }
     }
