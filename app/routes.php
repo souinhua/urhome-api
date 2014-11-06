@@ -22,6 +22,13 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
      */
     Route::resource('acl','AclController');
     
+    /*
+     * Property Resource Routes
+     */
+    Route::resource('property','PropertyController');
+    Route::resource('properties','PropertyController@index');
+    Route::resource('property/{id}/photo','PropertyController@postPhoto');
+    
     
     /*
      * Users Resource Routes
@@ -41,6 +48,24 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::resource('photo','PhotoController');
     Route::get('photo/{id}/display', 'PhotoController@display');
     
+    /*
+     * Types Resource Routes
+     */
+    Route::resource('type','TypeController');
+    Route::get('types','TypeController@index');
+    
+    /*
+     * Types Resource Routes
+     */
+    Route::resource('address','AddressController');
+    Route::get('addresses','AddressController@index');
+    
+    /*
+     * Amenity Resource Routes
+     */
+    Route::resource('amenity','AmenityController');
+    Route::get('amenities','AmenityController@index');
+    Route::post('amenity/{id}/photo','AmenityController@savePhoto');
 });
 
 Route::post('oauth/token', function() {

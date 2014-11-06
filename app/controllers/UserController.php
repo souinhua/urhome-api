@@ -8,18 +8,35 @@ class UserController extends \BaseController {
      * @return Response
      */
     public function index() {
+        $query = User::with(array('address', 'acl', 'photo'));
         if (Input::has("search")) {
             $search = Input::get('search');
-            $users = User::with(array('address', 'acl','photo'))
+            $query = $query
                     ->where('name', 'like', "%$search%")
                     ->orWhere('email', 'like', "%$search%")
                     ->orWhere('phone', 'like', "%$search%")
-                    ->orWhere('id', '=', $search)
-                    ->get();
-        } else {
-            $users = User::with(array('address', 'acl','photo'))->get();
+                    ->orWhere('id', '=', $search);
         }
-        return $this->makeSuccessResponse("All users fetched", $users->toArray());
+
+        if (Input::has('acl')) {
+            $acl = Input::get('acl');
+            if (is_array($acl)) {
+                $query = $query->whereIn('acl_id', $acl);
+            } else {
+                $query = $query->where('acl_id', '=', $acl);
+            }
+        }
+
+        $limit = Input::get("limit", 1000);
+        $offset = Input::get("offset", 0);
+
+        $count = $query->count();
+        $users = $query->take($limit)->skip($offset)->get();
+        
+        return $this->makeSuccessResponse("All users fetched", array(
+                    "users" => $users->toArray(),
+                    "count" => $count
+        ));
     }
 
     /**
@@ -59,7 +76,7 @@ class UserController extends \BaseController {
      * @return Response
      */
     public function show($id) {
-        if ($user = User::with(array('address', 'acl','photo'))->find($id)) {
+        if ($user = User::with(array('address', 'acl', 'photo'))->find($id)) {
             return $this->makeSuccessResponse("User (ID = $user->id) fetched", $user->toArray());
         } else {
             return $this->makeFailResponse("User (ID = $id) does not exist.");
@@ -200,7 +217,7 @@ class UserController extends \BaseController {
         $count = User::count();
         return $this->makeSuccessResponse("Number of Users fethced.", $count);
     }
-    
+
     /**
      * Store photo for a user
      * 
@@ -211,33 +228,31 @@ class UserController extends \BaseController {
             "photo" => "required|image"
         );
         $validation = Validator::make(Input::all(), $rules);
-        if($validation->fails()) {
+        if ($validation->fails()) {
             return $this->makeFailResponse("Photo upload of User (ID = $id) failed due to validation errors.", $validation->messages()->getMessages());
-        }
-        else {
-            if($user = User::find($id)) {
-                if(!is_null($user->photo)) {
+        } else {
+            if ($user = User::find($id)) {
+                if (!is_null($user->photo)) {
                     $user->photo->delete();
                 }
-                
+
                 $extension = Input::file('photo')->getClientOriginalExtension();
-                $fileName = Auth::user()->id . '_' . time() . "." . $extension;
-                
+                $fileName = $user->id . '_' . Auth::user()->id . '_' . time() . "." . $extension;
+
                 $destinationPath = public_path() . "/uploads/users";
                 Input::file('photo')->move($destinationPath, $fileName);
-                
+
                 $photo = new Photo();
                 $photo->path = "$destinationPath/$fileName";
                 $photo->url = URL::to("uploads/users/$fileName");
                 $photo->uploaded_by = Auth::user()->id;
                 $photo->save();
-                
+
                 $user->photo_id = $photo->id;
                 $user->save();
-                
+
                 return $this->makeSuccessResponse("Photo upload of User (ID = $id) was successful", $photo->toArray());
-            }
-            else {
+            } else {
                 return $this->makeFailResponse("User does not exist");
             }
         }
