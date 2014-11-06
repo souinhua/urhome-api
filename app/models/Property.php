@@ -6,6 +6,21 @@ class Property extends Eloquent {
     
     protected $table = "property";
     
+    /*
+     * Property Scopes
+     */
+    
+    public function scopeUnpublished($query) {
+        return $query->where('publish_start','=',null)->where('publish_end','=',null);
+    }
+    
+    public function scopePublished($query) {
+        return $query->where('publish_start','is not',null);
+    }
+    
+    /*
+     * Property Relationships
+     */
     public function types() {
         return $this->belongsToMany('Type','property_type','property_id','type_id');
     }
@@ -43,11 +58,15 @@ class Property extends Eloquent {
     }
     
     public function details() {
-        return $this->hasOne('CpmmonDetails','id','common_details_id');
+        return $this->hasOne('CommonDetails','id','common_details_id');
     }
     
     public function photos() {
         return $this->belongsToMany('Photo','property_photo','property_id','photo_id');
+    }
+    
+    public function publisher() {
+        return $this->hasOne("Person", "id", "published_by");
     }
 }
 

@@ -10,26 +10,30 @@
   | and give it the Closure to execute when that URI is requested.
   |
  */
+Route::get('/test', function() {
+    $properties = Property::whereCreated_by(1)->get();
+    var_dump($properties);
+});
 
 Route::get('/', function() {
     return View::make('home.index');
 });
 
 Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), function() {
-    
+
     /*
      * ACL Resource Routes
      */
-    Route::resource('acl','AclController');
-    
+    Route::resource('acl', 'AclController');
+
     /*
      * Property Resource Routes
      */
-    Route::resource('property','PropertyController');
-    Route::resource('properties','PropertyController@index');
-    Route::resource('property/{id}/photo','PropertyController@postPhoto');
-    
-    
+    Route::resource('property', 'PropertyController');
+    Route::resource('properties', 'PropertyController@index');
+    Route::resource('property/{id}/photo', 'PropertyController@postPhoto');
+
+
     /*
      * Users Resource Routes
      */
@@ -40,32 +44,32 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::post('user/{id}/photo', 'UserController@postPhoto');
     Route::put('user/{id}/address', 'UserController@setAddress');
     Route::get('user/exists/{email}/{password}', 'UserController@exists');
-    Route::get('users/count','UserController@count');
-    
+    Route::get('users/count', 'UserController@count');
+
     /*
      * Photos Resource Routes
      */
-    Route::resource('photo','PhotoController');
+    Route::resource('photo', 'PhotoController');
     Route::get('photo/{id}/display', 'PhotoController@display');
-    
+
     /*
      * Types Resource Routes
      */
-    Route::resource('type','TypeController');
-    Route::get('types','TypeController@index');
-    
+    Route::resource('type', 'TypeController');
+    Route::get('types', 'TypeController@index');
+
     /*
      * Types Resource Routes
      */
-    Route::resource('address','AddressController');
-    Route::get('addresses','AddressController@index');
-    
+    Route::resource('address', 'AddressController');
+    Route::get('addresses', 'AddressController@index');
+
     /*
      * Amenity Resource Routes
      */
-    Route::resource('amenity','AmenityController');
-    Route::get('amenities','AmenityController@index');
-    Route::post('amenity/{id}/photo','AmenityController@savePhoto');
+    Route::resource('amenity', 'AmenityController');
+    Route::get('amenities', 'AmenityController@index');
+    Route::post('amenity/{id}/photo', 'AmenityController@savePhoto');
 });
 
 Route::post('oauth/token', function() {
