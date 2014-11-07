@@ -32,4 +32,8 @@ class Content extends Eloquent{
     public function publisher() {
         return $this->hasOne("Person", "id", "published_by");
     }
+    
+    public function properties() {
+        return $this->belongsToMany('Property','content_property','property_id','content_id');
+    }
 }

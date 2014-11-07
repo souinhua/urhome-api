@@ -1,0 +1,126 @@
+<?php
+
+class ContentController extends \BaseController {
+
+    private $allowedFields;
+
+    function __construct() {
+        $this->allowedFields = array(
+            "title",
+            "abstract",
+            "body",
+            "publish_start",
+            "publish_end",
+            "photo_id"
+        );
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Response
+     */
+    public function index() {
+        $with = Input::get('with', array('photo'));
+        $query = Content::with($with);
+        
+        if(Input::has('search')) {
+            
+        }
+        
+        $limit = Input::get('limit', 1000);
+        $offset = Input::get('offset', 0);
+        $contents = $query->take($limit)->skip($offset)->get();
+        $count = $query->count();
+        
+        return $this->makeSuccessResponse("Contents fetched", array(
+            "contents" => $contents,
+            "count" => $count
+        ));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @return Response
+     */
+    public function store() {
+        $rules = array(
+            "title" => "required|max:128",
+            "abstract" => "required",
+            "body" => "required",
+            "photo_id" => "exists:photo,id"
+        );
+        $validation = Validator::make(Input::all(), $rules);
+        if ($validation->fails()) {
+            return $this->makeFailResponse("Content creation could not complete due to validation error(s).", $validation->messages()->getMessages());
+        } else {
+            $content = new Content();
+            foreach ($this->allowedFields as $field) {
+                if (Input::has($field)) {
+                    $content->$field = Input::get($field);
+                }
+            }
+            $content->created_by = Auth::id();
+            $content->save();
+            return $this->makeSuccessResponse("Content created.", $content->toArray());
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function show($id) {
+        $with = Input::get('with', array('photo'));
+        if($content = Content::with($with)->find($id)) {
+            return $this->makeSuccessResponse("Content (ID = $id) fetched", $content->toArray());
+        }
+        else {
+            return $this->makeFailResponse("Content does not exist");
+        }
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function update($id) {
+        if($content = Content::find($id)) {
+            foreach($this->allowedFields as $field) {
+                if(Input::has($field)) {
+                    $content->$field = Input::get($field);
+                }
+            }
+            $content->updated_by = Auth::id();
+            $content->save();
+            return $this->makeSuccessResponse("Content (ID = $id) updated", $content->toArray());
+        }
+        else {
+            return $this->makeFailResponse("Content does not exist");
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function destroy($id) {
+        if($content = Content::find($id)) {
+            $content->deleted_by = Auth::id();
+            $content->save();
+            $content->delete();
+            return $this->makeSuccessResponse("Content (ID = $id) deleted");
+        }
+        else {
+            return $this->makeFailResponse("Content does not exist");
+        }
+    }
+
+}

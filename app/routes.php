@@ -20,7 +20,12 @@ Route::get('/', function() {
 });
 
 Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), function() {
-
+    
+    Route::get('test', function() {
+        $user = Auth::user();
+        echo "asd:";
+        print_r($user);
+    });
     /*
      * ACL Resource Routes
      */
@@ -30,8 +35,9 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
      * Property Resource Routes
      */
     Route::resource('property', 'PropertyController');
-    Route::resource('properties', 'PropertyController@index');
-    Route::resource('property/{id}/photo', 'PropertyController@postPhoto');
+    Route::get('properties', 'PropertyController@index');
+    Route::get('properties/report', 'PropertyController@report');
+    Route::get('property/{id}/photo', 'PropertyController@postPhoto');
 
 
     /*
@@ -70,6 +76,12 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::resource('amenity', 'AmenityController');
     Route::get('amenities', 'AmenityController@index');
     Route::post('amenity/{id}/photo', 'AmenityController@savePhoto');
+    
+    /*
+     * Feature Resource Routes
+     */
+    Route::resource('feature', 'FeatureController');
+    Route::get('features', 'FeatureController@index');
 });
 
 Route::post('oauth/token', function() {

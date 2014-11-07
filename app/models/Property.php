@@ -18,6 +18,10 @@ class Property extends Eloquent {
         return $query->where('publish_start','is not',null);
     }
     
+    public function scopeOverdue($query) {
+        return $query->where('publish_end','<', date('Y-m-d H:i:s', time()));
+    }
+    
     /*
      * Property Relationships
      */

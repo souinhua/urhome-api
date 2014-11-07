@@ -8,11 +8,28 @@ class PropertyController extends \BaseController {
      * @return Response
      */
     public function index() {
-        $withs = array_merge(array('address','types'), Input::get("with", array()));
+        $withs = array_merge(array('address', 'types'), Input::get("with", array()));
         $query = Property::with($withs);
-        
-        $properties = $query->get();
-        return $this->makeSuccessResponse("Property Resources fetched.", $properties->toArray());
+
+        if (Input::has('unpublished')) {
+            $query = $query->unpublished();
+        } else if (Input::has('published')) {
+            $query = $query->published();
+        } else if (Input::has('overdue')) {
+            $query = $query->overdue();
+        }
+
+        $limit = Input::get("limit", 1000);
+        $offset = Input::get("offset", 0);
+
+        $properties = $query->take($limit)->skip($offset)->get();
+        $count = $query->count();
+
+        $data = array(
+            "properties" => $properties,
+            "count" => $count
+        );
+        return $this->makeSuccessResponse("Property Resources fetched.", $data);
     }
 
     /**
@@ -43,10 +60,10 @@ class PropertyController extends \BaseController {
             $property->transaction = Input::get("transaction");
             $property->address_as_name = Input::get("address_as_name", false);
             $property->address_id = Input::get("address");
-            
+
             $property->created_by = Auth::user()->id;
             $property->save();
-            
+
             $property->types()->sync(Input::get('types', array()));
             $property->save();
 
@@ -61,7 +78,7 @@ class PropertyController extends \BaseController {
      * @return Response
      */
     public function show($id) {
-        $withs = array_merge(array('address','types'), Input::get("with", array()));
+        $withs = array_merge(array('address', 'types'), Input::get("with", array()));
         if ($property = Property::with($withs)->find($id)) {
             return $this->makeSuccessResponse("Property (ID = $id) fetched", $property->toArray());
         }
@@ -103,9 +120,63 @@ class PropertyController extends \BaseController {
      * @return Response
      */
     public function destroy($id) {
-        //
+        if ($property = Property::find($id)) {
+            $property->deleted_by = Auth::id();
+            $property->save();
+            $property->delete();
+            return $this->makeSuccessResponse("Property (ID = $id) deleted");
+        } else {
+            return $this->makeFailResponse("Property does not exist.");
+        }
     }
-    
+
+    /**
+     * Return reporting data for Proeprties
+     *
+     * 
+     * @return Response
+     */
+    public function report() {
+        $counts = array(
+            "published" => Property::published()->count(),
+            "unpublished" => Property::unpublished()->count(),
+            "overdue" => Property::overdue()->count(),
+        );
+        return $this->makeSuccessResponse("Proeprty Report", $counts);
+    }
+
+    /**
+     * Pulish a property
+     *
+     * @param int $id Property ID
+     * @return Response
+     */
+    public function publish($id) {
+        if ($property = Property::find($id)) {
+            $rules = array(
+                "publish_start" => "required|date"
+            );
+            $validation = Validator::make(Input::all(), $rules);
+            if ($validation->fails()) {
+                return $this->makeFailResponse("Publihs property could not complete due to validation error(s).", $validation->messages()->getMessages());
+            } else {
+                $start = date("Y-m-d H:i:s", strtotime(Input::get('publish_start')));
+                $end = null;
+                if (Input::has('publish_end')) {
+                    $end = date("Y-m-d H:i:s", strtotime(Input::get('publish_end')));
+                }
+                $property->publish_start = $start;
+                $property->publish_end = $end;
+                $property->publish_by = Auth::id();
+                $property->save();
+                
+                return $this->makeSuccessResponse("Property (ID = $id) published", $property->toArray());
+            }
+        } else {
+            return $this->makeFailResponse("Property (ID = $id) does not exist.");
+        }
+    }
+
     /**
      * Store photo for a property
      * 
@@ -125,13 +196,13 @@ class PropertyController extends \BaseController {
                 }
 
                 $extension = Input::file('photo')->getClientOriginalExtension();
-                $fileName = $property->id . '_' . Auth::user()->id .'_'. time() . "." . $extension;
+                $fileName = $property->id . '_' . Auth::user()->id . '_' . time() . "." . $extension;
 
                 $propertyDir = public_path() . "/uploads/properties/$property->id";
-                if(!File::isDirectory($propertyDir)) {
+                if (!File::isDirectory($propertyDir)) {
                     File::makeDirectory($propertyDir, 0775, true);
                 }
-                
+
                 $destinationPath = public_path() . "/uploads/properties/$property->id";
                 Input::file('photo')->move($destinationPath, $fileName);
 
@@ -141,7 +212,7 @@ class PropertyController extends \BaseController {
                 $photo->uploaded_by = Auth::user()->id;
                 $photo->save();
 
-                if(!is_null($property->photo)) {
+                if (!is_null($property->photo)) {
                     $property->photo->delete();
                 }
                 $property->photo_id = $photo->id;
