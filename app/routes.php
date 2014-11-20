@@ -11,7 +11,7 @@
   |
  */
 Route::get('/test', function() {
-    $properties = Property::whereCreated_by(1)->get();
+    $properties = Property::published()->get();
     var_dump($properties);
 });
 
@@ -37,9 +37,9 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::resource('property', 'PropertyController');
     Route::get('properties', 'PropertyController@index');
     Route::get('properties/report', 'PropertyController@report');
-    Route::get('property/{id}/photo', 'PropertyController@postPhoto');
-
-
+    Route::post('property/{id}/photo', 'PropertyController@postPhoto');
+    
+    Route::resource('property.feature', 'PropertyFeatureController');
     /*
      * Users Resource Routes
      */

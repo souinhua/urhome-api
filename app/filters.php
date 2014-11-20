@@ -95,14 +95,14 @@ Route::filter('csrf', function() {
 
 
 
-Route::filter('json', function() {
-    if (Request::isMethod('post') || Request::isMethod('put')) {
-        if (Request::isJson()) {
-            $requestData = Request::instance()->getContent();
-            json_decode($requestData);
-        }
-    }
-});
+//Route::filter('json', function() {
+//    if (Request::isMethod('post') || Request::isMethod('put')) {
+//        if (Request::isJson()) {
+//            $requestData = Request::instance()->getContent();
+//            json_decode($requestData);
+//        }
+//    }
+//});
 
 
 Route::filter('oauth', function() {
@@ -117,13 +117,13 @@ Route::filter('oauth', function() {
                 Auth::login($user);
             } else {
                 return Response::json(array(
-                            'error' => 'Unauthorized'
-                                ), 400);
+                            'status' => 'UNAUTHORIZED'
+                                ), 401);
             }
         }
     } else {
         return Response::json(array(
-                    'error' => 'Unauthorized'
+                    'status' => 'UNAUTHORIZED'
                         ), $bridgedResponse->getStatusCode());
     }
 });

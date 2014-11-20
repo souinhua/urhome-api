@@ -122,5 +122,37 @@ class ContentController extends \BaseController {
             return $this->makeFailResponse("Content does not exist");
         }
     }
+    
+    /**
+     * Pulish a property
+     *
+     * @param int $id Property ID
+     * @return Response
+     */
+    public function publish($id) {
+        if ($content = Content::find($id)) {
+            $rules = array(
+                "publish_start" => "required|date"
+            );
+            $validation = Validator::make(Input::all(), $rules);
+            if ($validation->fails()) {
+                return $this->makeFailResponse("Publihs property could not complete due to validation error(s).", $validation->messages()->getMessages());
+            } else {
+                $start = date("Y-m-d H:i:s", strtotime(Input::get('publish_start')));
+                $end = null;
+                if (Input::has('publish_end')) {
+                    $end = date("Y-m-d H:i:s", strtotime(Input::get('publish_end')));
+                }
+                $content->publish_start = $start;
+                $content->publish_end = $end;
+                $content->publish_by = Auth::id();
+                $content->save();
+                
+                return $this->makeSuccessResponse("Property (ID = $id) published", $content->toArray());
+            }
+        } else {
+            return $this->makeFailResponse("Property (ID = $id) does not exist.");
+        }
+    }
 
 }

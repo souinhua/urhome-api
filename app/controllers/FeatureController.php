@@ -27,7 +27,7 @@ class FeatureController extends \BaseController {
         } else {
             $feature = new Feature();
             $feature->name = Input::get('name');
-            $feature->desciption = Input::get('desciption', null);
+            $feature->description = Input::get('description', null);
             $feature->save();
             return $this->makeSuccessResponse("Feature created", $feature->toArray());
         }

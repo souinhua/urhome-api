@@ -21,7 +21,7 @@ class BaseController extends Controller {
      */
     protected function makeSuccessResponse($message, $data = null) {
         $return = array(
-            'code' => 'OK',
+            'status' => 'OK',
             'message' => $message
         );
 
@@ -40,12 +40,12 @@ class BaseController extends Controller {
      */
     protected function makeFailResponse($message, array $validations = null, $errorCode = 400) {
         $return = array(
-            'code' => 'FAILED',
+            'status' => 'FAILED',
             'message' => $message
         );
 
         if (isset($validations))
-            $return['validations'] = $validations;
+            $return['error'] = $validations;
 
         return Response::json($return, $errorCode);
     }

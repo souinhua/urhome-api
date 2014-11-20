@@ -2,6 +2,20 @@
 
 class PropertyController extends \BaseController {
 
+    private $fillableFields;
+
+    function __construct() {
+        $this->fillableFields = array(
+            "name",
+            "tagline",
+            "description",
+            "status",
+            "transaction",
+            "address_as_name",
+            "address_id"
+        );
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -158,7 +172,7 @@ class PropertyController extends \BaseController {
             );
             $validation = Validator::make(Input::all(), $rules);
             if ($validation->fails()) {
-                return $this->makeFailResponse("Publihs property could not complete due to validation error(s).", $validation->messages()->getMessages());
+                return $this->makeFailResponse("Publish property could not complete due to validation error(s).", $validation->messages()->getMessages());
             } else {
                 $start = date("Y-m-d H:i:s", strtotime(Input::get('publish_start')));
                 $end = null;
@@ -169,7 +183,7 @@ class PropertyController extends \BaseController {
                 $property->publish_end = $end;
                 $property->publish_by = Auth::id();
                 $property->save();
-                
+
                 return $this->makeSuccessResponse("Property (ID = $id) published", $property->toArray());
             }
         } else {
