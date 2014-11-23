@@ -16,5 +16,9 @@ class Photo extends Eloquent {
         }
         parent::delete();
     }
+    
+    public function uploader() {
+        return $this->belongsTo('User','uploaded_by');
+    }
 
 }

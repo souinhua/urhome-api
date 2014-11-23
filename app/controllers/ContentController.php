@@ -154,5 +154,25 @@ class ContentController extends \BaseController {
             return $this->makeFailResponse("Property (ID = $id) does not exist.");
         }
     }
-
+    
+    /**
+     * Unpublish Property
+     * 
+     * @param int $id Property ID
+     * 
+     * @return Response
+     */
+    public function unpublish($id) {
+        if($content = Content::find($id)) {
+            $content->publish_start = null;
+            $content->publish_end = null;
+            $content->publish_by = null;
+            $content->save();
+            
+            return $this->makeSuccessResponse("Content (ID = $id) unplublished successfully", $content->toArray());
+        }
+        else {
+            return $this->makeFailResponse("Content does not exist");
+        }
+    }
 }
