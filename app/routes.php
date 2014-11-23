@@ -21,11 +21,6 @@ Route::get('/', function() {
 
 Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), function() {
     
-    Route::get('test', function() {
-        $user = Auth::user();
-        echo "asd:";
-        print_r($user);
-    });
     /*
      * ACL Resource Routes
      */
@@ -34,12 +29,15 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     /*
      * Property Resource Routes
      */
+    Route::get('properties/search', 'PropertyController@search');
     Route::resource('property', 'PropertyController');
     Route::get('properties', 'PropertyController@index');
     Route::get('properties/report', 'PropertyController@report');
     Route::post('property/{id}/photo', 'PropertyController@postPhoto');
     
     Route::resource('property.feature', 'PropertyFeatureController');
+    Route::resource('property.details', 'PropertyDetailsController');
+    Route::resource('property.spec', 'PropertySpecController');
     /*
      * Users Resource Routes
      */

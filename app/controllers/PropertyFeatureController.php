@@ -57,17 +57,27 @@ class PropertyFeatureController extends BaseController {
     }
     
     /**
-     * Store Feature of a Property
+     * Update Feature of a Property
      *
      * @param $propertyId Property ID
+     * @param $featureId Feature ID
      * @return Response
      */
-    public function destroy($propertyId, $featureId) {
+    public function update($propertyId, $featureId) {
+        $rules = array(
+            "name" => "required|max:128"
+        );
+        $validation = Validator::make(Input::all(), $rules);
+        if($validation->fails()) {
+            return $this->makeFailResponse("Feature creation could not complete due to validation error(s).", $validation->messages()->getMessages());
+        }
+        
         $response = null;
         if(($property = Property::find($propertyId)) && ($feature = Feature::find($featureId))) {
-            $property->features()->detach($feature->id);
-            $feature->delete();
-            return $this->makeSuccessResponse("Feature (ID=$featureId) deleted.");
+            $feature->name = Input::get("name");
+            $feature->description = Input::get("description", $feature->description);
+            $feature->save();
+            return $this->makeSuccessResponse("Feature (ID=$featureId) updated.", $feature);
         }
         else {
             $response = $this->makeFailResponse("Property Feature does not exist.");

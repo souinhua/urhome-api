@@ -46,6 +46,33 @@ class PropertyController extends \BaseController {
         return $this->makeSuccessResponse("Property Resources fetched.", $data);
     }
 
+    public function search() {
+        $rules = array(
+            'search' => "required"
+        );
+        $validation = Validator::make(Input::all(), $rules);
+        if ($validation->fails()) {
+            return $this->makeFailResponse("Property search could not complete due to validation error(s).", $validation->messages()->getMessages());
+        } else {
+            $search = Input::get("search");
+            $query = Property::where("name", "like", "%$search%")
+                    ->orWhere("description", "like", "%$search%")
+                    ->orWhere("tagline", "like", "%$search%");
+
+            $limit = Input::get("limit", 1000);
+            $offset = Input::get("offset", 0);
+
+            $properties = $query->take($limit)->skip($offset)->get();
+            $count = $query->count();
+
+            $data = array(
+                "properties" => $properties,
+                "count" => $count
+            );
+            return $this->makeSuccessResponse("Property search result fetched.", $data);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -168,7 +195,8 @@ class PropertyController extends \BaseController {
     public function publish($id) {
         if ($property = Property::find($id)) {
             $rules = array(
-                "publish_start" => "required|date"
+                "publish_start" => "required|date",
+                "publish_end" => "date"
             );
             $validation = Validator::make(Input::all(), $rules);
             if ($validation->fails()) {
