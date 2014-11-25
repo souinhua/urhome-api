@@ -11,6 +11,7 @@
   |
  */
 Route::get('/test', function() {
+    echo '<pre>';
     $users = User::all();
     var_dump($users);
     
