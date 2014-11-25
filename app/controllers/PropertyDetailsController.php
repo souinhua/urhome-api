@@ -81,14 +81,12 @@ class PropertyDetailsController extends \BaseController {
         if (($property = Property::find($propertyId))) {
             if ($property = Property::with('details')->find($propertyId)) {
                 $details = $property->details;
-                
-                foreach($this->fields as $field) {
-                    if(Input::has($field)) {
-                        $details->$field = Input::get($field);
-                    }
+
+                foreach ($this->fields as $field) {
+                    $details->$field = Input::get($field, $details->$field);
                 }
                 $details->save();
-                
+
                 return $this->makeSuccessResponse("Property Details updated", $details->toArray());
             } else {
                 return $this->makeFailResponse("Property does not exist");
@@ -97,4 +95,5 @@ class PropertyDetailsController extends \BaseController {
             return $this->makeFailResponse("Property does not exist.");
         }
     }
+
 }
