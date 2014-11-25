@@ -85,7 +85,7 @@ class PropertyController extends \BaseController {
             "description" => "required",
             "status" => "required|in:rfo,so,ps",
             "transaction" => "required|in:sale,rent",
-            "address_as_name" => "in:1,0",
+//            "address_as_name" => "in:1,0",
             "address" => "required|numeric|exists:address,id",
             "types" => "required|array"
         );
