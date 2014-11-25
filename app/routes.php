@@ -14,9 +14,23 @@ Route::get('/test', function() {
     echo '<pre>';
     $users = User::all();
     var_dump($users);
-    
+
     $clients = DB::table('oauth_clients')->get();
     print_r($clients);
+
+    if (empty($_SERVER['REMOTE_USER'])) {
+        header('WWW-Authenticate: Basic realm="My Realm"');
+        header('HTTP/1.0 401 Unauthorized');
+        echo 'Need auth!';
+        exit;
+    }
+
+    list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) = explode(
+            ':', base64_decode(substr($_SERVER['REMOTE_USER'], 6))
+    );
+
+    print_r($_SERVER);
+    echo "</pre>";
 });
 
 Route::get('/', function() {
@@ -24,7 +38,7 @@ Route::get('/', function() {
 });
 
 Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), function() {
-    
+
     /*
      * ACL Resource Routes
      */
@@ -38,7 +52,7 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::get('properties', 'PropertyController@index');
     Route::get('properties/report', 'PropertyController@report');
     Route::post('property/{id}/photo', 'PropertyController@postPhoto');
-    
+
     Route::resource('property.feature', 'PropertyFeatureController');
     Route::resource('property.details', 'PropertyDetailsController');
     Route::resource('property.spec', 'PropertySpecController');
@@ -78,7 +92,7 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::resource('amenity', 'AmenityController');
     Route::get('amenities', 'AmenityController@index');
     Route::post('amenity/{id}/photo', 'AmenityController@savePhoto');
-    
+
     /*
      * Feature Resource Routes
      */
