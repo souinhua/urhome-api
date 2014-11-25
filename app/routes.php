@@ -11,8 +11,8 @@
   |
  */
 Route::get('/test', function() {
-    $properties = Property::published()->get();
-    var_dump($properties);
+    $users = User::all();
+    var_dump($users);
 });
 
 Route::get('/', function() {
