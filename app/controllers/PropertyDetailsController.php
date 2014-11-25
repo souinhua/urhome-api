@@ -24,13 +24,13 @@ class PropertyDetailsController extends \BaseController {
     public function store($propertyId) {
         if ($property = Property::find($propertyId)) {
             $rules = array(
-                "bed" => "required|numeric",
-                "bath" => "required|numeric",
-                "parking" => "required|numeric",
-                "area" => "required|numeric",
-                "furnish" => "required|in:none,full,semi",
+                "bed" => "numeric",
+                "bath" => "numeric",
+                "parking" => "numeric",
+                "area" => "numeric",
+                "furnish" => "in:none,full,semi",
                 "min_price" => "required|numeric",
-                "max_price" => "required|numeric"
+                "max_price" => "numeric"
             );
             $validation = Validator::make(Input::all(), $rules);
             if ($validation->fails()) {
