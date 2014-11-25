@@ -65,7 +65,7 @@ return array(
             
                 'mysql-fortrabbit' => array(
                         'driver'    => 'mysql',
-			'host'      => 'http://urhome-api.mysql.eu1.frbit.com',
+			'host'      => 'urhome-api.mysql.eu1.frbit.com',
 			'database'  => 'urhome-api',
 			'username'  => 'urhome-api',
 			'password'  => 'LS9UNMrNeFymGJqU',
