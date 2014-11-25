@@ -22,6 +22,7 @@ App::after(function($request, $response) {
 
 App::singleton('oauth2', function() {
 
+//    $storage = new OAuth2\Storage\Pdo(array('dsn' => 'mysql:dbname=urhome_api_db;host=localhost', 'username' => 'root', 'password' => ''));
     $storage = new OAuth2\Storage\Pdo(array('dsn' => 'mysql:dbname=urhome-api;host=urhome-api.mysql.eu1.frbit.com', 'username' => 'urhome-api', 'password' => 'LS9UNMrNeFymGJqU'));
     $server = new OAuth2\Server($storage);
 
@@ -107,6 +108,8 @@ Route::filter('csrf', function() {
 
 Route::filter('oauth', function() {
     $bridgedRequest = OAuth2\HttpFoundationBridge\Request::createFromRequest(Request::instance());
+    print_r($bridgedRequest);
+    exit;
     $bridgedResponse = new OAuth2\HttpFoundationBridge\Response();
 
     if (App::make('oauth2')->verifyResourceRequest($bridgedRequest, $bridgedResponse)) {
