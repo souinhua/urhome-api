@@ -13,6 +13,9 @@
 Route::get('/test', function() {
     $users = User::all();
     var_dump($users);
+    
+    $clients = DB::table('oauth_clients')->get();
+    print_r($clients);
 });
 
 Route::get('/', function() {
