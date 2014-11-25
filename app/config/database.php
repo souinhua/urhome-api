@@ -26,7 +26,7 @@ return array(
 	|
 	*/
 
-	'default' => 'mysql',
+	'default' => 'mysql-fortrabbit',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -62,6 +62,17 @@ return array(
 			'collation' => 'utf8_unicode_ci',
 			'prefix'    => '',
 		),
+            
+                'mysql-fortrabbit' => array(
+                        'driver'    => 'mysql',
+			'host'      => 'urhome-api.mysql.eu1.frbit.com',
+			'database'  => 'urhome-api',
+			'username'  => 'urhome-api',
+			'password'  => 'q4xnx3B5OkTNhRN6',
+			'charset'   => 'utf8',
+			'collation' => 'utf8_unicode_ci',
+			'prefix'    => '',
+                ),
 
 		'pgsql' => array(
 			'driver'   => 'pgsql',

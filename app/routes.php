@@ -16,7 +16,7 @@ Route::get('/test', function() {
 });
 
 Route::get('/', function() {
-    return View::make('home.index');
+    echo "Urhome API";
 });
 
 Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), function() {
