@@ -68,7 +68,7 @@ return array(
 			'host'      => 'http://urhome-api.mysql.eu1.frbit.com',
 			'database'  => 'urhome-api',
 			'username'  => 'urhome-api',
-			'password'  => 'q4xnx3B5OkTNhRN6',
+			'password'  => 'LS9UNMrNeFymGJqU',
 			'charset'   => 'utf8',
 			'collation' => 'utf8_unicode_ci',
 			'prefix'    => '',
