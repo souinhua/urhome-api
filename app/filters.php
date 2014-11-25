@@ -108,8 +108,6 @@ Route::filter('csrf', function() {
 
 Route::filter('oauth', function() {
     $bridgedRequest = OAuth2\HttpFoundationBridge\Request::createFromRequest(Request::instance());
-    print_r($bridgedRequest);
-    exit;
     $bridgedResponse = new OAuth2\HttpFoundationBridge\Response();
 
     if (App::make('oauth2')->verifyResourceRequest($bridgedRequest, $bridgedResponse)) {
