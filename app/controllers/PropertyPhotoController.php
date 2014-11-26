@@ -23,8 +23,9 @@ class PropertyPhotoController extends \BaseController {
      */
     public function store($propertyId) {
         $rules = array(
-            "photo_id" => "required|numeric|exists:photo,id",
-            "property_id"=>"required|numeric|exists:property,id"
+            "photo" => "required|image",
+            "property_id" => "required|numeric|exists:property,id",
+            "caption" => "max:256"
         );
         $input = Input::all();
         $input['property_id'] = $propertyId;
@@ -32,14 +33,16 @@ class PropertyPhotoController extends \BaseController {
         if ($validation->fails()) {
             return $this->makeFailResponse("Property photo linking failed due to validation error(s).", $validation->messages()->getMessages());
         } else {
-            $photo = Photo::find(Input::get('photo_id'));
-            
             $property = Property::find($propertyId);
+
+            $uploadedFile = Input::file('photo');
+            $photo = PhotoManager::create($uploadedFile, 'property', $property->id, Input::get('caption', null));
+            
             $property->photos()->attach($photo->id);
             $property->updated_by = Auth::id();
             $property->save();
-            
-            return $this->makeSuccessResponse("Property Photo linked successfully", $photo);
+
+            return $this->makeSuccessResponse("Property Photo linked successfully", $photo->toArray());
         }
     }
 
@@ -49,7 +52,7 @@ class PropertyPhotoController extends \BaseController {
      * @param  int  $id
      * @return Response
      */
-    public function show($id) {
+    public function show($propertyId, $photoId) {
         //
     }
 
