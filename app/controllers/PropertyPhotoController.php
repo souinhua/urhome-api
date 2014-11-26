@@ -41,7 +41,6 @@ class PropertyPhotoController extends \BaseController {
             $property->photos()->attach($photo->id);
             $property->updated_by = Auth::id();
             $property->save();
-
             return $this->makeSuccessResponse("Property Photo linked successfully", $photo->toArray());
         }
     }
