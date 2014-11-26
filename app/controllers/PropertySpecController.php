@@ -46,7 +46,7 @@ class PropertySpecController extends BaseController {
                 $property->updated_by = Auth::id();
                 $property->save();
 
-                return $this->makeSuccessResponse("Property Specifications fetched", $spec->toArray());
+                return $this->makeSuccessResponse("Property Specifications created", $spec->toArray());
             }
         } else {
             return $this->makeFailResponse("Property does not exist");

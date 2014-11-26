@@ -83,7 +83,7 @@ class PropertyDetailsController extends \BaseController {
                 $details = $property->details;
 
                 foreach ($this->fields as $field) {
-                    $details->$field = Input::get($field, $details->$field);
+                    $details->$field = Input::get($field, null);
                 }
                 $details->save();
 
