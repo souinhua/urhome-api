@@ -10,16 +10,9 @@
   | and give it the Closure to execute when that URI is requested.
   |
  */
-Route::get('/test', function() {
-
-});
-
-Route::get('/', function() {
-    echo "Urhome API";
-});
 
 Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), function() {
-
+    
     /*
      * ACL Resource Routes
      */
