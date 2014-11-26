@@ -45,11 +45,11 @@ class PhotoManager {
             return null;
         }
         
-        if(!\File::isDirectory($path)) {
-            \File::makeDirectory($path, 0775, true);
+        $publicPath = public_path() . "$path";
+        if(!\File::isDirectory($publicPath)) {
+            \File::makeDirectory($publicPath, 0775, true);
         }
         
-        $publicPath = public_path() . "$path";
         $moved = $uploadedFile->move($publicPath, $fileName);
         
         if($moved) {
