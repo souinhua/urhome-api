@@ -30,6 +30,7 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::resource('property.feature', 'PropertyFeatureController');
     Route::resource('property.details', 'PropertyDetailsController');
     Route::resource('property.spec', 'PropertySpecController');
+    Route::resource('property.photos', 'PropertySpecController');
     /*
      * Users Resource Routes
      */
