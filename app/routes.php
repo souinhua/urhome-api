@@ -13,7 +13,7 @@
 
 Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), function() {
     Route::get('test', function(){
-        var_dump(Auth::user);
+        var_dump(Auth::user());
         echo "====================================================================<br/>";
         print_r(PhotoManager::create(null, 'property','1','wassap'));
     });
