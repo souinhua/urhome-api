@@ -22,8 +22,8 @@ App::after(function($request, $response) {
 
 App::singleton('oauth2', function() {
 
-//    $storage = new OAuth2\Storage\Pdo(array('dsn' => 'mysql:dbname=urhome_api_db;host=localhost', 'username' => 'root', 'password' => ''));
-    $storage = new OAuth2\Storage\Pdo(array('dsn' => 'mysql:dbname=urhome-api;host=urhome-api.mysql.eu1.frbit.com', 'username' => 'urhome-api', 'password' => 'LS9UNMrNeFymGJqU'));
+    $storage = new OAuth2\Storage\Pdo(array('dsn' => 'mysql:dbname=urhome_api_db;host=localhost', 'username' => 'root', 'password' => ''));
+//    $storage = new OAuth2\Storage\Pdo(array('dsn' => 'mysql:dbname=urhome-api;host=urhome-api.mysql.eu1.frbit.com', 'username' => 'urhome-api', 'password' => 'LS9UNMrNeFymGJqU'));
     $server = new OAuth2\Server($storage);
 
     $server->addGrantType(new OAuth2\GrantType\ClientCredentials($storage));
@@ -50,7 +50,7 @@ Route::filter('auth', function() {
         if (Request::ajax()) {
             return Response::make('Unauthorized', 401);
         } else {
-            return Redirect::guest('login');
+            return Response::json(array("error" => "UNAUTHORIZED"), 301);
         }
     }
 });
@@ -92,19 +92,6 @@ Route::filter('csrf', function() {
         throw new Illuminate\Session\TokenMismatchException;
     }
 });
-
-
-
-
-//Route::filter('json', function() {
-//    if (Request::isMethod('post') || Request::isMethod('put')) {
-//        if (Request::isJson()) {
-//            $requestData = Request::instance()->getContent();
-//            json_decode($requestData);
-//        }
-//    }
-//});
-
 
 Route::filter('oauth', function() {
     $bridgedRequest = OAuth2\HttpFoundationBridge\Request::createFromRequest(Request::instance());
