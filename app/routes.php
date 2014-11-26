@@ -12,11 +12,6 @@
  */
 
 Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), function() {
-    Route::get('test', function(){
-        var_dump(Auth::user());
-        echo "====================================================================<br/>";
-        print_r(PhotoManager::create(null, 'property','1','wassap'));
-    });
     /*
      * ACL Resource Routes
      */
@@ -34,7 +29,7 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::resource('property.feature', 'PropertyFeatureController');
     Route::resource('property.details', 'PropertyDetailsController');
     Route::resource('property.spec', 'PropertySpecController');
-    Route::resource('property.photos', 'PropertySpecController');
+    Route::resource('property.photos', 'PropertyPhotoController');
     /*
      * Users Resource Routes
      */
