@@ -46,33 +46,6 @@ class PropertyController extends \BaseController {
         return $this->makeSuccessResponse("Property Resources fetched.", $data);
     }
 
-    public function search() {
-        $rules = array(
-            'search' => "required"
-        );
-        $validation = Validator::make(Input::all(), $rules);
-        if ($validation->fails()) {
-            return $this->makeFailResponse("Property search could not complete due to validation error(s).", $validation->messages()->getMessages());
-        } else {
-            $search = Input::get("search");
-            $query = Property::where("name", "like", "%$search%")
-                    ->orWhere("description", "like", "%$search%")
-                    ->orWhere("tagline", "like", "%$search%");
-
-            $limit = Input::get("limit", 1000);
-            $offset = Input::get("offset", 0);
-
-            $properties = $query->take($limit)->skip($offset)->get();
-            $count = $query->count();
-
-            $data = array(
-                "properties" => $properties,
-                "count" => $count
-            );
-            return $this->makeSuccessResponse("Property search result fetched.", $data);
-        }
-    }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -224,40 +197,23 @@ class PropertyController extends \BaseController {
      * 
      * @return Response
      */
-    public function postPhoto($id) {
+    public function mainPhoto($id) {
         $rules = array(
-            "photo" => "required|image"
+            "photo" => "required|image",
+            "caption" => "max:256"
         );
         $validation = Validator::make(Input::all(), $rules);
         if ($validation->fails()) {
             return $this->makeFailResponse("Photo upload of User (ID = $id) failed due to validation errors.", $validation->messages()->getMessages());
         } else {
             if ($property = Property::find($id)) {
-                if (!is_null($property->photo)) {
-                    $property->photo->delete();
-                }
-
-                $extension = Input::file('photo')->getClientOriginalExtension();
-                $fileName = $property->id . '_' . Auth::user()->id . '_' . time() . "." . $extension;
-
-                $propertyDir = public_path() . "/uploads/properties/$property->id";
-                if (!File::isDirectory($propertyDir)) {
-                    File::makeDirectory($propertyDir, 0775, true);
-                }
-
-                $destinationPath = public_path() . "/uploads/properties/$property->id";
-                Input::file('photo')->move($destinationPath, $fileName);
-
-                $photo = new Photo();
-                $photo->path = "$destinationPath/$fileName";
-                $photo->url = URL::to("/uploads/properties/$property->id/$fileName");
-                $photo->uploaded_by = Auth::user()->id;
-                $photo->save();
-
+                $uploadedPhoto = Input::file('photo');
+                $photo = PhotoManager::create($uploadedPhoto, "property", $property->id, Input::get("caption", null));
                 if (!is_null($property->photo)) {
                     $property->photo->delete();
                 }
                 $property->photo_id = $photo->id;
+                $property->updated_by = Auth::id();
                 $property->save();
 
                 return $this->makeSuccessResponse("Photo upload of Property (ID = $id) was successful", $photo->toArray());
