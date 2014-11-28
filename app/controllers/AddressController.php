@@ -9,7 +9,8 @@ class AddressController extends \BaseController {
         "zip" => "required|max:32",
         "lng" => "numeric",
         "lat" => "numeric",
-        "zoom" => "numeric"
+        "zoom" => "numeric",
+        "accessibility" => ""
     );
 
     /**
