@@ -10,6 +10,9 @@
   | and give it the Closure to execute when that URI is requested.
   |
  */
+Route::get("docs", function() {
+    return View::make("home.index");
+});
 
 Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), function() {
     /*
@@ -40,8 +43,8 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     /*
      * Photos Resource Routes
      */
-    Route::resource('photos', 'PhotoController');
     Route::get('photos/{id}/display', 'PhotoController@display');
+    Route::resource('photos', 'PhotoController');
 
     /*
      * Types Resource Routes
