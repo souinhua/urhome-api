@@ -74,7 +74,7 @@ class Property extends Eloquent {
     }
     
     public function units() {
-        return $this->hasMany("Unit","property_id");
+        return $this->hasMany("Unit","property_id",'id');
     }
 }
 

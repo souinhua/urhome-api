@@ -5,7 +5,7 @@
  *
  * @author Janssen Canturias
  */
-class Unit {
+class Unit extends Eloquent {
    
     protected $table = 'unit';
     public $timstamps = false;
