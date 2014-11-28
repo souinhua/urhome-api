@@ -20,63 +20,58 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     /*
      * Property Resource Routes
      */
-    Route::get('properties/search', 'PropertyController@search');
-    Route::resource('property', 'PropertyController');
-    Route::get('properties', 'PropertyController@index');
     Route::get('properties/report', 'PropertyController@report');
-    Route::post('property/{id}/photo', 'PropertyController@postPhoto');
+    Route::post('properties/{id}/main-photo', 'PropertyController@mainPhoto');
+    Route::resource('properties', 'PropertyController');
 
-    Route::resource('property.feature', 'PropertyFeatureController');
-    Route::resource('property.details', 'PropertyDetailsController');
-    Route::resource('property.spec', 'PropertySpecController');
-    Route::resource('property.photos', 'PropertyPhotoController');
+    Route::resource('properties.feature', 'PropertyFeatureController');
+    Route::resource('properties.details', 'PropertyDetailsController');
+    Route::resource('properties.spec', 'PropertySpecController');
+    Route::resource('properties.photos', 'PropertyPhotoController');
+    Route::resource('properties.amenities', 'PropertyPhotoController');
     /*
      * Users Resource Routes
      */
-    Route::resource('user', 'UserController');
-    Route::get('users', 'UserController@index');
-    Route::get('user/email/{name}', 'UserController@getEmail');
-    Route::post('user/{id}/address', 'UserController@setAddress');
-    Route::post('user/{id}/photo', 'UserController@postPhoto');
-    Route::put('user/{id}/address', 'UserController@setAddress');
-    Route::get('user/exists/{email}/{password}', 'UserController@exists');
+    Route::get('users/email/{name}', 'UserController@getEmail');
+    Route::post('users/{id}/address', 'UserController@setAddress');
+    Route::post('users/{id}/photo', 'UserController@postPhoto');
+    Route::put('users/{id}/address', 'UserController@setAddress');
+    Route::get('users/exists/{email}/{password}', 'UserController@exists');
     Route::get('users/count', 'UserController@count');
+    Route::resource('users', 'UserController');
+    
 
     /*
      * Photos Resource Routes
      */
-    Route::resource('photo', 'PhotoController');
-    Route::get('photo/{id}/display', 'PhotoController@display');
+    Route::resource('photos', 'PhotoController');
+    Route::get('photos/{id}/display', 'PhotoController@display');
 
     /*
      * Types Resource Routes
      */
-    Route::resource('type', 'TypeController');
-    Route::get('types', 'TypeController@index');
+    Route::resource('types', 'TypeController');
 
     /*
      * Types Resource Routes
      */
-    Route::resource('address', 'AddressController');
-    Route::get('addresses', 'AddressController@index');
+    Route::resource('addresses', 'AddressController');
 
     /*
      * Amenity Resource Routes
      */
-    Route::resource('amenity', 'AmenityController');
-    Route::get('amenities', 'AmenityController@index');
-    Route::post('amenity/{id}/photo', 'AmenityController@savePhoto');
+    Route::resource('amenities', 'AmenityController');
+    Route::post('amenities/{id}/photo', 'AmenityController@savePhoto');
 
     /*
      * Feature Resource Routes
      */
-    Route::resource('feature', 'FeatureController');
-    Route::get('features', 'FeatureController@index');
+    Route::resource('features', 'FeatureController');
     
     /**
      * Specifications
      */
-    Route::resource('spec', 'SpecController');
+    Route::resource('specs', 'SpecController');
 });
 
 Route::post('oauth/token', function() {
