@@ -33,14 +33,10 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
      * Users Resource Routes
      */
     Route::get('users/email/{name}', 'UserController@getEmail');
-    Route::post('users/{id}/address', 'UserController@setAddress');
-    Route::post('users/{id}/photo', 'UserController@postPhoto');
-    Route::put('users/{id}/address', 'UserController@setAddress');
     Route::get('users/exists/{email}/{password}', 'UserController@exists');
-    Route::get('users/count', 'UserController@count');
+    Route::post('users/{id}/photo', 'UserController@photo');
     Route::resource('users', 'UserController');
     
-
     /*
      * Photos Resource Routes
      */

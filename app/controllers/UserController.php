@@ -32,7 +32,7 @@ class UserController extends \BaseController {
 
         $count = $query->count();
         $users = $query->take($limit)->skip($offset)->get();
-        
+
         return $this->makeSuccessResponse("All users fetched", array(
                     "users" => $users->toArray(),
                     "count" => $count
@@ -209,49 +209,33 @@ class UserController extends \BaseController {
     }
 
     /**
-     * Get the number of active users
-     * 
+     * Store the Photo resource to a user.
+     *
+     * @param  int  $id
      * @return Response
      */
-    public function count() {
-        $count = User::count();
-        return $this->makeSuccessResponse("Number of Users fethced.", $count);
-    }
-
-    /**
-     * Store photo for a user
-     * 
-     * @return Response
-     */
-    public function postPhoto($id) {
+    public function photo($id) {
         $rules = array(
-            "photo" => "required|image"
+            "photo" => "required|image",
+            "caption" => "max:256"
         );
         $validation = Validator::make(Input::all(), $rules);
         if ($validation->fails()) {
-            return $this->makeFailResponse("Photo upload of User (ID = $id) failed due to validation errors.", $validation->messages()->getMessages());
+            return $this->makeFailResponse("Photo upload could not be completed due to validation errors.", $validation->messages()->getMessages());
         } else {
             if ($user = User::find($id)) {
-                if (!is_null($user->photo)) {
+                $uploadedFile = Input::file('photo');
+                $photo = PhotoManager::create($uploadedFile, 'user', $id, Input::get('caption', null));
+                
+                if(!is_null($user->photo)) {
                     $user->photo->delete();
                 }
-
-                $extension = Input::file('photo')->getClientOriginalExtension();
-                $fileName = $user->id . '_' . Auth::user()->id . '_' . time() . "." . $extension;
-
-                $destinationPath = public_path() . "/uploads/users";
-                Input::file('photo')->move($destinationPath, $fileName);
-
-                $photo = new Photo();
-                $photo->path = "$destinationPath/$fileName";
-                $photo->url = URL::to("uploads/users/$fileName");
-                $photo->uploaded_by = Auth::user()->id;
-                $photo->save();
-
+                
                 $user->photo_id = $photo->id;
+                $user->updated_by = Auth::id();
                 $user->save();
-
-                return $this->makeSuccessResponse("Photo upload of User (ID = $id) was successful", $photo->toArray());
+                
+                return $this->makeSuccessResponse("Photo uploaded for user (ID = $id)", $photo->toArray());
             } else {
                 return $this->makeFailResponse("User does not exist");
             }
