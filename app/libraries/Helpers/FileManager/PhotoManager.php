@@ -41,6 +41,11 @@ class PhotoManager {
             $fileName = "$developer->id-$userId-$time.$extension";
             $path = "/uploads/developers";
         }
+        else if($type == 'unit') {
+            $unit = \Unit::find($typeId);
+            $fileName = "$unit->id-$userId-$time.$extension";
+            $path = "/uploads/properties/$unit->property_id/units/$unit->id";
+        }
         else {
             return null;
         }

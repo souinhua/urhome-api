@@ -32,6 +32,9 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::resource('properties.specs', 'PropertySpecController');
     Route::resource('properties.photos', 'PropertyPhotoController');
     Route::resource('properties.amenities', 'PropertyPhotoController');
+    
+    Route::post("properties/{propertyId}/units/{unitId}/main-photo",'PropertyUnitController@mainPhoto');
+    Route::resource('properties.units', 'PropertyUnitController');
     /*
      * Users Resource Routes
      */
