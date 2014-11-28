@@ -72,5 +72,9 @@ class Property extends Eloquent {
     public function publisher() {
         return $this->hasOne("Person", "id", "published_by");
     }
+    
+    public function units() {
+        return $this->hasMany("Unit","property_id");
+    }
 }
 
