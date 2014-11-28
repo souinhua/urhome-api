@@ -8,7 +8,7 @@
 class Unit extends Eloquent {
    
     protected $table = 'unit';
-    public $timstamps = false;
+    public $timestamps = false;
     
     public function property() {
         return $this->belongsTo('Property');
