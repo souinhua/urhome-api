@@ -70,8 +70,10 @@ class PropertyUnitController extends \BaseController {
      * @return Response
      */
     public function show($propertyId, $unitId) {
+        $with = Input::get("with", array('details'));
+        
         if ($property = Property::find($propertyId)) {
-            $unit = $property->units()->find($unitId);
+            $unit = $property->units()->with($with)->find($unitId);
             return $this->makeSuccessResponse("Property Unit resource fetched.", $unit->toArray());
         } else {
             return $this->makeFailResponse("Property does not exist.");
