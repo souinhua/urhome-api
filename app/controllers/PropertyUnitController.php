@@ -139,7 +139,7 @@ class PropertyUnitController extends \BaseController {
         );
         $validation = Validator::make(Input::all(), $rules);
         if ($validation->fails()) {
-            return $this->makeFailResponse("Photo upload of User (ID = $id) failed due to validation errors.", $validation->messages()->getMessages());
+            return $this->makeFailResponse("Photo upload failed due to validation errors.", $validation->messages()->getMessages());
         } else {
             if ($property = Property::find($propertyId) && ($unit = Unit::find($unitId))) {
                 $uploadedPhoto = Input::file('photo');
