@@ -7,8 +7,10 @@
  */
 class Unit extends Eloquent {
    
+    use SoftDeletingTrait;
+
+    protected $dates = ['deleted_at'];
     protected $table = 'unit';
-    public $timestamps = false;
     
     public function property() {
         return $this->belongsTo('Property');
