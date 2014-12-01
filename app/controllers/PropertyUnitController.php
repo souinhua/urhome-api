@@ -150,8 +150,8 @@ class PropertyUnitController extends \BaseController {
                 $unit->photo_id = $photo->id;
                 $unit->save();
 
-                $property->updated_by = Auth::id();
-                $property->save();
+//                $property->updated_by = Auth::id();
+//                $property->save();
 
                 return $this->makeSuccessResponse("Photo upload of Unit (ID = $unitId) was successful", $photo->toArray());
             } else {
