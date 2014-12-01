@@ -134,7 +134,7 @@ class PropertyUnitController extends \BaseController {
 
     public function mainPhoto($propertyId, $unitId) {
         $rules = array(
-            "photo" => "required|image",
+            "photo" => "required|image", 
             "caption" => "max:256"
         );
         $validation = Validator::make(Input::all(), $rules);
