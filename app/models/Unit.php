@@ -27,7 +27,7 @@ class Unit extends Eloquent {
     }
     
     public function details() {
-        return $this->hasOne('CpmmonDetails','id','common_details_id');
+        return $this->hasOne('CommonDetails','id','common_details_id');
     }
     
     public function photos() {
