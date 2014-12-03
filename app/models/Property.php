@@ -90,7 +90,7 @@ class Property extends Eloquent {
         $publishEnd = strtotime($this->publish_end);
         $time = time();
         
-        return $publishEnd > $time;
+        return $time > $publishEnd;
     }
 }
 
