@@ -17,21 +17,29 @@ class TypeController extends \BaseController {
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create() {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @return Response
      */
     public function store() {
-        //
+        $rules = array(
+            "name" => "required|max:32", 
+            "description" => "required",
+            "parent_id" => "exists:type,id"
+        );
+        $validation = Validator::make(Input::all(), $rules);
+        if($validation->fails()) {
+            return $this->makeFailResponse("Type creation failed due to validation error(s).", $validation->messages()->getMessages());
+        }
+        else {
+            $type = new Type();
+            $type->name = Input::get("name");
+            $type->description = Input::get("description");
+            $type->parent_id = Input::get("parent_id", null);
+            $type->save();
+            
+            return $this->makeSuccessResponse("Type resource created", $type->toArray());
+        }
     }
 
     /**
@@ -41,17 +49,11 @@ class TypeController extends \BaseController {
      * @return Response
      */
     public function show($id) {
-        //
-    }
+        $type = Cache::remember("types-$id", 1440, function($id) {
+                    return Type::find($id);
+                });
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function edit($id) {
-        //
+        return $this->makeSuccessResponse("Types (ID = $id) resource fetched", $type->toArray());
     }
 
     /**
@@ -61,7 +63,16 @@ class TypeController extends \BaseController {
      * @return Response
      */
     public function update($id) {
-        //
+        if($type = Type::find($id)) {
+            foreach(array("name", "description", "parent_id") as $field) {
+                $type->$field = Input::get($field, $type->$field);
+            }
+            $type->save();
+            return $this->makeSuccessResponse("Type resource updated", $type->toArray());
+        }
+        else {
+            return $this->makeFailResponse("Type does not exist");
+        }
     }
 
     /**
@@ -71,7 +82,13 @@ class TypeController extends \BaseController {
      * @return Response
      */
     public function destroy($id) {
-        //
+        if($type = Type::find($id)) {
+            $type->delete();
+            return $this->makeSuccessResponse("Type resource deleted", $type->toArray());
+        }
+        else {
+            return $this->makeFailResponse("Type does not exist");
+        }
     }
 
 }
