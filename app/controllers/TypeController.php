@@ -8,7 +8,11 @@ class TypeController extends \BaseController {
      * @return Response
      */
     public function index() {
-        $types = Type::all();
+
+        $types = Cache::remember('types', 1440, function() {
+                    return Type::all();
+                });
+
         return $this->makeSuccessResponse("Types resource fetched", $types->toArray());
     }
 
