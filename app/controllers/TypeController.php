@@ -49,10 +49,7 @@ class TypeController extends \BaseController {
      * @return Response
      */
     public function show($id) {
-        $type = Cache::remember("types-$id", 1440, function($id) {
-                    return Type::find($id);
-                });
-
+        $type = Type::find($id);
         return $this->makeSuccessResponse("Types (ID = $id) resource fetched", $type->toArray());
     }
 
