@@ -183,7 +183,7 @@ class PropertyController extends \BaseController {
                 }
                 $property->publish_start = $start;
                 $property->publish_end = $end;
-                $property->publish_by = Auth::id();
+                $property->published_by = Auth::id();
                 $property->save();
 
                 return $this->makeSuccessResponse("Property (ID = $id) published", $property->toArray());
