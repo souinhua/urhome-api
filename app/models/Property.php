@@ -5,7 +5,7 @@ class Property extends Eloquent {
     use SoftDeletingTrait;
     
     protected $table = "property";
-    protected $appends = array("published","overdue","unpublished");
+    protected $appends = array("published","overdue","unpublished","alias");
     
     /*
      * Property Scopes
@@ -78,6 +78,10 @@ class Property extends Eloquent {
         return $this->hasMany("Unit","property_id",'id');
     }
     
+    /*
+     * Custom Attributes
+     */
+    
     public function getPublishedAttribute() {
         return !is_null($this->publish_start) && !$this->getOverdueAttribute();
     }
@@ -90,7 +94,11 @@ class Property extends Eloquent {
         $publishEnd = strtotime($this->publish_end);
         $time = time();
         
-        return $publishEnd < $time;
+        return $publishEnd < $time && !is_null($this->publish_end);
+    }
+    
+    public function getAliasAttribute() {
+        return "$this->name-$this->id";
     }
 }
 
