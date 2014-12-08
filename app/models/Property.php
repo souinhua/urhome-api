@@ -42,6 +42,10 @@ class Property extends Eloquent {
         return $this->hasOne('User','id','updated_by');
     }
     
+    public function agent() {
+        return $this->hasOne('User','id','agent_id');
+    }
+    
     public function photo() {
         return $this->hasOne('Photo','id','photo_id');
     }
@@ -98,7 +102,10 @@ class Property extends Eloquent {
     }
     
     public function getAliasAttribute() {
-        return "$this->name-$this->id";
+        $name = strtolower($this->name);
+        $slug = str_replace(" ", ",", $name);
+        
+        return "$slug-$this->id";
     }
 }
 
