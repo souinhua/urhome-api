@@ -79,7 +79,7 @@ class Property extends Eloquent {
     }
     
     public function getPublishedAttribute() {
-        return !is_null($this->publish_start);
+        return !is_null($this->publish_start) && !$this->getOverdueAttribute();
     }
     
     public function getUnpublishedAttribute() {
