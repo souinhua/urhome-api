@@ -10,9 +10,6 @@
   | and give it the Closure to execute when that URI is requested.
   |
  */
-Route::get("/", function(){
-    
-});
 
 Route::get("docs", function() {
     return View::make("home.index");
