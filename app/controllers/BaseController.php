@@ -49,5 +49,23 @@ class BaseController extends Controller {
 
         return Response::json($return, $errorCode);
     }
+    
+    /**
+     * @param string $entity
+     * @param int $identifier
+     * @param string $field
+     * @return boolean
+     */
+    protected function entityExists($entity, $identifier, $field = 'id') {
+        $data = DB::select("SELECT EXISTS(SELECT $field FROM $entity WHERE $field = ?) AS existing", array($identifier));
+        $exisits = false;
+        foreach($data as $datum) {
+            if($datum->existing) {
+                $exisits = true;
+                break;
+            }
+        }
+        return $exisits;
+    }
 
 }

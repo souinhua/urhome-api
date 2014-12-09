@@ -19,6 +19,6 @@ class Address extends Eloquent{
     protected $appends = array("format");
     
     public function getFormatAttribute() {
-        return "$this->address, $this->city, $this->province, $this->zip";
+        return "$this->address, $this->city, $this->province $this->zip";
     }
 }
