@@ -108,7 +108,7 @@ class Property extends Eloquent {
         return "$slug-$this->id";
     }
     
-    public function getStatus_nameAttribute() {
+    public function getStatusNameAttribute() {
         if($this->status == 'rfo') {
             $statusName = "Ready For Occupancy";
         }
