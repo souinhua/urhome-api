@@ -15,7 +15,9 @@ class PropertyAmenityController extends BaseController{
      */
     public function index($propertyId) {
         if($this->entityExists('property', $propertyId)) {
-            $amenities = Amenity::where("property_id", "=", $propertyId)->get();
+            $with = Input::get('with', array('photo'));
+            
+            $amenities = Amenity::with($with)->where("property_id", "=", $propertyId)->get();
             return $this->makeSuccessResponse("Amenities of Property (ID = $propertyId) feteched.", $amenities->toArray());
         }
         else {
