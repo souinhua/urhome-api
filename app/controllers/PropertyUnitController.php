@@ -9,8 +9,8 @@ class PropertyUnitController extends \BaseController {
      */
     public function index($propertyId) {
         $with = Input::get('with', array('details'));
-        if ($property = Property::with($with)->find($propertyId)) {
-            $units = $property->units;
+        if ($this->entityExists("property", $propertyId)) {
+            $units = Unit::with($with)->where("property_id", "=", $propertyId)->get();
             return $this->makeSuccessResponse("Property Units resource fetched.", $units->toArray());
         } else {
             return $this->makeFailResponse("Property does not exist.");
