@@ -5,7 +5,7 @@ class Property extends Eloquent {
     use SoftDeletingTrait;
     
     protected $table = "property";
-    protected $appends = array("published","overdue","unpublished","alias");
+    protected $appends = array("published","overdue","unpublished","alias","status_name");
     
     /*
      * Property Scopes
@@ -106,6 +106,22 @@ class Property extends Eloquent {
         $slug = str_replace(" ", ",", $name);
         
         return "$slug-$this->id";
+    }
+    
+    public function getStatus_nameAttribute() {
+        if($this->status == 'rfo') {
+            $statusName = "Ready For Occupancy";
+        }
+        else if($this->status == 'ps') {
+            $statusName = "Preselling";
+        }
+        else if($this->status == 'so') {
+            $statusName = "Sold Out";
+        }
+        else {
+            $statusName = "Unavailable";
+        }
+        return $statusName;
     }
 }
 
