@@ -15,4 +15,10 @@ class Address extends Eloquent{
     
     protected $table = 'address';
     public $timestamps = false;
+    
+    protected $appends = array("format");
+    
+    public function getFormatAttribute() {
+        return "$this->address, $this->city, $this->province, $this->zip";
+    }
 }
