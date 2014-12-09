@@ -8,7 +8,8 @@ class PropertyUnitController extends \BaseController {
      * @return Response
      */
     public function index($propertyId) {
-        if ($property = Property::with('details')->find($propertyId)) {
+        $with = Input::get('with', array('details'));
+        if ($property = Property::with($with)->find($propertyId)) {
             $units = $property->units;
             return $this->makeSuccessResponse("Property Units resource fetched.", $units->toArray());
         } else {
