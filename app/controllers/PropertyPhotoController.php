@@ -84,5 +84,15 @@ class PropertyPhotoController extends \BaseController {
     public function destroy($id) {
         //
     }
+    
+    public function count($propertyId) {
+        if($this->entityExists("property", $propertyId)) {
+            $count = Property::find($propertyId)->photos->count();
+            return $count;
+        }
+        else {
+            return $this->makeFailResponse("Property does not exist.");
+        }
+    }
 
 }
