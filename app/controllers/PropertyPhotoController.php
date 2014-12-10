@@ -88,7 +88,7 @@ class PropertyPhotoController extends \BaseController {
     public function count($propertyId) {
         if($this->entityExists("property", $propertyId)) {
             $count = Property::find($propertyId)->photos->count();
-            return $count;
+            return $this->makeSuccessResponse("Photos count fetched", $count);
         }
         else {
             return $this->makeFailResponse("Property does not exist.");
