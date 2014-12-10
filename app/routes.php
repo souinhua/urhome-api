@@ -32,6 +32,8 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::resource('properties.feature', 'PropertyFeatureController');
     Route::resource('properties.details', 'PropertyDetailsController');
     Route::resource('properties.specs', 'PropertySpecController');
+    
+    Route::get("properties/{propertyId}/photos/count", 'PropertyPhotoController@count');
     Route::resource('properties.photos', 'PropertyPhotoController');
     Route::resource('properties.amenities', 'PropertyAmenityController');
     
