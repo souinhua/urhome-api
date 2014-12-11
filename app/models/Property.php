@@ -129,7 +129,7 @@ class Property extends Eloquent {
         if(!is_null($this->photo)) {
             $count++;
         }
-        $count += $this->photos()->count;
+        $count += $this->photos->count();
         return $count;
     }
 }
