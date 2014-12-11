@@ -5,7 +5,7 @@ class Property extends Eloquent {
     use SoftDeletingTrait;
     
     protected $table = "property";
-    protected $appends = array("published","overdue","unpublished","alias","status_name","photos_count");
+    protected $appends = array("published","overdue","unpublished","alias","status_name","photos_count","address_name");
     
     /*
      * Property Scopes
@@ -133,7 +133,7 @@ class Property extends Eloquent {
         return $count;
     }
     
-    public function getNameAttribute() {
+    public function getAddressNameAttribute() {
         if($this->address_as_name) {
             $address = $this->address;
             $name = "$address->address, $address->city $address->zip";
