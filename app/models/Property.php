@@ -132,5 +132,16 @@ class Property extends Eloquent {
         $count += $this->photos->count();
         return $count;
     }
+    
+    public function getNameAttribute() {
+        if($this->address_as_name) {
+            $address = $this->address;
+            $name = "$address->address, $address->city $address->zip";
+            return $name;
+        }
+        else {
+            return $this->name;
+        }
+    }
 }
 
