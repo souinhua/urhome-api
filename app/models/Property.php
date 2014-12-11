@@ -5,7 +5,7 @@ class Property extends Eloquent {
     use SoftDeletingTrait;
     
     protected $table = "property";
-    protected $appends = array("published","overdue","unpublished","alias","status_name");
+    protected $appends = array("published","overdue","unpublished","alias","status_name","photos_count");
     
     /*
      * Property Scopes
@@ -122,6 +122,15 @@ class Property extends Eloquent {
             $statusName = "Unavailable";
         }
         return $statusName;
+    }
+    
+    public function getPhotosCountAttribute() {
+        $count = 0;
+        if(!is_null($this->photo)) {
+            $count++;
+        }
+        $count += $this->photos->count;
+        return $count;
     }
 }
 
