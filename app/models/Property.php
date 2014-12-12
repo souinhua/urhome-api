@@ -102,10 +102,18 @@ class Property extends Eloquent {
     }
     
     public function getAliasAttribute() {
-        $name = strtolower($this->name);
-        $slug = str_replace(" ", ",", $name);
-        
-        return "$slug-$this->id";
+        if($this->address_as_name) {
+            $address = $this->address()->format;
+            $dot = str_replace(".", " ", $address);
+            $comma = str_replace(",", " ", $dot);
+            $trim = trim($comma);
+            $alias = strtolower(str_replace(" ","-", $trim) . "-$this->id"); 
+        }
+        else {
+            $address = $this->address();
+            $alias = strtolower(trim("$this->name-$address->city-$this->id"));
+        }
+        return $alias;
     }
     
     public function getStatusNameAttribute() {

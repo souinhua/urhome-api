@@ -10,6 +10,11 @@
   | and give it the Closure to execute when that URI is requested.
   |
  */
+Route::get('/', function(){
+    $data = Property::find(1);
+    echo "<pre>";
+    print_r($data->toArray());
+});
 
 Route::get("docs", function() {
     return View::make("home.index");
