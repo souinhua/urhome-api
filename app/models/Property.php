@@ -103,7 +103,7 @@ class Property extends Eloquent {
     
     public function getAliasAttribute() {
         if($this->address_as_name) {
-            $address = $this->address()->format;
+            $address = $this->address->format;
             $dot = str_replace(".", " ", $address);
             $comma = str_replace(",", " ", $dot);
             $trim = trim($comma);
