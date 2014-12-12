@@ -111,7 +111,7 @@ class Property extends Eloquent {
         }
         else {
             $address = $this->address;
-            $alias = strtolower(trim("$this->name-$address->city-$this->id"));
+            $alias = strtolower(str_replace(" ","-", trim("$this->name-$address->city-$this->id")));
         }
         return $alias;
     }
