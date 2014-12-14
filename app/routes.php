@@ -11,9 +11,7 @@
   |
  */
 Route::get('/', function(){
-    $data = Property::find(1);
-    echo "<pre>";
-    print_r($data->toArray());
+
 });
 
 Route::get("docs", function() {

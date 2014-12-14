@@ -92,8 +92,15 @@ class PropertyController extends \BaseController {
      * @return Response
      */
     public function show($id) {
+        $alias = $id;
+        if(!is_numeric($id)) {
+            $explode = explode("-", $alias);
+            $count = count($explode);
+            $alias = $explode[$count-1];
+        }
+        
         $withs = array_merge(array('address', 'types'), Input::get("with", array()));
-        if ($property = Property::with($withs)->find($id)) {
+        if ($property = Property::with($withs)->find($alias)) {
             return $this->makeSuccessResponse("Property (ID = $id) fetched", $property->toArray());
         }
         return $this->makeFailResponse("Property (ID = $id) does not exist");

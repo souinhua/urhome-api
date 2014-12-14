@@ -103,11 +103,9 @@ class Property extends Eloquent {
     
     public function getAliasAttribute() {
         if($this->address_as_name) {
-            $address = $this->address->format;
-            $dot = str_replace(".", " ", $address);
-            $comma = str_replace(",", " ", $dot);
-            $trim = trim($comma);
-            $alias = strtolower(str_replace(" ","-", $trim) . "-$this->id"); 
+            $address = $this->address;
+            $addressStr = "$address->address $address->city $address->zip $this->id";
+            $alias = str_replace(trim($addressStr), " ", "-");
         }
         else {
             $address = $this->address;
