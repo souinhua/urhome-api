@@ -122,6 +122,7 @@ class PropertyController extends \BaseController {
             $property->address_as_name = Input::get("address_as_name", $property->address_as_name);
             $property->address_id = Input::get("address", $property->address_id);
             $property->agent_id = Input::get("agent_id", $property->agent_id );
+            $property->agent_message = Input::get("agent_message", $property->agent_message );
 
             if (Input::has('types')) {
                 $property->types()->sync(Input::get('types', array()));
