@@ -13,9 +13,9 @@ return array(
     */
 
     'cloudName'  => 'urhome-ph',
-    'baseUrl'    => '',
-    'secureUrl'  => '',
-    'apiBaseUrl' => '',
+    'baseUrl'    => 'http://res.cloudinary.com/urhome-ph',
+    'secureUrl'  => 'https://res.cloudinary.com/urhome-ph',
+    'apiBaseUrl' => 'https://api.cloudinary.com/v1_1/urhome-ph',
     'apiKey'     => '685992343944418',
     'apiSecret'  => 'Fybpw94RH24gBlgQkRngXgs7Smg',
 
