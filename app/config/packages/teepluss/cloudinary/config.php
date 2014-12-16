@@ -30,10 +30,10 @@ return array(
     */
 
     'scaling'    => array(
-        'format' => 'png',
-        'width'  => 150,
-        'height' => 150,
-        'crop'   => 'fit',
+        'format' => null,
+        'width'  => null,
+        'height' => null,
+        'crop'   => null,
         'effect' => null
     )
 

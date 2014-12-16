@@ -11,7 +11,8 @@
   |
  */
 Route::get('/', function(){
-
+    $url = Cloudy::show('sample', array());
+    echo HTML::image($url);
 });
 
 Route::get("docs", function() {
