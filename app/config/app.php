@@ -122,6 +122,7 @@ return array(
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
                 'Helpers\FileManager\PhotoManagerServiceProvider',
+                'Teepluss\Cloudinary\CloudinaryServiceProvider'
 	),
 
 	/*
@@ -188,7 +189,8 @@ return array(
 		'URL'               => 'Illuminate\Support\Facades\URL',
 		'Validator'         => 'Illuminate\Support\Facades\Validator',
 		'View'              => 'Illuminate\Support\Facades\View',
-                'PhotoManager'      => 'Helpers\FileManager\Facades\PhotoManager'
+                'PhotoManager'      => 'Helpers\FileManager\Facades\PhotoManager',
+                'Cloudy'            => 'Teepluss\Cloudinary\Facades\Cloudy'
 
 	),
 
