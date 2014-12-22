@@ -6,10 +6,50 @@
  * @author Janssen Canturias
  */
 namespace Helpers\FileManager;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+//use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class PhotoManager {
     
+    private $api;
+    
+    function __construct() {
+        $this->api = new \Cloudinary\Api();
+    }
+    
+    public function create($public_id, Eloquent $model, $caption = null) {
+        $time = time();
+        $userId = Aith::id();
+        try {
+            $resource = $this->api->resource($public_id);
+            if($model instanceof User) {
+                $fileName = "$model->id-$userId-$time";
+                $path = "users/$fileName";
+            }
+            
+            $update = $this->api->update($public_id, array(
+                'public_id' => $path
+            ));
+            $updated = $this->api->resource($path);
+            
+            $photo = new Photo();
+            $photo->public_id = $updated->public_id;
+            $photo->width = $updated->width;
+            $photo->height = $updated->height;
+            $photo->bytes = $updated->bytes;
+            $photo->url = $updated->url;
+            $photo->secure_url = $updated->secure_url;
+            $photo->caption = $caption;
+            $photo->uploaded_by = $userId;
+            $photo->save();
+            
+            return $photo;
+        }
+        catch(Exception $e) {
+            return null;
+        }
+    }
+    
+    /*
     public function create(UploadedFile $uploadedFile, $type, $typeId, $caption = null) {
         $userId = is_null(\Auth::id())?0:\Auth::id();
         
@@ -71,4 +111,5 @@ class PhotoManager {
             return null;
         }
     }
+     */
 }

@@ -10,9 +10,8 @@
   | and give it the Closure to execute when that URI is requested.
   |
  */
-Route::get('/', function(){
-    $url = Cloudy::show('sample', array());
-    echo HTML::image($url);
+Route::get('/', function() {
+    
 });
 
 Route::get("docs", function() {
@@ -36,12 +35,12 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::resource('properties.feature', 'PropertyFeatureController');
     Route::resource('properties.details', 'PropertyDetailsController');
     Route::resource('properties.specs', 'PropertySpecController');
-    
+
     Route::get("properties/{propertyId}/photos/count", 'PropertyPhotoController@count');
     Route::resource('properties.photos', 'PropertyPhotoController');
     Route::resource('properties.amenities', 'PropertyAmenityController');
-    
-    Route::post("properties/{propertyId}/units/{unitId}/main-photo",'PropertyUnitController@mainPhoto');
+
+    Route::post("properties/{propertyId}/units/{unitId}/main-photo", 'PropertyUnitController@mainPhoto');
     Route::resource('properties.units', 'PropertyUnitController');
     /*
      * Users Resource Routes
@@ -50,7 +49,7 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::get('users/exists/{email}/{password}', 'UserController@exists');
     Route::post('users/{id}/photo', 'UserController@photo');
     Route::resource('users', 'UserController');
-    
+
     /*
      * Photos Resource Routes
      */
@@ -77,7 +76,7 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
      * Feature Resource Routes
      */
     Route::resource('features', 'FeatureController');
-    
+
     /**
      * Specifications
      */

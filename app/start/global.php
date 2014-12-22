@@ -80,3 +80,21 @@ App::down(function()
 */
 
 require app_path().'/filters.php';
+
+/*
+|--------------------------------------------------------------------------
+| Cloudinary Credentials
+|--------------------------------------------------------------------------
+|
+| I have no idea why this is here but I believe this will work ya know ;)
+|
+*/
+
+\Cloudinary::config(array(
+    'cloud_name' => 'urhome-ph',
+    'base_url' => 'http://res.cloudinary.com/urhome-ph',
+    'secure_url' => 'https://res.cloudinary.com/urhome-ph',
+    'api_base_url' => 'https://api.cloudinary.com/v1_1/urhome-ph',
+    'api_key' => '685992343944418',
+    'api_secret' => 'Fybpw94RH24gBlgQkRngXgs7Smg',
+));

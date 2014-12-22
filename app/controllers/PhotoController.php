@@ -179,5 +179,4 @@ class PhotoController extends \BaseController {
             return $this->makeFailResponse("Photo (ID = $id) does not exist.");
         }
     }
-
 }
