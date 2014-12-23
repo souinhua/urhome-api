@@ -16,17 +16,14 @@ class Photo extends Eloquent {
             $api->delete_resources(array(
                 $this->public_id
             ));
-        }
-        catch(Exception $e) {
+        } catch (Exception $e) {
             
         }
-        finally {
-            parent::delete();
-        }
+        parent::delete();
     }
-    
+
     public function uploader() {
-        return $this->belongsTo('User','uploaded_by');
+        return $this->belongsTo('User', 'uploaded_by');
     }
 
 }
