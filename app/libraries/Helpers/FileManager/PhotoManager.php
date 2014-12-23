@@ -63,9 +63,9 @@ class PhotoManager {
             $options = array(
                 "width" => $trnsfrsmtn['width'],
                 "height" => $trnsfrsmtn['height'],
-                "x" => $trnsfrsmtn['x'],
-                "y" => $trnsfrsmtn['y'],
-                "crop" => $trnsfrsmtn['crop'],
+                "x" => isset($trnsfrsmtn['x'])?$trnsfrsmtn['x']:null,
+                "y" => isset($trnsfrsmtn['y'])?$trnsfrsmtn['y']:null,
+                "crop" => isset($trnsfrsmtn['crop'])?$trnsfrsmtn['crop']:null,
             );
             $url = cloudinary_url($updated['public_id'], $options);
             $options['secure'] = true;
