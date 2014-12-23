@@ -31,7 +31,7 @@ class PhotoManager {
 //            ));
             \Cloudinary\Uploader::rename($public_id, $path, array("overwrite" => true));
             $updated = $this->api->resource($path);
-            
+            return $updated;
             $photo = new \Photo();
             $photo->public_id = $updated->public_id;
             $photo->width = $updated->width;
