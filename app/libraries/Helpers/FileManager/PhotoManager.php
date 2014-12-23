@@ -19,16 +19,17 @@ class PhotoManager {
     public function create($public_id, \Eloquent $model, $caption = null) {
         $time = time();
         $userId = \Auth::id();
-//        try {
+        try {
             $resource = $this->api->resource($public_id);
             if($model instanceof \User) {
                 $fileName = "$model->id-$userId-$time";
                 $path = "users/$fileName";
             }
             
-            $update = $this->api->update($public_id, array(
-                'public_id' => $path
-            ));
+//            $update = $this->api->update($public_id, array(
+//                'public_id' => $path
+//            ));
+            \Cloudinary\Uploader::rename($public_id, $path, array("overwrite" => true));
             $updated = $this->api->resource($path);
             
             $photo = new \Photo();
@@ -43,10 +44,10 @@ class PhotoManager {
             $photo->save();
             
             return $photo;
-//        }
-//        catch(\Exception $e) {
-//            return $e;
-//        }
+        }
+        catch(\Exception $e) {
+            return null;
+        }
     }
     
     /*
