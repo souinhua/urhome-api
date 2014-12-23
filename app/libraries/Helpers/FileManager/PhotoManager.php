@@ -26,17 +26,25 @@ class PhotoManager {
         $fileName = "$model->id-$userId-$time";
         if ($model instanceof \User) {
             $path = "users/$fileName";
+            $tags = "user";
         } else if ($model instanceof \Property) {
             $path = "properties/$fileName";
+            $tags = "property";
         } else if ($model instanceof \Amenity) {
             $path = "properties/$model->property_id/amenities/$fileName";
+            $tags = "amenity";
         } else if ($model instanceof \Unit) {
             $path = "properties/$model->property_id/units/$model->id/$fileName";
+            $tags = "unit";
         }
 
         \Cloudinary\Uploader::rename($public_id, $path, array("overwrite" => true));
+        
         $updated = $this->api->resource($path);
-
+        $this->api->update($path, array(
+            "tags" => $tags
+        ));
+        
         $photo = new \Photo();
         $photo->public_id = $updated['public_id'];
 
