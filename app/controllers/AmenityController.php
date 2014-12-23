@@ -86,32 +86,15 @@ class AmenityController extends \BaseController {
 
     public function savePhoto($id) {
         $rules = array(
-            "photo" => "required|image"
+            "photo" => "required|cloudinary_photo"
         );
         $validation = Validator::make(Input::all(), $rules);
         if ($validation->fails()) {
             
         } else {
             $amenity = Amenity::find($id);
-            $uploadedPhoto = Input::file('photo');
-            
-            $extension = $uploadedPhoto->getClientOriginalExtension();
-            $fileName = $amenity->id . '_' . Auth::user()->id . '_' . time() . "." . $extension;
-
-            $propertyDir = public_path() . "/uploads/properties/$amenity->property_id/amenities";
-            if (!File::isDirectory($propertyDir)) {
-                File::makeDirectory($propertyDir, 0775, true);
-            }
-
-            $destinationPath = public_path() . "/uploads/properties/$amenity->property_id/amenities";
-            $uploadedPhoto->move($destinationPath, $fileName);
-
-            $photo = new Photo();
-            $photo->path = "$destinationPath/$fileName";
-            $photo->url = URL::to("uploads/properties/$amenity->property_id/amenities/$fileName");
-            $photo->uploaded_by = Auth::user()->id;
-            $photo->save();
-
+            $data = Input::get('photo');
+            $photo = PhotoManager::createCloudinary($data['public_id'], $amenity, null, $data);
             if (!is_null($amenity->photo)) {
                 $amenity->photo->delete();
             }
