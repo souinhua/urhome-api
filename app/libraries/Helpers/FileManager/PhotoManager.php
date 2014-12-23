@@ -40,11 +40,11 @@ class PhotoManager {
 
             $photo = new \Photo();
             $photo->public_id = $updated['public_id'];
-            $photo->width = $updated->width;
-            $photo->height = $updated->height;
-            $photo->bytes = $updated->bytes;
-            $photo->url = $updated->url;
-            $photo->secure_url = $updated->secure_url;
+            $photo->width = $updated['width'];
+            $photo->height = $updated['height'];
+            $photo->bytes = $updated['bytes'];
+            $photo->url = $updated['url'];
+            $photo->secure_url = $updated['url'];
             $photo->caption = $caption;
             $photo->uploaded_by = $userId;
             $photo->save();
