@@ -229,6 +229,7 @@ class UserController extends \BaseController {
                 $data = Input::get('photo');
                 
                 $photo = PhotoManager::create($data['public_id'], $user, Input::get('caption'));
+                print_r($photo);exit;
                 $user->photo_id = $photo->id;
                 $user->save();
                 
