@@ -5,6 +5,7 @@ class PropertyController extends \BaseController {
     private $fillableFields;
 
     function __construct() {
+        parent::__construct();
         $this->fillableFields = array(
             "name",
             "tagline",
@@ -93,12 +94,12 @@ class PropertyController extends \BaseController {
      */
     public function show($id) {
         $alias = $id;
-        if(!is_numeric($id)) {
+        if (!is_numeric($id)) {
             $explode = explode("-", $alias);
             $count = count($explode);
-            $alias = $explode[$count-1];
+            $alias = $explode[$count - 1];
         }
-        
+
         $withs = array_merge(array('address', 'types'), Input::get("with", array()));
         if ($property = Property::with($withs)->find($alias)) {
             return $this->makeSuccessResponse("Property (ID = $id) fetched", $property->toArray());
@@ -121,8 +122,8 @@ class PropertyController extends \BaseController {
             $property->transaction = Input::get("transaction", $property->transaction);
             $property->address_as_name = Input::get("address_as_name", $property->address_as_name);
             $property->address_id = Input::get("address", $property->address_id);
-            $property->agent_id = Input::get("agent_id", $property->agent_id );
-            $property->agent_message = Input::get("agent_message", $property->agent_message );
+            $property->agent_id = Input::get("agent_id", $property->agent_id);
+            $property->agent_message = Input::get("agent_message", $property->agent_message);
 
             if (Input::has('types')) {
                 $property->types()->sync(Input::get('types', array()));
@@ -218,11 +219,11 @@ class PropertyController extends \BaseController {
             if ($property = Property::find($id)) {
                 $data = Input::get('photo');
                 $photo = PhotoManager::createCloudinary($data['public_id'], $property, Input::get('caption'), $data);
-                
-                if(!is_null($user->photo)) {
+
+                if (!is_null($user->photo)) {
                     $property->photo->delete();
                 }
-                
+
                 $property->photo_id = $photo->id;
                 $property->updated_by = Auth::id();
                 $property->save();
