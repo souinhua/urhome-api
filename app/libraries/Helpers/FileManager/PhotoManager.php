@@ -16,7 +16,7 @@ class PhotoManager {
         $this->api = new \Cloudinary\Api();
     }
     
-    public function create($public_id, Eloquent $model, $caption = null) {
+    public function create($public_id, \Eloquent $model, $caption = null) {
         $time = time();
         $userId = Aith::id();
         try {
