@@ -229,6 +229,8 @@ class UserController extends \BaseController {
                 $data = Input::get('photo');
                 
                 $photo = PhotoManager::create($data['public_id'], $user, Input::get('caption'));
+                $user->photo_id = $photo->id;
+                $user->save();
                 
                 return $this->makeSuccessResponse("Photo uploaded for user (ID = $id)", $photo->toArray());
             } else {
