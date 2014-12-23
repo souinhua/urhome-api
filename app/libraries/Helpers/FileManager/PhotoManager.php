@@ -19,7 +19,7 @@ class PhotoManager {
     public function create($public_id, \Eloquent $model, $caption = null) {
         $time = time();
         $userId = \Auth::id();
-        try {
+//        try {
             $resource = $this->api->resource($public_id);
             if($model instanceof User) {
                 $fileName = "$model->id-$userId-$time";
@@ -43,10 +43,10 @@ class PhotoManager {
             $photo->save();
             
             return $photo;
-        }
-        catch(\Exception $e) {
-            return null;
-        }
+//        }
+//        catch(\Exception $e) {
+//            return $e;
+//        }
     }
     
     /*
