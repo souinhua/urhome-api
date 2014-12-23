@@ -11,10 +11,18 @@ class Photo extends Eloquent {
     protected $guarded = array('path');
 
     public function delete() {
-        if (File::exists($this->path)) {
-            File::delete($this->path);
+        try {
+            $api = new \Cloudinary\Api();
+            $api->delete_resources(array(
+                $this->public_id
+            ));
         }
-        parent::delete();
+        catch(Exception $e) {
+            
+        }
+        finally {
+            parent::delete();
+        }
     }
     
     public function uploader() {

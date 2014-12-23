@@ -226,7 +226,12 @@ class UserController extends \BaseController {
         } else {
             if ($user = User::find($id)) {
                 $data = Input::get('photo');
-                $photo = PhotoManager::create($data['public_id'], $user, Input::get('caption'), $data);
+                $photo = PhotoManager::createCloudinary($data['public_id'], $user, Input::get('caption'), $data);
+                
+                if(!is_null($user->photo)) {
+                    $user->photo->delete();
+                }
+                
                 $user->photo_id = $photo->id;
                 $user->save();
                 
@@ -236,35 +241,4 @@ class UserController extends \BaseController {
             }
         }
     }
-    
-    
-    
-//    public function photo($id) {
-//        $rules = array(
-//            "photo" => "required|image",
-//            "caption" => "max:256"
-//        );
-//        $validation = Validator::make(Input::all(), $rules);
-//        if ($validation->fails()) {
-//            return $this->makeFailResponse("Photo upload could not be completed due to validation errors.", $validation->messages()->getMessages());
-//        } else {
-//            if ($user = User::find($id)) {
-//                $uploadedFile = Input::file('photo');
-//                $photo = PhotoManager::create($uploadedFile, 'user', $id, Input::get('caption', null));
-//                
-//                if(!is_null($user->photo)) {
-//                    $user->photo->delete();
-//                }
-//                
-//                $user->photo_id = $photo->id;
-//                $user->updated_by = Auth::id();
-//                $user->save();
-//                
-//                return $this->makeSuccessResponse("Photo uploaded for user (ID = $id)", $photo->toArray());
-//            } else {
-//                return $this->makeFailResponse("User does not exist");
-//            }
-//        }
-//    }
-
 }
