@@ -18,7 +18,7 @@ class PhotoManager {
     
     public function create($public_id, \Eloquent $model, $caption = null) {
         $time = time();
-        $userId = Aith::id();
+        $userId = \Auth::id();
         try {
             $resource = $this->api->resource($public_id);
             if($model instanceof User) {
@@ -31,7 +31,7 @@ class PhotoManager {
             ));
             $updated = $this->api->resource($path);
             
-            $photo = new Photo();
+            $photo = new \Photo();
             $photo->public_id = $updated->public_id;
             $photo->width = $updated->width;
             $photo->height = $updated->height;
@@ -44,7 +44,7 @@ class PhotoManager {
             
             return $photo;
         }
-        catch(Exception $e) {
+        catch(\Exception $e) {
             return null;
         }
     }
