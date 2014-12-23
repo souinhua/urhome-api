@@ -225,11 +225,8 @@ class UserController extends \BaseController {
             return $this->makeFailResponse("Photo upload could not be completed due to validation errors.", $validation->messages()->getMessages());
         } else {
             if ($user = User::find($id)) {
-                
                 $data = Input::get('photo');
-                
-                $photo = PhotoManager::create($data['public_id'], $user, Input::get('caption'));
-                print_r($photo);exit;
+                $photo = PhotoManager::create($data['public_id'], $user, Input::get('caption'), $data);
                 $user->photo_id = $photo->id;
                 $user->save();
                 
