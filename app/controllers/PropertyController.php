@@ -208,7 +208,7 @@ class PropertyController extends \BaseController {
      */
     public function mainPhoto($id) {
         $rules = array(
-            "photo" => "required|image",
+            "photo" => "required|cloudinary_photo",
             "caption" => "max:256"
         );
         $validation = Validator::make(Input::all(), $rules);
@@ -216,11 +216,13 @@ class PropertyController extends \BaseController {
             return $this->makeFailResponse("Photo upload of User (ID = $id) failed due to validation errors.", $validation->messages()->getMessages());
         } else {
             if ($property = Property::find($id)) {
-                $uploadedPhoto = Input::file('photo');
-                $photo = PhotoManager::create($uploadedPhoto, "property", $property->id, Input::get("caption", null));
-                if (!is_null($property->photo)) {
+                $data = Input::get('photo');
+                $photo = PhotoManager::createCloudinary($data['public_id'], $property, Input::get('caption'), $data);
+                
+                if(!is_null($user->photo)) {
                     $property->photo->delete();
                 }
+                
                 $property->photo_id = $photo->id;
                 $property->updated_by = Auth::id();
                 $property->save();
