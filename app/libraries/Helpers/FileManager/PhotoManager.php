@@ -21,9 +21,18 @@ class PhotoManager {
         $userId = \Auth::id();
         try {
             $resource = $this->api->resource($public_id);
+            $fileName = "$model->id-$userId-$time";
             if($model instanceof \User) {
-                $fileName = "$model->id-$userId-$time";
                 $path = "users/$fileName";
+            }
+            else if($model instanceof \Property) {
+                $path = "properties/$fileName";
+            }
+            else if($model instanceof \Amenity) {
+                $path = "properties/$model->property_id/amenities/$fileName";
+            }
+            else if($model instanceof \Unit) {
+                $path = "properties/$model->property_id/units/$model->id/$fileName";
             }
             
             \Cloudinary\Uploader::rename($public_id, $path, array("overwrite" => true));
