@@ -21,7 +21,7 @@ class PhotoManager {
         $userId = \Auth::id();
 //        try {
             $resource = $this->api->resource($public_id);
-            if($model instanceof User) {
+            if($model instanceof \User) {
                 $fileName = "$model->id-$userId-$time";
                 $path = "users/$fileName";
             }
