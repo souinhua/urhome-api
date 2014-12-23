@@ -94,7 +94,7 @@ class AmenityController extends \BaseController {
         } else {
             $amenity = Amenity::find($id);
             $data = Input::get('photo');
-            $photo = PhotoManager::createCloudinary($data['public_id'], $amenity, null, $data);
+            $photo = PhotoManager::createCloudinary($data['public_id'], $amenity, Input::get('caption'), $data);
             if (!is_null($amenity->photo)) {
                 $amenity->photo->delete();
             }

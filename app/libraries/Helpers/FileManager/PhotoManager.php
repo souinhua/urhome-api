@@ -56,17 +56,24 @@ class PhotoManager {
         if (!is_null($trnsfrsmtn)) {
             $width = $trnsfrsmtn['width'];
             $height = $trnsfrsmtn['height'];
-            $photo->x = $trnsfrsmtn['x'];
-            $photo->y = $trnsfrsmtn['y'];
-            $photo->crop = $trnsfrsmtn['crop'];
+            $photo->x = isset($trnsfrsmtn['x'])?$trnsfrsmtn['x']:null;
+            $photo->y = isset($trnsfrsmtn['y'])?$trnsfrsmtn['y']:null;
+            $photo->crop = isset($trnsfrsmtn['crop'])?$trnsfrsmtn['crop']:null;
 
             $options = array(
                 "width" => $trnsfrsmtn['width'],
                 "height" => $trnsfrsmtn['height'],
-                "x" => isset($trnsfrsmtn['x'])?$trnsfrsmtn['x']:null,
-                "y" => isset($trnsfrsmtn['y'])?$trnsfrsmtn['y']:null,
-                "crop" => isset($trnsfrsmtn['crop'])?$trnsfrsmtn['crop']:null,
             );
+            
+            if(isset($trnsfrsmtn['x']) && isset($trnsfrsmtn['y'])) {
+                $options['x'] = $trnsfrsmtn['x'];
+                $options['y'] = $trnsfrsmtn['y'];
+            }
+            
+            if(isset($trnsfrsmtn['crop'])) {
+                $options['crop'] = $trnsfrsmtn['crop'];
+            }
+            
             $url = cloudinary_url($updated['public_id'], $options);
             $options['secure'] = true;
             $sUrl = cloudinary_url($updated['public_id'], $options);
