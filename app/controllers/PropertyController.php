@@ -220,7 +220,7 @@ class PropertyController extends \BaseController {
                 $data = Input::get('photo');
                 $photo = PhotoManager::createCloudinary($data['public_id'], $property, Input::get('caption'), $data);
 
-                if (!is_null($user->photo)) {
+                if (!is_null($property->photo)) {
                     $property->photo->delete();
                 }
 
