@@ -144,9 +144,16 @@ class PropertyUnitController extends \BaseController {
         } else {
             if ($property = Property::find($propertyId) && ($unit = Unit::find($unitId))) {
                 
+                if(!is_null($unit->photo)) {
+                    $unit->photo->delete();
+                }
+                
                 $cloudinaryData = Input::get("photo");
                 $photo = PhotoManager::createCloudinary($cloudinaryData['public_id'], $unit, Input::get('caption'), $cloudinaryData);
-
+                
+                $unit->photo_id = $photo->id;
+                $unit->save();
+                
                 return $this->makeSuccessResponse("Photo upload of Unit (ID = $unitId) was successful", $photo->toArray());
             } else {
                 return $this->makeFailResponse("Property does not exist");
