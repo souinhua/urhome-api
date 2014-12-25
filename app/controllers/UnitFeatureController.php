@@ -33,10 +33,10 @@ class UnitFeatureController extends \BaseController {
                 return $this->makeFailResponse("Feature creation failed due to validation error(s).", $validation->messages()->getMessages());
             }
             else {
-                $feature = new Feature(array(
-                    "name" => Input::get("name"), 
-                    "description" => Input::get("description")
-                ));
+                $feature = new Feature();
+                $feature->name = Input::get("name");
+                $feature->description = Input::get("description");
+                $feature->save();
                 
                 $unit->features()->attach($feature->id);
                 $unit->save();
