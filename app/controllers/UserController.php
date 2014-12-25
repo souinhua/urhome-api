@@ -76,11 +76,11 @@ class UserController extends \BaseController {
      * @return Response
      */
     public function show($id) {
-        if ($user = User::with(array('address', 'acl', 'photo'))->find($id)) {
-            return $this->makeSuccessResponse("User (ID = $user->id) fetched", $user->toArray());
-        } else {
-            return $this->makeFailResponse("User (ID = $id) does not exist.");
-        }
+        $user = Cache::rememberForever("user-$id", function() {
+                    return User::with(array('address', 'acl', 'photo'))->find($id);
+                });
+
+        return $this->makeSuccessResponse("User (ID = $user->id) fetched", $user->toArray());
     }
 
     /**
@@ -214,7 +214,6 @@ class UserController extends \BaseController {
      * @param  int  $id
      * @return Response
      */
-    
     public function photo($id) {
         $rules = array(
             "photo" => "required|cloudinary_photo",
@@ -227,18 +226,19 @@ class UserController extends \BaseController {
             if ($user = User::find($id)) {
                 $data = Input::get('photo');
                 $photo = PhotoManager::createCloudinary($data['public_id'], $user, Input::get('caption'), $data);
-                
-                if(!is_null($user->photo)) {
+
+                if (!is_null($user->photo)) {
                     $user->photo->delete();
                 }
-                
+
                 $user->photo_id = $photo->id;
                 $user->save();
-                
+
                 return $this->makeSuccessResponse("Photo uploaded for user (ID = $id)", $photo->toArray());
             } else {
                 return $this->makeFailResponse("User does not exist");
             }
         }
     }
+
 }
