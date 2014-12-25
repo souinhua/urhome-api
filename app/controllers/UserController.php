@@ -76,7 +76,7 @@ class UserController extends \BaseController {
      * @return Response
      */
     public function show($id) {
-        $user = Cache::rememberForever("user-$id", function() {
+        $user = Cache::rememberForever("user-$id", function($id) {
                     return User::with(array('address', 'acl', 'photo'))->find($id);
                 });
 
