@@ -30,25 +30,23 @@ class UnitSpecController extends \BaseController {
                 'value' => 'required|max:64'
             );
             $validation = Validator::make(Input::all(), $rules);
-            if($validation->fails()) {
+            if ($validation->fails()) {
                 return $this->makeFailResponse("Spec creation failed due to validation error(s).", $validation->messages()->getMessages());
-            }
-            else {
-                $spec = new Spec(array(
-                    "variable" => Input::get("variable"), 
-                    "value" => Input::get("value")
-                ));
+            } else {
+                $spec = new Spec();
+                $spec->variable = Input::get("variable");
+                $spec->value = Input::get("value");
+                $spec->save();
                 
                 $unit->specs()->attach($spec->id);
                 $unit->save();
                 return $this->makeSuccessResponse("Unit Spec created.", $spec->toArray());
             }
-            
         } else {
             return $this->makeFailResponse("Unit does not exist.");
         }
     }
-    
+
     /**
      * Update Spec Resource of a Unit
      * 
@@ -57,27 +55,25 @@ class UnitSpecController extends \BaseController {
      * @return Response
      */
     public function update($unitId, $specId) {
-        if($unit = Unit::find($unitId)) {
+        if ($unit = Unit::find($unitId)) {
             $spec = $unit->specs->find($specId);
-            if($spec) {
-                foreach(array("variable", "value") as $field) {
-                    if($this->hasInput($field)) {
+            if ($spec) {
+                foreach (array("variable", "value") as $field) {
+                    if ($this->hasInput($field)) {
                         $spec->$field = Input::get($field);
                     }
                 }
                 $spec->save();
-                
+
                 return $this->makeSuccessResponse("Unit Spec updated.", $spec->toArray());
-            }
-            else {
+            } else {
                 return $this->makeFailResponse("Spec does not exist.");
             }
-        } 
-        else {
+        } else {
             return $this->makeFailResponse("Unit does not exist.");
         }
     }
-    
+
     /**
      * Deletes a Spec of a Unit
      * 
@@ -86,17 +82,15 @@ class UnitSpecController extends \BaseController {
      * @return Response
      */
     public function destroy($unitId, $specId) {
-        if($unit = Unit::find($unitId) && ($this->entityExists("spec", $specId))) {
+        if ($unit = Unit::find($unitId) && ($this->entityExists("spec", $specId))) {
             $unit->specs()->detach($specId);
             $spec = Spec::find($specId);
             $spec->delete();
-            
+
             return $this->makeSuccessResponse("Unit Spec deleted.", $spec->toArray());
-        }
-        else {
+        } else {
             return $this->makeFailResponse("Unit does not exist.");
         }
     }
-
 
 }
