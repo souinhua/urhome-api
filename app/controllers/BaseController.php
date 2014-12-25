@@ -94,5 +94,11 @@ class BaseController extends Controller {
                 return false;
         });
     }
+    
+    
+    protected function hasInput($key) {
+        $inputs = Input::all();
+        return array_key_exists($key, $inputs);
+    }
 
 }

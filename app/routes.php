@@ -81,6 +81,12 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
      * Specifications
      */
     Route::resource('specs', 'SpecController');
+    
+    /**
+     * Unit Features
+     */
+    Route::resource('units.features', 'UnitFeatureController');
+    Route::resource('units.specs', 'UnitSpecController');
 });
 
 Route::post('oauth/token', function() {
