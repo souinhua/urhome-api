@@ -96,7 +96,7 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
 });
 
 Route::get('resource/exists/{entity}/{id}/{key?}', function($entity, $id, $key = 'id') {
-        $table = DB::select("SELECT EXISTS(SELECT * FROM ? WHERE ? = ?) AS existing", array($entity, $key, $id));
+        $table = DB::select("SELECT EXISTS(SELECT * FROM `$entity` WHERE ? = ?) AS existing", array($entity, $key, $id));
         return Response::json($table[0]->existing);
     });
 
