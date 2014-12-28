@@ -76,7 +76,7 @@ class UserController extends \BaseController {
      * @return Response
      */
     public function show($id) {
-        if ($user = User::with(array('address', 'acl', 'photo'))->find($id)) {
+        if ($user = User::with(array('address', 'acl', 'photo'))->remember(1440)->find($id)) {
             return $this->makeSuccessResponse("User (ID = $user->id) fetched", $user->toArray());
         } else {
             return $this->makeFailResponse("User (ID = $id) does not exist.");
