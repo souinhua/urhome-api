@@ -101,6 +101,8 @@ class UserController extends \BaseController {
 
             $user->updated_by = Auth::user()->id;
             $user->save();
+            
+            $user->remember(1440);
             return $this->makeSuccessResponse("User (ID = $id) updated", $user->toArray());
         }
         else {
