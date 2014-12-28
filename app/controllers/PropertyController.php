@@ -100,8 +100,24 @@ class PropertyController extends \BaseController {
             $alias = $explode[$count - 1];
         }
 
-        $withs = array_merge(array('address', 'types'), Input::get("with", array()));
-        if ($property = Property::with($withs)->find($alias)) {
+        $withs = array(
+            "types",
+            "address",
+            "creator",
+            "editor",
+            "agent",
+            "photo",
+            "amenities",
+            "tags",
+            "features",
+            "specs",
+            "details",
+            "photos",
+            "publisher",
+            "units"
+        );
+
+        if ($property = Property::with($withs)->remember(1440, "property-$alias")->find($alias)) {
             return $this->makeSuccessResponse("Property (ID = $id) fetched", $property->toArray());
         }
         return $this->makeFailResponse("Property (ID = $id) does not exist");

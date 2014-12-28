@@ -3,6 +3,13 @@
 class UserController extends \BaseController {
 
     /**
+     * Instantiate a new UserController instance
+     */
+    function __construct() {
+
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return Response
@@ -101,7 +108,7 @@ class UserController extends \BaseController {
 
             $user->updated_by = Auth::user()->id;
             $user->save();
-            
+
             Cache::forget("user-$id");
             return $this->makeSuccessResponse("User (ID = $id) updated", $user->toArray());
         }
@@ -216,7 +223,6 @@ class UserController extends \BaseController {
      * @param  int  $id
      * @return Response
      */
-    
     public function photo($id) {
         $rules = array(
             "photo" => "required|cloudinary_photo",
@@ -229,18 +235,19 @@ class UserController extends \BaseController {
             if ($user = User::find($id)) {
                 $data = Input::get('photo');
                 $photo = PhotoManager::createCloudinary($data['public_id'], $user, Input::get('caption'), $data);
-                
-                if(!is_null($user->photo)) {
+
+                if (!is_null($user->photo)) {
                     $user->photo->delete();
                 }
-                
+
                 $user->photo_id = $photo->id;
                 $user->save();
-                
+
                 return $this->makeSuccessResponse("Photo uploaded for user (ID = $id)", $photo->toArray());
             } else {
                 return $this->makeFailResponse("User does not exist");
             }
         }
     }
+
 }
