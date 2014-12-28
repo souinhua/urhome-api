@@ -76,7 +76,7 @@ class UserController extends \BaseController {
      * @return Response
      */
     public function show($id) {
-        if ($user = User::with(array('address', 'acl', 'photo'))->remember(1440)->find($id)) {
+        if ($user = User::with(array('address', 'acl', 'photo'))->remember(1440, "user-$id")->find($id)) {
             return $this->makeSuccessResponse("User (ID = $user->id) fetched", $user->toArray());
         } else {
             return $this->makeFailResponse("User (ID = $id) does not exist.");
@@ -102,7 +102,7 @@ class UserController extends \BaseController {
             $user->updated_by = Auth::user()->id;
             $user->save();
             
-            $user->remember(1440);
+            Cache::forget("user-$id");
             return $this->makeSuccessResponse("User (ID = $id) updated", $user->toArray());
         }
         else {
