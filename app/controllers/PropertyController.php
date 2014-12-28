@@ -103,18 +103,18 @@ class PropertyController extends \BaseController {
         $withs = array(
             "types",
             "address",
-            "creator",
-            "editor",
-            "agent",
+            "creator.photo",
+            "editor.photo",
+            "agent.photo",
             "photo",
-            "amenities",
+            "amenities.photo",
             "tags",
             "features",
             "specs",
             "details",
             "photos",
             "publisher",
-            "units"
+            "units.photo"
         );
 
         if ($property = Property::with($withs)->remember(1440, "property-$alias")->find($alias)) {
