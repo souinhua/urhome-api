@@ -100,7 +100,7 @@ class PropertyController extends \BaseController {
             $alias = $explode[$count - 1];
         }
 
-        $withs = array(
+        $withs = Input::get('with', array(
             "types",
             "address",
             "creator.photo",
@@ -114,8 +114,9 @@ class PropertyController extends \BaseController {
             "details",
             "photos",
             "publisher",
-            "units.photo"
-        );
+            "units.photo",
+            "units.details"
+        ));
 
         if ($property = Property::with($withs)->remember(1440, "property-$alias")->find($alias)) {
             return $this->makeSuccessResponse("Property (ID = $id) fetched", $property->toArray());
