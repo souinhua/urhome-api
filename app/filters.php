@@ -115,25 +115,3 @@ Route::filter('oauth', function() {
                         ), $bridgedResponse->getStatusCode());
     }
 });
-
-Route::filter('json', function() {
-    if (Request::isMethod('post') || Request::isMethod('put')) {
-        // Check for Content-type: application/json header
-        if (!Request::isJson())
-            return Response::json(array(
-                        'status' => 'FAILED',
-                        'message' => "Request content-type is not 'application/json'."
-                            ), 400);
-
-
-        $requestData = Request::instance()->getContent();
-        json_decode($requestData);
-
-        // Check for blank data and malformed JSON
-        if (strlen($requestData) === 0 || !(json_last_error() == JSON_ERROR_NONE))
-            return Response::json(array(
-                        'status' => 'FAILED',
-                        'message' => "Request data is not properly formed JSON."
-                            ), 400);
-    }
-});
