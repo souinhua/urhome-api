@@ -118,7 +118,7 @@ class PropertyController extends \BaseController {
             "units.details"
         ));
 
-        if ($property = Property::with($withs)->remember(1440, "property-$alias")->find($alias)) {
+        if ($property = Property::with($withs)->find($alias)) {
             return $this->makeSuccessResponse("Property (ID = $id) fetched", $property->toArray());
         }
         return $this->makeFailResponse("Property (ID = $id) does not exist");
