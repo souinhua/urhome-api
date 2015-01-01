@@ -77,7 +77,18 @@ class BaseController extends Controller {
      */
     private function initCustomValidations() {
         Validator::extend('cloudinary_photo', function($attribute, $value, $parameters) {
-            return isset($value['public_id']);
+            if (isset($value['public_id'])) {
+                try {
+                    $cloudy = new \Cloudinary\Api();
+                    $cloudy->resource($value['public_id']);
+                    return true;
+                } catch (Exception $e) {
+                    return false;
+                }
+            }
+            else {
+                 return false;
+            }
         });
     }
     
