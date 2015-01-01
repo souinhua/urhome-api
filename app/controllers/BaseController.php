@@ -77,21 +77,7 @@ class BaseController extends Controller {
      */
     private function initCustomValidations() {
         Validator::extend('cloudinary_photo', function($attribute, $value, $parameters) {
-            $numericFields = array('x','y','width','height');
-            if (is_array($value)) {
-                $numericPassed = true;
-                foreach($numericFields as $field) {
-                    if(isset($value[$field])) {
-                        if(!is_numeric($value[$field])) {
-                            $numericPassed = false;
-                            break;
-                        }
-                    }
-                }
-                
-                return !is_null($value['public_id']) && $numericPassed;
-            } else
-                return false;
+            return isset($value['public_id']);
         });
     }
     
