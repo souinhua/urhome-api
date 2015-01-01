@@ -91,6 +91,15 @@ class PropertyUnitController extends \BaseController {
                         $unit->$field = Input::get($field);
                     }
                 }
+                
+                $details = $unit->details;
+                foreach(array("bed","bath","parking","furnish","area") as  $dField) {
+                    if($this->hasInput($dField)) {
+                        $details->$dField = Input::get($dField);
+                    }
+                }
+                
+                $details->save();
                 $unit->save();
                 return $this->makeSuccessResponse("Unit (ID = $unitId) updated", $unit->toArray());
             }
