@@ -32,8 +32,6 @@ class PropertyUnitController extends \BaseController {
                 "parking" => "required|numeric",
                 "area" => "required|numeric",
                 "furnish" => "required|in:none,semi,full",
-                "min_price" => "required|numeric",
-                "max_price" => "numeric"
             );
 
             $validation = Validator::make(Input::all(), $rules);
@@ -51,8 +49,6 @@ class PropertyUnitController extends \BaseController {
                 $details->parking = Input::get("parking");
                 $details->area = Input::get("area");
                 $details->furnish = Input::get("furnish");
-                $details->min_price = Input::get("min_price");
-                $details->max_price = Input::get("max_price");
                 $details->save();
 
                 $unit->common_details_id = $details->id;
