@@ -85,7 +85,7 @@ class UnitFeatureController extends \BaseController {
      * @return Response
      */
     public function destroy($unitId, $featureId) {
-        if($unit = Unit::find($unitId) && ($this->entityExists("feature", $featureId))) {
+        if(($unit = Unit::find($unitId)) && ($this->entityExists("feature", $featureId))) {
             $unit->features()->detach($featureId);
             $feature = Feature::find($featureId);
             $feature->delete();
