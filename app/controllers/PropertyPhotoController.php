@@ -30,15 +30,22 @@ class PropertyPhotoController extends \BaseController {
         if ($validation->fails()) {
             return $this->makeFailResponse("Property photo linking failed due to validation error(s).", $validation->messages()->getMessages());
         } else {
-            $property = Property::find($propertyId);
+            if ($property = Property::find($id)) {
+                $data = Input::get('photo');
+                $photo = PhotoManager::createCloudinary($data['public_id'], $property, Input::get('caption'), $data);
 
-            $uploadedFile = Input::file('photo');
-            $photo = PhotoManager::create($uploadedFile, 'property', $property->id, Input::get('caption', null));
-            
-            $property->photos()->attach($photo->id);
-            $property->updated_by = Auth::id();
-            $property->save();
-            return $this->makeSuccessResponse("Property Photo linked successfully", $photo->toArray());
+                if (!is_null($property->photo)) {
+                    $property->photo->delete();
+                }
+
+                $property->photos()->attach($photo->id);
+                $property->updated_by = Auth::id();
+                $property->save();
+
+                return $this->makeSuccessResponse("Photo upload of Property (ID = $id) was successful", $photo->toArray());
+            } else {
+                return $this->makeFailResponse("Property does not exist");
+            }
         }
     }
 
@@ -81,13 +88,12 @@ class PropertyPhotoController extends \BaseController {
     public function destroy($id) {
         //
     }
-    
+
     public function count($propertyId) {
-        if($this->entityExists("property", $propertyId)) {
+        if ($this->entityExists("property", $propertyId)) {
             $count = Property::find($propertyId)->photos->count();
             return $this->makeSuccessResponse("Photos count fetched", $count);
-        }
-        else {
+        } else {
             return $this->makeFailResponse("Property does not exist.");
         }
     }
