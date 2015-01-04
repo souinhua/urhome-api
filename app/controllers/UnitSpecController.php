@@ -82,7 +82,7 @@ class UnitSpecController extends \BaseController {
      * @return Response
      */
     public function destroy($unitId, $specId) {
-        if ($unit = Unit::find($unitId) && ($this->entityExists("spec", $specId))) {
+        if (($unit = Unit::find($unitId)) && ($this->entityExists("spec", $specId))) {
             $unit->specs()->detach($specId);
             $spec = Spec::find($specId);
             $spec->delete();
