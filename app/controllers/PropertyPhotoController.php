@@ -23,13 +23,10 @@ class PropertyPhotoController extends \BaseController {
      */
     public function store($propertyId) {
         $rules = array(
-            "photo" => "required|image",
-            "property_id" => "required|numeric|exists:property,id",
-            "caption" => "max:256"
+            "photo" => "required|cloudinary_photo",
         );
-        $input = Input::all();
-        $input['property_id'] = $propertyId;
-        $validation = Validator::make($input, $rules);
+
+        $validation = Validator::make(Input::all(), $rules);
         if ($validation->fails()) {
             return $this->makeFailResponse("Property photo linking failed due to validation error(s).", $validation->messages()->getMessages());
         } else {
