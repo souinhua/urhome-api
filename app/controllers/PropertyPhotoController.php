@@ -30,7 +30,7 @@ class PropertyPhotoController extends \BaseController {
         if ($validation->fails()) {
             return $this->makeFailResponse("Property photo linking failed due to validation error(s).", $validation->messages()->getMessages());
         } else {
-            if ($property = Property::find($id)) {
+            if ($property = Property::find($propertyId)) {
                 $data = Input::get('photo');
                 $photo = PhotoManager::createCloudinary($data['public_id'], $property, Input::get('caption'), $data);
 
