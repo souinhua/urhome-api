@@ -34,10 +34,6 @@ class PropertyPhotoController extends \BaseController {
                 $data = Input::get('photo');
                 $photo = PhotoManager::createCloudinary($data['public_id'], $property, Input::get('caption'), $data);
 
-                if (!is_null($property->photo)) {
-                    $property->photo->delete();
-                }
-
                 $property->photos()->attach($photo->id);
                 $property->updated_by = Auth::id();
                 $property->save();
