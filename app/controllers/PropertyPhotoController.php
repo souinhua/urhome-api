@@ -42,7 +42,7 @@ class PropertyPhotoController extends \BaseController {
                 $property->updated_by = Auth::id();
                 $property->save();
 
-                return $this->makeSuccessResponse("Photo upload of Property (ID = $id) was successful", $photo->toArray());
+                return $this->makeSuccessResponse("Photo upload of Property (ID = $propertyId) was successful", $photo->toArray());
             } else {
                 return $this->makeFailResponse("Property does not exist");
             }
