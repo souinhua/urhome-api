@@ -87,8 +87,15 @@ class PropertyPhotoController extends \BaseController {
      * @param  int  $id
      * @return Response
      */
-    public function destroy($id) {
-        //
+    public function destroy($propertyId, $photoId) {
+        if($property = Property::find($propertyId)) {
+            $photo = $property->photos()->find($photoId);
+            $delete = $photo->delete();
+            return $this->makeSuccessResponse("Photo deleted", $delete);
+        }
+        else {
+            return $this->makeFailResponse("Photo resource does not exist");
+        }
     }
 
     public function count($propertyId) {
