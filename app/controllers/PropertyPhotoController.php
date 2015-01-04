@@ -56,7 +56,13 @@ class PropertyPhotoController extends \BaseController {
      * @return Response
      */
     public function show($propertyId, $photoId) {
-        //
+        if($this->entityExists("property", $propertyId) && $this->entityExists("photo", $photoId)) {
+            $photo = Photo::find($photoId);
+            return $this->makeSuccessResponse("Photo resource fetched.", $photo->toArray());
+        }
+        else {
+            return $this->makeFailResponse("Photo resource does not exist");
+        }
     }
 
     /**
