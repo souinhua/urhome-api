@@ -14,7 +14,7 @@ Route::get('/', function() {
     $properties = Property::all();
     $count = Property::count();
     
-    return Response::json($properties, 200, array("X-Count" => $count));
+    return Response::json($properties, 200, array("X-Urhome-Count" => $count));
 });
 
 Route::get("docs", function() {
@@ -90,6 +90,11 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
      */
     Route::resource('units.features', 'UnitFeatureController');
     Route::resource('units.specs', 'UnitSpecController');
+    
+    /*
+     * Developer Resource
+     */
+    Route::resource('developers', 'DeveloperController');
     
 });
 

@@ -53,7 +53,7 @@ class BaseController extends Controller {
 
         return Response::json($return, $errorCode);
     }
-    
+
     /**
      * @param string $entity
      * @param int $identifier
@@ -63,15 +63,15 @@ class BaseController extends Controller {
     protected function entityExists($entity, $identifier, $field = 'id') {
         $data = DB::select("SELECT EXISTS(SELECT $field FROM $entity WHERE $field = ?) AS existing", array($identifier));
         $exisits = false;
-        foreach($data as $datum) {
-            if($datum->existing) {
+        foreach ($data as $datum) {
+            if ($datum->existing) {
                 $exisits = true;
                 break;
             }
         }
         return $exisits;
     }
-    
+
     /**
      * Initialize custome validations
      */
@@ -85,17 +85,37 @@ class BaseController extends Controller {
                 } catch (Exception $e) {
                     return false;
                 }
-            }
-            else {
-                 return false;
+            } else {
+                return false;
             }
         });
     }
-    
-    
+
+    /**
+     * Check if a key exists in $_POST or $_GET
+     * @param any $key
+     * @return boolean
+     */
     protected function hasInput($key) {
         $inputs = Input::all();
         return array_key_exists($key, $inputs);
+    }
+    
+    /**
+     * creates an HTTP JSON Response
+     * 
+     * @param type $data
+     * @param int $code
+     * @param string $message
+     * @param array $headers
+     * @return HTTP Response
+     */
+
+    protected function makeResponse($data, $code, $message, $headers = array()) {
+        $responseHeaders = array_merge($headers, array(
+            "X-Urhome-Message" => $message,
+        ));
+        return Response::json($data, $code, $responseHeaders);
     }
 
 }
