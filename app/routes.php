@@ -11,7 +11,9 @@
   |
  */
 Route::get('/', function() {
-    
+    $properties = Property::all();
+    $count = Property::count();
+    return Response::json($properties, 200, array("X-Count" => $count));
 });
 
 Route::get("docs", function() {
