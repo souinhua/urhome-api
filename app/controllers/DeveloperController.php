@@ -33,7 +33,7 @@ class DeveloperController extends \BaseController {
         );
         $validation = Validator::make(Input::all(), $rules);
         if($validation->fails()) {
-            return $this->makeResponse($validation, 400, "Request failed in validation");
+            return $this->makeResponse($validation->messages(), 400, "Request failed in validation");
         }
         else {
             $developer = new Developer();
