@@ -117,5 +117,4 @@ class BaseController extends Controller {
         ));
         return Response::json($data, $code, $responseHeaders);
     }
-
 }
