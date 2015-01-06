@@ -28,7 +28,20 @@ class DeveloperController extends \BaseController {
      * @return Response
      */
     public function store() {
-        
+        $rules = array(
+            "name" => "required|max:64"
+        );
+        $validation = Validator::make(Input::all(), $rules);
+        if($validation->fails()) {
+            return $this->makeResponse($validation, 400, "Request failed in validation");
+        }
+        else {
+            $developer = new Developer();
+            $developer->name = Input::get("name");
+            $developer->save();
+            
+            return $this->makeResponse($developer, 201, "Developer created");
+        }
     }
 
     /**
