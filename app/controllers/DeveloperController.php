@@ -9,16 +9,16 @@ class DeveloperController extends \BaseController {
      */
     public function index() {
         $query = Developer::with('photo');
-        
+
         $limit = Input::get("limit", 1000);
         $offset = Input::get("offset", 0);
-        
+
         $count = $query->count();
         $developers = $query->take($limit)->skip($offset)->get();
-        
+
         $message = "Developers fetched";
         return $this->makeResponse($developers, 200, $message, array(
-            "X-Total-Count" => $count
+                    "X-Total-Count" => $count
         ));
     }
 
@@ -28,7 +28,7 @@ class DeveloperController extends \BaseController {
      * @return Response
      */
     public function store() {
-        //
+        
     }
 
     /**
@@ -38,7 +38,12 @@ class DeveloperController extends \BaseController {
      * @return Response
      */
     public function show($id) {
-        //
+        if ($developer = Developer::find($id)) {
+            $message = "Developer (ID = $id) fetched";
+            return $this->makeResponse($developer, 200, $message);
+        } else {
+            return $this->makeResponse(null, 400, "Developer does not exist");
+        }
     }
 
     /**
