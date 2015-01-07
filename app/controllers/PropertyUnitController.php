@@ -11,9 +11,9 @@ class PropertyUnitController extends \BaseController {
         $with = Input::get('with', array('details'));
         if ($this->entityExists("property", $propertyId)) {
             $units = Unit::with($with)->where("property_id", "=", $propertyId)->get();
-            return $this->makeSuccessResponse("Property Units resource fetched.", $units->toArray());
+            return $this->makeResponse($units, 200, "Unit resources fetched.");
         } else {
-            return $this->makeFailResponse("Property does not exist.");
+            return $this->makeResponse(null, 404, "Property resource not found.");
         }
     }
 
@@ -33,7 +33,7 @@ class PropertyUnitController extends \BaseController {
                 "area" => "required|numeric",
                 "furnish" => "required|in:none,semi,full",
             );
-
+            
             $validation = Validator::make(Input::all(), $rules);
             if ($validation->fails()) {
                 return $this->makeFailResponse("Unit creation failed due to validation errors.", $validation->messages()->getMessages());

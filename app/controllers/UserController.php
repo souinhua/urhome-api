@@ -75,8 +75,13 @@ class UserController extends \BaseController {
      * @return Response
      */
     public function show($id) {
-        if ($user = User::with(array('address', 'acl', 'photo'))->find($id)) {
-            return $this->makeSuccessResponse("User (ID = $user->id) resource fetched.", $user->toArray());
+        
+        $user = Cache::remember("user-$id", 1440, function() use($id) {
+            return User::with(array('address', 'acl', 'photo'))->find($id);
+        });
+        
+        if ($user) {
+            return $this->makeResponse($user ,200,"User (ID = $user->id) resource fetched.");
         } else {
             return $this->makeResponse(null, 404, "User resource not found.");
         }
@@ -115,6 +120,9 @@ class UserController extends \BaseController {
 
                 $user->updated_by = Auth::user()->id;
                 $user->save();
+                
+                Cache::forget("user-$id");
+                
                 return $this->makeResponse($user, 200, "User (ID = $id) updated.");
             }
         } else {
