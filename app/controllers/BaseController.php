@@ -75,7 +75,7 @@ class BaseController extends Controller {
     /**
      * Initialize custome validations
      */
-    private function initCustomValidations() {
+    protected function initCustomValidations() {
         Validator::extend('cloudinary_photo', function($attribute, $value, $parameters) {
             if (isset($value['public_id'])) {
                 try {
