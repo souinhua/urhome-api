@@ -95,8 +95,8 @@ class UserController extends \BaseController {
                 "title" => "max:32",
                 "email" => "max:64",
                 "phone" => "max:32",
-                "acl_id" => "exists:acl,id",
-                "password" => "min:6",
+                "acl_id" => "max:64",
+                "password" => "max:64",
             );
             $validation = Validator::make(Input::all(), $rules);
             if ($validation->fails()) {
