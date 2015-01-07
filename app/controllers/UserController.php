@@ -91,7 +91,7 @@ class UserController extends \BaseController {
         if ($user = User::find($id)) {
             $rules = array(
                 "name" => "max:64",
-                "title" => "max:32", 
+                "title" => "max:32",
                 "email" => "email|unique:user,email",
                 "phone" => "max:32",
                 "acl_id" => "exists:acl,id",
@@ -103,7 +103,7 @@ class UserController extends \BaseController {
             } else {
                 unset($rules["password"]); // exclude password field for the loop
                 foreach ($rules as $fieldName => $rule) {
-                    if($this->hasInput($fieldName)) {
+                    if ($this->hasInput($fieldName)) {
                         $user->$fieldName = Input::get($fieldName);
                     }
                 }
@@ -178,15 +178,16 @@ class UserController extends \BaseController {
      * @return Response
      */
     public function photo($id) {
-        $rules = array(
-            "photo" => "required|cloudinary_photo",
-            "caption" => "max:256"
-        );
-        $validation = Validator::make(Input::all(), $rules);
-        if ($validation->fails()) {
-            return $this->makeFailResponse("Photo upload could not be completed due to validation errors.", $validation->messages()->getMessages());
-        } else {
-            if ($user = User::find($id)) {
+        if ($user = User::find($id)) {
+            $rules = array(
+                "photo" => "required|cloudinary_photo",
+                "caption" => "max:256"
+            );
+            $validation = Validator::make(Input::all(), $rules);
+            if ($validation->fails()) {
+                return $this->makeResponse($validation->messages(), 400, "Invalid cloudinary resource public ID");
+            }
+            else {
                 $data = Input::get('photo');
                 $photo = PhotoManager::createCloudinary($data['public_id'], $user, Input::get('caption'), $data);
 
@@ -196,11 +197,11 @@ class UserController extends \BaseController {
 
                 $user->photo_id = $photo->id;
                 $user->save();
-
-                return $this->makeSuccessResponse("Photo uploaded for user (ID = $id)", $photo->toArray());
-            } else {
-                return $this->makeFailResponse("User does not exist");
+                
+                return $this->makeResponse($photo, 201, "Cloudinary resource linked to User (ID = $id).");
             }
+        } else {
+            return $this->makeResponse(null, 404, "User resource not found.");
         }
     }
 
