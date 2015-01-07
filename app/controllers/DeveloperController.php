@@ -55,7 +55,7 @@ class DeveloperController extends \BaseController {
             $message = "Developer (ID = $id) fetched";
             return $this->makeResponse($developer, 200, $message);
         } else {
-            return $this->makeResponse(null, 400, "Developer does not exist");
+            return $this->makeResponse(null, 404, "Developer resource does not exist");
         }
     }
 
@@ -78,7 +78,7 @@ class DeveloperController extends \BaseController {
             $developer->name = Input::get("name");
             $developer->save();
             
-            return $this->makeResponse($developer, 200, "Developer updated.");
+            return $this->makeResponse($developer, 200, "Developer resource updated.");
         }
     }
 
@@ -91,10 +91,10 @@ class DeveloperController extends \BaseController {
     public function destroy($id) {
         if($developer = Developer::find($id)) {
             $developer->delete();
-            return $this->makeResponse(null, 200, "Developer (ID=$id) deleted.");
+            return $this->makeResponse(null, 204, "Developer (ID=$id) deleted.");
         }
         else {
-            return $this->makeResponse(null, 400, "Developer does not exist.");
+            return $this->makeResponse(null, 404, "Developer resource not found.");
         }
     }
 
