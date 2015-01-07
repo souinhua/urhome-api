@@ -2,10 +2,7 @@
 
 class UserController extends \BaseController {
 
-    function __construct() {
-        parent::__construct();
-    }
-
+    
     /**
      * Display a listing of the resource.
      *
@@ -183,7 +180,6 @@ class UserController extends \BaseController {
      */
     public function photo($id) {
         if ($user = User::find($id)) {
-            $this->initCustomValidations();
             $rules = array(
                 "photo" => "required|cloudinary_photo",
                 "caption" => "max:256"
