@@ -66,7 +66,20 @@ class DeveloperController extends \BaseController {
      * @return Response
      */
     public function update($id) {
-        //
+        $rules = array(
+            "name" => "required|max:64"
+        );
+        $validation = Validator::make(Input::all(), $rules);
+        if($validation->fails()) {
+            return $this->makeResponse($validation->messages(), 400, "Request failed in validation");
+        }
+        else {
+            $developer = Developer::find($id);
+            $developer->name = Input::get("name");
+            $developer->save();
+            
+            return $this->makeResponse($developer, 200, "Developer updated.");
+        }
     }
 
     /**
@@ -76,7 +89,13 @@ class DeveloperController extends \BaseController {
      * @return Response
      */
     public function destroy($id) {
-        //
+        if($developer = Developer::find($id)) {
+            $developer->delete();
+            return $this->makeResponse(null, 200, "Developer (ID=$id) deleted.");
+        }
+        else {
+            return $this->makeResponse(null, 400, "Developer does not exist.");
+        }
     }
 
 }
