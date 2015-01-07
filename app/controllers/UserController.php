@@ -155,9 +155,9 @@ class UserController extends \BaseController {
      */
     public function getEmail($email) {
         if ($user = User::with(array('address', 'acl'))->where('email', '=', $email)->first()) {
-            return $this->makeSuccessResponse("User (Email = $email) fetched.", $user->toArray());
+            return $this->makeResponse($user, 200, "User (Email = $email) fetched.");
         } else {
-            return $this->makeFailResponse("User (Email = $email) does not exist.");
+            return $this->makeResponse(null, 404, "User (Email = $email) does not exist.");
         }
     }
 
