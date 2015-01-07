@@ -93,7 +93,7 @@ class UserController extends \BaseController {
             $rules = array(
                 "name" => "max:64",
                 "title" => "max:32",
-                "email" => "email|unique:user,email",
+                "email" => "unique:user,email",
                 "phone" => "max:32",
                 "acl_id" => "exists:acl,id",
                 "password" => "min:6",
