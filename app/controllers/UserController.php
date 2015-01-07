@@ -44,8 +44,9 @@ class UserController extends \BaseController {
     public function store() {
         $rules = array(
             "name" => "required|max:128",
-            "email" => "required|max:128|email",
+            "email" => "required|max:128|email|unique:user,email",
             "password" => "required|min:6",
+            "conf_password" => "required|min:6|same:password",
             "acl_id" => "required|exists:acl,id",
         );
         $validation = Validator::make(Input::all(), $rules);
