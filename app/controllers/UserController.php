@@ -177,7 +177,7 @@ class UserController extends \BaseController {
         if ($exist)
             return $this->getEmail($email);
         else
-            return $this->makeFailResponse("User does not exist.");
+            return $this->makeResponse(null, 404, "User resource not found.");
     }
 
     /**
@@ -211,6 +211,51 @@ class UserController extends \BaseController {
             }
         } else {
             return $this->makeResponse(null, 404, "User resource not found.");
+        }
+    }
+    
+    /**
+     * Updates the User Address resource
+     * 
+     * @param int $id
+     * @return Response
+     */
+    public function address($id) {
+        $input = Input::all();
+        $input['id'] = $id;
+        $rules = array(
+            "address" => "required|max:256", 
+            "city" => "required|max:64", 
+            "province" => "required|max:64", 
+            "zip" => "required|numeric", 
+            "lng" => "numeric", 
+            "lat" => "numeric", 
+            "zoom" => "numeric", 
+            "id" => "required|numeric|exists:user,id"
+        );
+        
+        $validation = Validator::make($input, $rules);
+        if($validation->fails()) {
+            return $this->makeResponse($validation->messages(), 400, "Request failed in User Address validation.");
+        }
+        else {
+            $user = User::find($id);
+            $address = $user->address;
+            if(is_null($address)) {
+                $address = new Addess();
+            }
+            $address->address = Input::get("address");
+            $address->city = Input::get("city");
+            $address->province = Input::get("province");
+            $address->zip = Input::get("zip");
+            $address->lng = Input::get("lng");
+            $address->lat = Input::get("lat");
+            $address->zoom = Input::get("zoom");
+            $address->save();
+            
+            $user->address_id = $address->id;
+            $user->save();
+            return $this->makeResponse($address, 200, "User Address set.");
         }
     }
 
