@@ -33,7 +33,7 @@ class PropertyUnitController extends \BaseController {
                 "area" => "required|numeric",
                 "furnish" => "required|in:none,semi,full",
             );
-            
+
             $validation = Validator::make(Input::all(), $rules);
             if ($validation->fails()) {
                 return $this->makeFailResponse("Unit creation failed due to validation errors.", $validation->messages()->getMessages());
@@ -68,7 +68,7 @@ class PropertyUnitController extends \BaseController {
      */
     public function show($propertyId, $unitId) {
         $with = Input::get("with", array('details'));
-        
+
         if ($property = Property::find($propertyId)) {
             $unit = $property->units()->with($with)->find($unitId);
             return $this->makeSuccessResponse("Property Unit resource fetched.", $unit->toArray());
@@ -86,28 +86,26 @@ class PropertyUnitController extends \BaseController {
     public function update($propertyId, $unitId) {
         if ($property = Property::find($propertyId)) {
             if ($unit = $property->units()->find($unitId)) {
-                foreach(array("name", "description") as $field) {
-                    if(Input::has($field)) {
+                foreach (array("name", "description") as $field) {
+                    if (Input::has($field)) {
                         $unit->$field = Input::get($field);
                     }
                 }
-                
+
                 $details = $unit->details;
-                foreach(array("bed","bath","parking","furnish","area") as  $dField) {
-                    if($this->hasInput($dField)) {
+                foreach (array("bed", "bath", "parking", "furnish", "area") as $dField) {
+                    if ($this->hasInput($dField)) {
                         $details->$dField = Input::get($dField);
                     }
                 }
-                
+
                 $details->save();
                 $unit->save();
                 return $this->makeSuccessResponse("Unit (ID = $unitId) updated", $unit->toArray());
-            }
-            else {
+            } else {
                 return $this->makeFailResponse("Unit does not exist.");
             }
-        }
-        else {
+        } else {
             return $this->makeFailResponse("Property does not exist.");
         }
     }
@@ -123,24 +121,22 @@ class PropertyUnitController extends \BaseController {
             if ($unit = $property->units()->find($unitId)) {
                 $property->units()->detach($unit->id);
                 $unit->delete();
-                
+
                 $property->updated_by = Auth::id();
                 $property->save();
-                
+
                 return $this->makeSuccessResponse("Unit (ID = $unitId) deleted.");
-            }
-            else {
+            } else {
                 return $this->makeFailResponse("Unit does not exist.");
             }
-        }
-        else {
+        } else {
             return $this->makeFailResponse("Property does not exist.");
         }
     }
 
     public function mainPhoto($propertyId, $unitId) {
         $rules = array(
-            "photo" => "required|cloudinary_photo", 
+            "photo" => "required|cloudinary_photo",
             "caption" => "max:256"
         );
         $validation = Validator::make(Input::all(), $rules);
@@ -148,21 +144,55 @@ class PropertyUnitController extends \BaseController {
             return $this->makeFailResponse("Photo upload failed due to validation errors.", $validation->messages()->getMessages());
         } else {
             if ($property = Property::find($propertyId) && ($unit = Unit::find($unitId))) {
-                
-                if(!is_null($unit->photo)) {
+
+                if (!is_null($unit->photo)) {
                     $unit->photo->delete();
                 }
-                
+
                 $cloudinaryData = Input::get("photo");
                 $photo = PhotoManager::createCloudinary($cloudinaryData['public_id'], $unit, Input::get('caption'), $cloudinaryData);
-                
+
                 $unit->photo_id = $photo->id;
                 $unit->save();
-                
+
                 return $this->makeSuccessResponse("Photo upload of Unit (ID = $unitId) was successful", $photo->toArray());
             } else {
                 return $this->makeFailResponse("Property does not exist");
             }
+        }
+    }
+
+    public function details($propertyId, $unitId) {
+        if ($unit = Property::find($propertyId)->units()->find($unitId)) {
+
+            $rules = array(
+                "bed" => "numeric",
+                "bath" => "numeric",
+                "parking" => "numeric",
+                "area" => "numeric",
+                "furnish" => "in:full,semi,none"
+            );
+
+            $validation = Validator::make(Input::all(), $rules);
+            if ($validation->fails()) {
+                return $this->makeResponse($validation->messages(), 400, "Request failed in Property Unit resource validation.");
+            } else {
+                $details = $unit->details();
+                if (!is_null($details)) {
+                    $details = new CommonDetails();
+                }
+                
+                foreach($rules as $field => $rule) {
+                    if($this->hasInput($field)) {
+                        $details->$field = Input::get($field);
+                    }
+                }
+                $unit->details_id = $details->id;
+                $details->save();
+                return $this->makeResponse($details, 200, "Property Unit resource saved.");
+            }
+        } else {
+            return $this->makeResponse(null, 404, "Property Unit resource not found.");
         }
     }
 

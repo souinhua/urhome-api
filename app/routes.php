@@ -44,7 +44,10 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::resource('properties.amenities', 'PropertyAmenityController');
 
     Route::post("properties/{propertyId}/units/{unitId}/main-photo", 'PropertyUnitController@mainPhoto');
+    Route::post("properties/{properytId}/units/{unitId}/details", 'PropertyUnitController@details');
+    Route::put("properties/{properytId}/units/{unitId}/details", 'PropertyUnitController@details');
     Route::resource('properties.units', 'PropertyUnitController');
+    
     /*
      * Users Resource Routes
      */
