@@ -195,7 +195,7 @@ class PropertyUnitController extends \BaseController {
                     }
                 }
                 $details->save();
-                $unit->details_id = $details->id;
+                $unit->common_details_id = $details->id;
                 
                 $unit->save();
                 

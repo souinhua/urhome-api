@@ -285,7 +285,7 @@ class PropertyController extends \BaseController {
                     }
                 }
                 $details->save();
-                $property->details_id = $details->id;
+                $property->common_details_id = $details->id;
                 
                 $property->save();
                 return $this->makeResponse($details, 200, "Property Unit resource saved.");
