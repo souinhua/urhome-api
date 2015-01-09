@@ -184,7 +184,7 @@ class PropertyUnitController extends \BaseController {
             if ($validation->fails()) {
                 return $this->makeResponse($validation->messages(), 400, "Request failed in Property Unit resource validation.");
             } else {
-                $details = $unit->details();
+                $details = $unit->details;
                 if (is_null($details)) {
                     $details = new CommonDetails();
                 }
