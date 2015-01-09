@@ -13,8 +13,11 @@ class PhotoController extends \BaseController {
         $limit = Input::get('limit', 1000);
         $offset = Input::get('offset', 0);
         
+        $count = $query->count();
         $photos = $query->take($limit)->skip($offset)->get();
-        return $this->makeSuccessResponse("All photos fetched.", $photos->toArray());
+        return $this->makeSuccessResponse($photos, 200, "Photo resources fetched.", array(
+            "X-Total-Count" => $count
+        ));
     }
 
     /**
@@ -23,83 +26,7 @@ class PhotoController extends \BaseController {
      * @return Response
      */
     public function store() {
-        $rules = array(
-            "photo" => "required|image",
-            "caption" => "max:256",
-            "type" => "required|in:property,unit,user,developer,content",
-            "type_id" => "required|numeric"
-        );
-
-        if (Input::get('type') == 'property') {
-            $rules['type_id'] = "required|exists:property,id";
-        } else if (Input::get('type' == 'unit')) {
-            $rules['type_id'] = "required|exists:unit,id";
-        } else if (Input::get('type' == 'user')) {
-            $rules['type_id'] = "required|exists:user,id";
-        } else if (Input::get('type' == 'developer')) {
-            $rules['type_id'] = "required|exists:developer,id";
-        } else if (Input::get('type' == 'content')) {
-            $rules['type_id'] = "required|exists:content,id";
-        } else if (Input::get('type' == 'amenity')) {
-            $rules['type_id'] = "required|exists:amenity,id";
-        }
-
-        $validation = Validator::make(Input::all(), $rules);
-        if ($validation->fails()) {
-            return $this->makeFailResponse("Photo upload failed due to validation error(s)", $validation->messages()->getMessages());
-        } else {
-            $extension = Input::file('photo')->getClientOriginalExtension();
-
-            $type = Input::get("type");
-            $type_id = Input::get("type_id");
-
-            $time = time();
-            $userId = Auth::id();
-            if ($type == 'property') {
-                $property = Property::find($type_id);
-                $fileName = "$property->id-$userId-$time.$extension";
-                $uploadPath = "uploads/properties/$property->id";
-            } else if ($type == 'unit') {
-                $unit = Unit::find($type_id);
-                $fileName = "$unit->id-$userId-$time.$extension";
-                $uploadPath = "uploads/properties/$unit->property_id/units/$unit->id";
-            } else if ($type == 'user') {
-                $user = User::find($type_id);
-                $fileName = "$user->id-$userId-$time.$extension";
-                $uploadPath = "uploads/users";
-            } else if ($type == 'amenity') {
-                $amenity = Amenity::find($type_id);
-                $fileName = "$amenity->id-$userId-$time.$extension";
-                $uploadPath = "uploads/properties/$amenity->property_id/amenities";
-            } else if($type == 'developer') {
-                $developer = Developer::find($type_id);
-                $fileName = "$developer->id-$userId-$time.$extension";
-                $uploadPath = "uploads/developers";
-            } else if($type == 'content') {
-                $content = Content::find($type_id);
-                $fileName = "$content->id-$userId-$time.$extension";
-                $uploadPath = "uploads/contents";
-            }
-
-            $destinationPath = public_path($uploadPath);
-            if (!File::isDirectory($destinationPath)) {
-                File::makeDirectory($destinationPath, 0755, true);
-            }
-
-            $file = Input::file('photo')->move($destinationPath, $fileName);
-            if ($file) {
-                $photo = new Photo();
-                $photo->path = "$destinationPath/$fileName";
-                $photo->url = URL::to("$uploadPath/$fileName");
-                $photo->uploaded_by = Auth::id();
-                $photo->caption = Input::get('caption', null);
-                $photo->save();
-
-                return $this->makeSuccessResponse("Photo uploaded successfully.", $photo->toArray());
-            } else {
-                return $this->makeFailResponse("Upload Error");
-            }
-        }
+        return $this->makeResponse(null, 403, "Why u do this to me?!");
     }
 
     /**
@@ -110,9 +37,9 @@ class PhotoController extends \BaseController {
      */
     public function show($id) {
         if ($photo = Photo::find($id)) {
-            return $this->makeSuccessResponse("Photo fetched.", $photo->toArray());
+            return $this->makeResponse($photo, 200, "Photo (ID=$id) fetched.");
         } else {
-            return $this->makeFailResponse("Photo does not exist.");
+            return $this->makeResponse(null, 404, "Photo resource not found.");
         }
     }
 
@@ -123,23 +50,22 @@ class PhotoController extends \BaseController {
      * @return Response
      */
     public function update($id) {
-        $rules = array(
-            "caption" => "max:256", 
-            "id" => "required|numeric|exists:photo,id"
-        );
-        $input = Input::all();
-        $input['id'] = $id;
-        
-        $validation = Validator::make($input, $rules);
-        if($validation->fails()) {
-            return $this->makeFailResponse("Update photo failed due to validation error(s).", $validation);
+        if($photo = Photo::find($id)) {
+            $rules = array(
+                "caption" => "required|max:256"
+            );
+            $validation = Validator::make(Input::all(), $rules);
+            if($validation->fails()) {
+                return $this->makeResponse($validation->messages(), 400, "Request failed in Photo resource validation.");
+            }
+            else {
+                $photo->caption = Input::get("caption");
+                $photo->save();
+                return $this->makeResponse($photo, 200, "Photo resource caption saved.");
+            }
         }
         else {
-            $photo = Photo::find($id);
-            $photo->caption = Input::get('caption');
-            $photo->save();
-            
-            return $this->makeSuccessResponse("Photo (ID = $id) updated successfully", $photo->toArray());
+            return $this->makeResponse(null, 404, "Photo resource not found.");
         }
     }
 
@@ -152,10 +78,10 @@ class PhotoController extends \BaseController {
     public function destroy($id) {
         if($photo = Photo::find($id)) {
             $photo->delete();
-            return $this->makeSuccessResponse("Photo (ID = $id) deleted.");
+            return $this->makeResponse(null, 204, "Photo (ID = $id) deleted.");
         }
         else {
-            return $this->makeFailResponse("Photo does not exist");
+            return $this->makeResponse(null, 404, "Photo does not exist");
         }
     }
 
@@ -176,7 +102,7 @@ class PhotoController extends \BaseController {
             $response->header("Content-type", $mimeType);
             return $response;
         } else {
-            return $this->makeFailResponse("Photo (ID = $id) does not exist.");
+            return $this->makeResponse(null,404,"Photo (ID = $id) does not exist.");
         }
     }
 }
