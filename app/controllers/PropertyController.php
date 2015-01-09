@@ -251,5 +251,49 @@ class PropertyController extends \BaseController {
             }
         }
     }
+    
+    /**
+     * Updates or Create Details resource for a Property resource.
+     * 
+     * @param int $propertyId
+     * @param int $unitId
+     * @return API Response
+     */
+    public function details($propertyId) {
+        if ($property = Property::find($propertyId)) {
+
+            $rules = array(
+                "bed" => "numeric",
+                "bath" => "numeric",
+                "parking" => "numeric",
+                "area" => "numeric",
+                "furnish" => "in:full,semi,none"
+            );
+
+            $validation = Validator::make(Input::all(), $rules);
+            if ($validation->fails()) {
+                return $this->makeResponse($validation->messages(), 400, "Request failed in Property Unit resource validation.");
+            } else {
+                $details = $property->details();
+                if (!is_null($details)) {
+                    $details = new CommonDetails();
+                }
+                
+                foreach($rules as $field => $rule) {
+                    if($this->hasInput($field)) {
+                        $details->$field = Input::get($field);
+                    }
+                }
+                $details->save();
+                $property->details_id = $details->id;
+                
+                $property->save();
+                return $this->makeResponse($details, 200, "Property Unit resource saved.");
+            }
+        } else {
+            return $this->makeResponse(null, 404, "Property Unit resource not found.");
+        }
+    }
+
 
 }

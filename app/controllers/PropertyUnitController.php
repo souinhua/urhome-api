@@ -162,6 +162,13 @@ class PropertyUnitController extends \BaseController {
         }
     }
 
+    /**
+     * Updates or Create Details resource for a Unit resource.
+     * 
+     * @param int $propertyId
+     * @param int $unitId
+     * @return API Response
+     */
     public function details($propertyId, $unitId) {
         if ($unit = Property::find($propertyId)->units()->find($unitId)) {
 
@@ -187,8 +194,11 @@ class PropertyUnitController extends \BaseController {
                         $details->$field = Input::get($field);
                     }
                 }
-                $unit->details_id = $details->id;
                 $details->save();
+                $unit->details_id = $details->id;
+                
+                $unit->save();
+                
                 return $this->makeResponse($details, 200, "Property Unit resource saved.");
             }
         } else {
