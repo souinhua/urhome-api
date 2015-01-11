@@ -23,19 +23,19 @@ class ContentController extends \BaseController {
     public function index() {
         $with = Input::get('with', array('photo'));
         $query = Content::with($with);
-        
-        if(Input::has('search')) {
+
+        if (Input::has('search')) {
             
         }
-        
+
         $limit = Input::get('limit', 1000);
         $offset = Input::get('offset', 0);
         $contents = $query->take($limit)->skip($offset)->get();
         $count = $query->count();
-        
+
         return $this->makeSuccessResponse("Contents fetched", array(
-            "contents" => $contents,
-            "count" => $count
+                    "contents" => $contents,
+                    "count" => $count
         ));
     }
 
@@ -75,10 +75,9 @@ class ContentController extends \BaseController {
      */
     public function show($id) {
         $with = Input::get('with', array('photo'));
-        if($content = Content::with($with)->find($id)) {
+        if ($content = Content::with($with)->find($id)) {
             return $this->makeSuccessResponse("Content (ID = $id) fetched", $content->toArray());
-        }
-        else {
+        } else {
             return $this->makeFailResponse("Content does not exist");
         }
     }
@@ -90,17 +89,16 @@ class ContentController extends \BaseController {
      * @return Response
      */
     public function update($id) {
-        if($content = Content::find($id)) {
-            foreach($this->allowedFields as $field) {
-                if(Input::has($field)) {
+        if ($content = Content::find($id)) {
+            foreach ($this->allowedFields as $field) {
+                if (Input::has($field)) {
                     $content->$field = Input::get($field);
                 }
             }
             $content->updated_by = Auth::id();
             $content->save();
             return $this->makeSuccessResponse("Content (ID = $id) updated", $content->toArray());
-        }
-        else {
+        } else {
             return $this->makeFailResponse("Content does not exist");
         }
     }
@@ -112,17 +110,16 @@ class ContentController extends \BaseController {
      * @return Response
      */
     public function destroy($id) {
-        if($content = Content::find($id)) {
+        if ($content = Content::find($id)) {
             $content->deleted_by = Auth::id();
             $content->save();
             $content->delete();
             return $this->makeSuccessResponse("Content (ID = $id) deleted");
-        }
-        else {
+        } else {
             return $this->makeFailResponse("Content does not exist");
         }
     }
-    
+
     /**
      * Pulish a property
      *
@@ -147,14 +144,14 @@ class ContentController extends \BaseController {
                 $content->publish_end = $end;
                 $content->publish_by = Auth::id();
                 $content->save();
-                
+
                 return $this->makeSuccessResponse("Property (ID = $id) published", $content->toArray());
             }
         } else {
             return $this->makeFailResponse("Property (ID = $id) does not exist.");
         }
     }
-    
+
     /**
      * Unpublish Property
      * 
@@ -163,16 +160,47 @@ class ContentController extends \BaseController {
      * @return Response
      */
     public function unpublish($id) {
-        if($content = Content::find($id)) {
+        if ($content = Content::find($id)) {
             $content->publish_start = null;
             $content->publish_end = null;
             $content->publish_by = null;
             $content->save();
-            
+
             return $this->makeSuccessResponse("Content (ID = $id) unplublished successfully", $content->toArray());
-        }
-        else {
+        } else {
             return $this->makeFailResponse("Content does not exist");
         }
     }
+
+    /**
+     * Stores Cloudinary Photo resource for Content.
+     * 
+     * @param type $contentId
+     * @return Response
+     */
+    public function mainPhoto($contentId) {
+        if ($content = Content::find($contentId)) {
+            $rules = array(
+                "photo" => "required|cloudinary_photo",
+                "caption" => "max:256"
+            );
+
+            $validation = Validator::make(Input::all(), $rules);
+            if ($validation->fails()) {
+                return $this->makeResponse($validation->messages(), 400, "Request failed in Content Photo validation.");
+            } else {
+                $data = Input::get('photo');
+                $photo = PhotoManager::createCloudinary($data['public_id'], $content, Input::get('caption'), $data);
+
+                $content->photo_id = $photo->id;
+                $content->updated_by = Auth::id();
+                $content->save();
+                
+                return $this->makeResponse($photo, 201, "Cloudainry photo resource created.");
+            }
+        } else {
+            return $this->makeResponse(null, 404, "Content resource not found.");
+        }
+    }
+
 }

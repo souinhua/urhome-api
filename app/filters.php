@@ -48,9 +48,9 @@ App::singleton('oauth2', function() {
 Route::filter('auth', function() {
     if (Auth::guest()) {
         if (Request::ajax()) {
-            return Response::make('Unauthorized', 401);
+            return Response::json(array('status'=>'UNAUTHORIZED'), 401);
         } else {
-            return Response::json(array("error" => "UNAUTHORIZED"), 301);
+            return Response::json(array("status" => "UNAUTHORIZED"), 401);
         }
     }
 });

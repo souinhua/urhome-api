@@ -62,23 +62,22 @@ class PropertyPhotoController extends \BaseController {
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function edit($id) {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  int  $id
      * @return Response
      */
-    public function update($id) {
-        //
+    public function update($propertyId, $photoId) {
+        if($photo = Property::find($propertyId)->photos()->find($photoId)) {
+            if(Input::has("caption")) {
+                $photo->caption = Input::get("caption");
+            }
+            $photo->save();
+            return $this->makeResponse($photo, 200, "Property Photo updated.");
+        }
+        else {
+            return $this->makeResponse(null, 404, "Property Photo resource not found.");
+        }
     }
 
     /**
@@ -98,6 +97,12 @@ class PropertyPhotoController extends \BaseController {
         }
     }
 
+    /**
+     * Fetch Total Count of Property Photo resources
+     * 
+     * @param type $propertyId
+     * @return int 
+     */
     public function count($propertyId) {
         if ($this->entityExists("property", $propertyId)) {
             $count = Property::find($propertyId)->photos->count();

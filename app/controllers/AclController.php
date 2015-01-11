@@ -3,7 +3,7 @@
 /**
  * Description of AclController
  *
- * @author User
+ * @author Janssen Canturias
  */
 class AclController extends BaseController {
     
@@ -14,7 +14,8 @@ class AclController extends BaseController {
      */
     public function index() {
         $acls = ACL::all();
-        return $this->makeSuccessResponse("All ACLs fetched.", $acls->toArray());
+        
+        return $this->makeResponse($acls, 200, "ACLs Fetched.");
     }
     
     /**

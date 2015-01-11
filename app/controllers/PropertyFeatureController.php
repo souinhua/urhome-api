@@ -84,4 +84,22 @@ class PropertyFeatureController extends BaseController {
         }
         return $response;
     }
+    
+    /**
+     * Deletes a Property Feature resource.
+     * 
+     * @param int $propertyId
+     * @param int $featureId
+     * @return Response
+     */
+    public function destroy($propertyId, $featureId) {
+        if($feature = Property::find($propertyId)->features()->find($featureId)) {
+            
+            $feature->delete();
+            return $this->makeResponse($feature, 204, "Property Feature resource deleted.");
+        }
+        else {
+            return $this->makeResponse(null, 404, "Property Feature resource not found.");
+        }
+    }
 }

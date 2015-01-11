@@ -35,4 +35,8 @@ class Unit extends Eloquent {
     public function photos() {
         return $this->belongsToMany('Photo','unit_photo','unit_id','photo_id');
     }
+    
+    public function tags() {
+        return $this->belongsToMany('Tag','unit_tag','unit_id','tag_id');
+    }
 }
