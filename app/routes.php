@@ -13,7 +13,7 @@
 Route::get('/', function() {
     $properties = Property::all();
     $count = Property::count();
-    
+
     return Response::json($properties, 200, array("X-Urhome-Count" => $count));
 });
 
@@ -33,8 +33,8 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::get('properties/report', 'PropertyController@report');
     Route::post('properties/{id}/main-photo', 'PropertyController@mainPhoto');
     Route::post('properties/{id}/publish', 'PropertyController@publish');
-    Route::post("properties/{id}/details","PropertyController@details");
-    Route::put("properties/{id}/details","PropertyController@details");
+    Route::post("properties/{id}/details", "PropertyController@details");
+    Route::put("properties/{id}/details", "PropertyController@details");
     Route::resource('properties', 'PropertyController');
 
     Route::resource('properties.feature', 'PropertyFeatureController');
@@ -49,7 +49,9 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::post("properties/{properytId}/units/{unitId}/details", 'PropertyUnitController@details');
     Route::put("properties/{properytId}/units/{unitId}/details", 'PropertyUnitController@details');
     Route::resource('properties.units', 'PropertyUnitController');
-    
+
+    Route::resource("properties.tags", "PropertyTagController");
+
     /*
      * Users Resource Routes
      */
@@ -89,18 +91,18 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
      * Specifications
      */
     Route::resource('specs', 'SpecController');
-    
+
     /**
      * Unit Features
      */
     Route::resource('units.features', 'UnitFeatureController');
     Route::resource('units.specs', 'UnitSpecController');
-    
+    Route::resource("units.tags", "UnitTagController");
+
     /*
      * Developer Resource
      */
     Route::resource('developers', 'DeveloperController');
-    
 });
 
 Route::post('oauth/token', function() {
