@@ -181,7 +181,7 @@ class PropertyController extends \BaseController {
             "unpublished" => Property::unpublished()->count(),
             "overdue" => Property::overdue()->count(),
         );
-        return $this->makeResponse($count, 200, "Proeprty Report");
+        return $this->makeResponse($counts, 200, "Proeprty Report");
     }
 
     /**
