@@ -15,6 +15,9 @@ class PropertyController extends \BaseController {
             "address_as_name",
             "address_id"
         );
+        
+        $this->beforeFilter('auth', array('except' => ['index', 'show']));
+        $this->beforeFilter('admin', array('only' => ['publish', 'unpublish']));
     }
 
     /**
@@ -25,6 +28,10 @@ class PropertyController extends \BaseController {
     public function index() {
         $withs = array_merge(array('address', 'types'), Input::get("with", array()));
         $query = Property::with($withs);
+        
+        if(Auth::guest()) {
+            $query = $query->published();
+        }
 
         if (Input::has('unpublished')) {
             $query = $query->unpublished();

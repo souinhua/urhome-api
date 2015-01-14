@@ -17,6 +17,26 @@ class Content extends Eloquent{
     
     protected $table = "content";
     
+    /*
+     * Content Scopes
+     */
+    
+    public function scopeUnpublished($query) {
+        return $query->where('publish_start','=',null)->where('publish_end','=',null);
+    }
+    
+    public function scopePublished($query) {
+        return $query->whereNotNull('publish_start')->where('publish_end','<', date('Y-m-d H:i:s', time()));
+    }
+    
+    public function scopeOverdue($query) {
+        return $query->where('publish_end','<', date('Y-m-d H:i:s', time()));
+    }
+    
+    /*
+     * Content Relationships 
+     */
+    
     public function photo() {
         return $this->hasOne('Photo', 'id', 'photo_id');
     }

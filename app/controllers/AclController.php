@@ -7,6 +7,12 @@
  */
 class AclController extends BaseController {
     
+    function __construct() {
+        parent::__construct();
+        
+        $this->beforeFilter('auth', array('except'=> ['index','show']));
+    }
+
     /**
      * Fetch all ACLs
      *

@@ -47,11 +47,19 @@ App::singleton('oauth2', function() {
 
 Route::filter('auth', function() {
     if (Auth::guest()) {
-        if (Request::ajax()) {
-            return Response::json(array('status'=>'UNAUTHORIZED'), 401);
-        } else {
-            return Response::json(array("status" => "UNAUTHORIZED"), 401);
-        }
+        return Response::json(array("error" => "unauthorized"), 401, array(
+                    "X-Urhome-Message" => "Why u here?! Get outta here!",
+                    "X-Urhome" => "Sure"
+        ));
+    }
+});
+
+Route::filter("admin", function() {
+    if (Auth::guest() || Auth::user()->acl->id == 3) {
+        return Response::json(array("error" => "unauthorized"), 401, array(
+                    "X-Urhome-Message" => "Why u here?! Get outta here!",
+                    "X-Urhome" => "Sure"
+        ));
     }
 });
 
