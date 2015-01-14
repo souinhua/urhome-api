@@ -11,8 +11,13 @@
   |
  */
 Route::get('/', function() {
+    $date = date("Y-m-d H:i:s", time());
+    
+    $data = Property::whereRaw("publish_start IS NOT NULL AND (publish_end IS NOT NULL OR publish_end < $date)");
+    $sql = $data->toSql();
     echo '<pre style="font-size: 10px">';
-    print_r(Property::published()->get());
+    echo $sql . "<br/>";
+    print_r($data->get());
     echo "</pre>";
 });
 
