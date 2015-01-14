@@ -28,18 +28,9 @@ class PropertyController extends \BaseController {
     public function index() {
         $withs = array_merge(array('address', 'types'), Input::get("with", array()));
         
-        
+        $query = Property::with($withs);
         if(Auth::guest()) {
-            $query = Property::published();
-        }
-        $query = $query->with($withs);
-
-        if (Input::has('unpublished')) {
-            $query = $query->unpublished();
-        } else if (Input::has('published')) {
             $query = $query->published();
-        } else if (Input::has('overdue')) {
-            $query = $query->overdue();
         }
 
         $limit = Input::get("limit", 1000);

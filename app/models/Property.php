@@ -16,7 +16,7 @@ class Property extends Eloquent {
     }
     
     public function scopePublished($query) {
-        return $query->whereNotNull('publish_start')->where('publish_end','<', date('Y-m-d H:i:s', time()));
+        return $query->whereNotNull('publish_start')->whereNotNull('publish_end')->where('publish_end','<', date('Y-m-d H:i:s', time()));
     }
     
     public function scopeOverdue($query) {

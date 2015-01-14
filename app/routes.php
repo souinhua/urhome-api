@@ -11,10 +11,9 @@
   |
  */
 Route::get('/', function() {
-    $properties = Property::all();
-    $count = Property::count();
-
-    return Response::json($properties, 200, array("X-Urhome-Count" => $count));
+    echo '<pre style="font-size: 10px">';
+    print_r(Property::published()->get());
+    echo "</pre>";
 });
 
 Route::get("docs", function() {
