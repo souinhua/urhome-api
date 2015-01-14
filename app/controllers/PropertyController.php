@@ -37,8 +37,8 @@ class PropertyController extends \BaseController {
         $limit = Input::get("limit", 1000);
         $offset = Input::get("offset", 0);
 
-        $properties = $query->take($limit)->skip($offset)->get();
         $count = $query->count();
+        $properties = $query->take($limit)->skip($offset)->get();
 
         return $this->makeResponse($properties, 200, "Property resources fetched.", array(
                     "X-Total-Count" => $count
