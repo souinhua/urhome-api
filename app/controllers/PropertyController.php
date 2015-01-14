@@ -27,11 +27,12 @@ class PropertyController extends \BaseController {
      */
     public function index() {
         $withs = array_merge(array('address', 'types'), Input::get("with", array()));
-        $query = Property::with($withs);
+        
         
         if(Auth::guest()) {
-            $query = $query->published();
+            $query = Property::published();
         }
+        $query = $query->with($withs);
 
         if (Input::has('unpublished')) {
             $query = $query->unpublished();
