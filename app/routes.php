@@ -13,7 +13,7 @@
 Route::get('/', function() {
     $date = date("Y-m-d H:i:s", time());
     
-    $data = Property::whereRaw("publish_start IS NOT NULL AND (publish_end IS NOT NULL OR publish_end < $date)");
+    $data = Property::whereRaw("publish_start IS NOT NULL AND if(publish_end IS NOT NULL, publish_end < ?, TRUE)", array($date));
     $sql = $data->toSql();
     echo '<pre style="font-size: 10px">';
     echo $sql . "<br/>";
