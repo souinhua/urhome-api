@@ -24,6 +24,6 @@ class TypeController extends \BaseController {
      */
     public function show($id) {
         $type = Type::find($id);
-        return $this->makeSuccessResponse($type, 200, "Type resource fetched.");
+        return $this->makeResponse($type, 200, "Type resource fetched.");
     }
 }
