@@ -9,11 +9,11 @@ class UnitFeatureController extends \BaseController {
      * @return Response
      */
     public function index($unitId) {
-        if ($unit = Unit::find($unitId)) {
+        if ($unit = Unit::with("features")->find($unitId)) {
             $features = $unit->features;
-            return $this->makeSuccessResponse("Unit features fetched.", $features->toArray());
+            return $this->makeResponse($features, 200, "Unit Feature resources fetched.");
         } else {
-            return $this->makeFailResponse("Unit does not exist.");
+            return $this->makeResponse(null, 404, "Unit does not exist.");
         }
     }
 
@@ -30,7 +30,7 @@ class UnitFeatureController extends \BaseController {
             );
             $validation = Validator::make(Input::all(), $rules);
             if($validation->fails()) {
-                return $this->makeFailResponse("Feature creation failed due to validation error(s).", $validation->messages()->getMessages());
+                return $this->makeResponse($validation->messages(), 400, "Request failed due to Unit Feature validation error(s).");
             }
             else {
                 $feature = new Feature();
@@ -40,11 +40,11 @@ class UnitFeatureController extends \BaseController {
                 
                 $unit->features()->attach($feature->id);
                 $unit->save();
-                return $this->makeSuccessResponse("Unit Feature created.", $feature->toArray());
+                return $this->makeResponse($feature, 201, "Unit Feature resource created.");
             }
             
         } else {
-            return $this->makeFailResponse("Unit does not exist.");
+            return $this->makeResponse(null, 404, "Unit resource not found.");
         }
     }
     
@@ -66,14 +66,14 @@ class UnitFeatureController extends \BaseController {
                 }
                 $feature->save();
                 
-                return $this->makeSuccessResponse("Unit Feature updated.", $feature->toArray());
+                return $this->makeResponse($feature, 200, "Unit Feature resource updated.");
             }
             else {
-                return $this->makeFailResponse("Feature does not exist.");
+                return $this->makeResponse(null, 404, "Feature does not exist.");
             }
         } 
         else {
-            return $this->makeFailResponse("Unit does not exist.");
+            return $this->makeResponse(null, 404, "Unit does not exist.");
         }
     }
     
@@ -90,10 +90,10 @@ class UnitFeatureController extends \BaseController {
             $feature = Feature::find($featureId);
             $feature->delete();
             
-            return $this->makeSuccessResponse("Unit Feature deleted.", $feature->toArray());
+            return $this->makeResponse(null, 204, "Unit Feature resource deleted.");
         }
         else {
-            return $this->makeFailResponse("Unit does not exist.");
+            return $this->makeResponse(null, 404, "Unit Feature resource not found..");
         }
     }
 

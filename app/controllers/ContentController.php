@@ -22,20 +22,17 @@ class ContentController extends \BaseController {
      */
     public function index() {
         $with = Input::get('with', array('photo'));
+        
         $query = Content::with($with);
-
-        if (Input::has('search')) {
-            
-        }
-
-        $limit = Input::get('limit', 1000);
-        $offset = Input::get('offset', 0);
-        $contents = $query->take($limit)->skip($offset)->get();
+        
+        $limit = Input::get("limit", 1000);
+        $offset = Input::get("offset", 0);
+        
         $count = $query->count();
-
-        return $this->makeSuccessResponse("Contents fetched", array(
-                    "contents" => $contents,
-                    "count" => $count
+        $contents = $query->take($limit)->skip($offset)->get();
+        
+        return $this->makeResponse($contents, 200, "Content resources fetched.", array(
+            "X-Total-Count" => $count
         ));
     }
 
@@ -53,7 +50,7 @@ class ContentController extends \BaseController {
         );
         $validation = Validator::make(Input::all(), $rules);
         if ($validation->fails()) {
-            return $this->makeFailResponse("Content creation could not complete due to validation error(s).", $validation->messages()->getMessages());
+            return $this->makeResponse($validation->messages(), 400, "Request failed in Content resource validation.");
         } else {
             $content = new Content();
             foreach ($this->allowedFields as $field) {
@@ -63,7 +60,7 @@ class ContentController extends \BaseController {
             }
             $content->created_by = Auth::id();
             $content->save();
-            return $this->makeSuccessResponse("Content created.", $content->toArray());
+            return $this->makeResponse($content, 201, "Content resource created.");
         }
     }
 
@@ -76,9 +73,9 @@ class ContentController extends \BaseController {
     public function show($id) {
         $with = Input::get('with', array('photo'));
         if ($content = Content::with($with)->find($id)) {
-            return $this->makeSuccessResponse("Content (ID = $id) fetched", $content->toArray());
+            return $$this->makeResponse($content, 200, "Content resource (ID = $id) fetched.");
         } else {
-            return $this->makeFailResponse("Content does not exist");
+            return $this->makeResponse(null, 404, "Content resource not found.");
         }
     }
 
@@ -97,9 +94,9 @@ class ContentController extends \BaseController {
             }
             $content->updated_by = Auth::id();
             $content->save();
-            return $this->makeSuccessResponse("Content (ID = $id) updated", $content->toArray());
+            return $this->makeResponse($content, 200, "Content resource (ID = $id) updated.");
         } else {
-            return $this->makeFailResponse("Content does not exist");
+            return $this->makeResponse(null, 404, "Content resource not found.");
         }
     }
 
@@ -114,9 +111,9 @@ class ContentController extends \BaseController {
             $content->deleted_by = Auth::id();
             $content->save();
             $content->delete();
-            return $this->makeSuccessResponse("Content (ID = $id) deleted");
+            return $this->makeResponse(null, 204 ,"Content (ID = $id) deleted");
         } else {
-            return $this->makeFailResponse("Content does not exist");
+            return $this->makeResponse(null, 404,"Content resource not found.");
         }
     }
 
@@ -145,10 +142,10 @@ class ContentController extends \BaseController {
                 $content->publish_by = Auth::id();
                 $content->save();
 
-                return $this->makeSuccessResponse("Property (ID = $id) published", $content->toArray());
+                return $this->makeSuccessResponse($content, 200, "Content resource (ID = $id) published.");
             }
         } else {
-            return $this->makeFailResponse("Property (ID = $id) does not exist.");
+            return $this->makeFailResponse(null, 404,"Content resource (ID = $id) does not exist.");
         }
     }
 
@@ -166,9 +163,9 @@ class ContentController extends \BaseController {
             $content->publish_by = null;
             $content->save();
 
-            return $this->makeSuccessResponse("Content (ID = $id) unplublished successfully", $content->toArray());
+            return $this->makeSuccessResponse($content, 200, "Content resource (ID = $id) unpublished.");
         } else {
-            return $this->makeFailResponse("Content does not exist");
+            return $this->makeFailResponse(null, 404,"Content resource (ID = $id) does not exist.");
         }
     }
 

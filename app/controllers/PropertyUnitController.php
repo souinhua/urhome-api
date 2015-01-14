@@ -36,7 +36,7 @@ class PropertyUnitController extends \BaseController {
 
             $validation = Validator::make(Input::all(), $rules);
             if ($validation->fails()) {
-                return $this->makeFailResponse("Unit creation failed due to validation errors.", $validation->messages()->getMessages());
+                return $this->makeResponse($validation->messages(), 400, "Request failed in Property Unit resource validation.");
             } else {
                 $unit = new Unit();
                 $unit->name = Input::get("name");
@@ -53,10 +53,10 @@ class PropertyUnitController extends \BaseController {
 
                 $unit->common_details_id = $details->id;
                 $unit->save();
-                return $this->makeSuccessResponse("Property Units resource created.", $unit->toArray());
+                return $this->makeResponse($unit, 201,"Property Units resource created.");
             }
         } else {
-            return $this->makeFailResponse("Property does not exist.");
+            return $this->makeResponse(null, 404, "Property resource not found.");
         }
     }
 
@@ -71,9 +71,9 @@ class PropertyUnitController extends \BaseController {
 
         if ($property = Property::find($propertyId)) {
             $unit = $property->units()->with($with)->find($unitId);
-            return $this->makeSuccessResponse("Property Unit resource fetched.", $unit->toArray());
+            return $this->makeResponse($unit, 200, "Property Unit resource fetched.");
         } else {
-            return $this->makeFailResponse("Property does not exist.");
+            return $this->makeResponse(null, 404, "Property resource not found.");
         }
     }
 
@@ -101,12 +101,12 @@ class PropertyUnitController extends \BaseController {
 
                 $details->save();
                 $unit->save();
-                return $this->makeSuccessResponse("Unit (ID = $unitId) updated", $unit->toArray());
+                return $this->makeResponse($unit, 200, "Unit resource (ID = $unitId) updated");
             } else {
-                return $this->makeFailResponse("Unit does not exist.");
+                return $this->makeResponse(null, 404, "Unit resource not found.");
             }
         } else {
-            return $this->makeFailResponse("Property does not exist.");
+            return $this->makeResponse(null, 404, "Property resource not found.");
         }
     }
 
@@ -117,23 +117,22 @@ class PropertyUnitController extends \BaseController {
      * @return Response
      */
     public function destroy($propertyId, $unitId) {
-        if ($property = Property::find($propertyId)) {
-            if ($unit = $property->units()->find($unitId)) {
-                $property->units()->detach($unit->id);
-                $unit->delete();
-
-                $property->updated_by = Auth::id();
-                $property->save();
-
-                return $this->makeSuccessResponse("Unit (ID = $unitId) deleted.");
-            } else {
-                return $this->makeFailResponse("Unit does not exist.");
-            }
-        } else {
-            return $this->makeFailResponse("Property does not exist.");
+        if($unit = Property::find($propertyId)->units()->find($unitId)) {
+            $unit->delete();
+            return $this->makeResponse(null, 204, "Property Unit (ID = $unitId) resource deleted.");
+        }
+        else {
+            return $this->makeResponse(null, 404, "Property Unit resource not found.");
         }
     }
 
+    /**
+     * Creates a Cloudinary Photo resource for a Unit.
+     * 
+     * @param int $propertyId
+     * @param int $unitId
+     * @return Response
+     */
     public function mainPhoto($propertyId, $unitId) {
         $rules = array(
             "photo" => "required|cloudinary_photo",
@@ -141,7 +140,7 @@ class PropertyUnitController extends \BaseController {
         );
         $validation = Validator::make(Input::all(), $rules);
         if ($validation->fails()) {
-            return $this->makeFailResponse("Photo upload failed due to validation errors.", $validation->messages()->getMessages());
+            return $this->makeResponse($validation->messages(), 400, "Resource failed in Photo resource validation.");
         } else {
             if ($property = Property::find($propertyId) && ($unit = Unit::find($unitId))) {
 
@@ -155,9 +154,9 @@ class PropertyUnitController extends \BaseController {
                 $unit->photo_id = $photo->id;
                 $unit->save();
 
-                return $this->makeSuccessResponse("Photo upload of Unit (ID = $unitId) was successful", $photo->toArray());
+                return $this->makeResponse($photo, 201, "Photo resource of Unit (ID = $unitId) created.");
             } else {
-                return $this->makeFailResponse("Property does not exist");
+                return $this->makeResponse(null, 404, "Property Unit resource not found.");
             }
         }
     }

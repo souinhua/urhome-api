@@ -15,9 +15,9 @@ class PropertySpecController extends BaseController {
     public function index($propertyId) {
         if ($property = Property::find($propertyId)) {
             $specs = $property->specs;
-            return $this->makeSuccessResponse("Property Specifications fetched", $specs->toArray());
+            return $this->makeResponse($specs, 200, 'Property Specs resource fetched.');
         } else {
-            return $this->makeFailResponse("Property does not exist");
+            return $this->makeResponse(null, 404, "Property resource not found.");
         }
     }
 
@@ -35,7 +35,7 @@ class PropertySpecController extends BaseController {
 
             $validation = Validator::make(Input::all(), $rules);
             if ($validation->fails()) {
-                return $this->makeFailResponse("Spec Creation cannot be completed due to validation error(s).", $validation->messages()->getMessages());
+                return $this->makeResponse($validation->messages(), 400, "Request failed in Property Sepc resource validation.");
             } else {
                 $spec = new Spec();
                 $spec->variable = Input::get('variable');
@@ -46,10 +46,10 @@ class PropertySpecController extends BaseController {
                 $property->updated_by = Auth::id();
                 $property->save();
 
-                return $this->makeSuccessResponse("Property Specifications created", $spec->toArray());
+                return $this->makeResponse($spec, 201, "Property Specifications created");
             }
         } else {
-            return $this->makeFailResponse("Property does not exist");
+            return $this->makeResponse(null, 404, "Property Spec resource not found.");
         }
     }
 
@@ -70,9 +70,9 @@ class PropertySpecController extends BaseController {
             $property->updated_by = Auth::id();
             $property->save();
             
-            return $this->makeSuccessResponse("Property Spec updated", $spec->toArray());
+            return $this->makeResponse($spec, 200, "Property Spec resource updated");
         } else {
-            return $this->makeFailResponse("Property Specification does not exist.");
+            return $this->makeResponse(null, 404, "Property Specification resource not found.");
         }
     }
     
@@ -92,9 +92,9 @@ class PropertySpecController extends BaseController {
             $property->updated_by = Auth::id();
             $property->save();
             
-            return $this->makeSuccessResponse("Property Spec deleted", $spec->toArray());
+            return $this->makeResponse(null, 204, "Property Spec resource deleted.");
         } else {
-            return $this->makeFailResponse("Property Specification does not exist.");
+            return $this->makeResponse(null, 404, "Property Specification does not exist.");
         }
     }
 

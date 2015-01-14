@@ -40,11 +40,9 @@ class PropertyController extends \BaseController {
         $properties = $query->take($limit)->skip($offset)->get();
         $count = $query->count();
 
-        $data = array(
-            "properties" => $properties,
-            "count" => $count
-        );
-        return $this->makeSuccessResponse("Property Resources fetched.", $data);
+        return $this->makeResponse($properties, 200, "Property resources fetched.", array(
+                    "X-Total-Count" => $count
+        ));
     }
 
     /**
@@ -65,7 +63,7 @@ class PropertyController extends \BaseController {
         );
         $validation = Validator::make(Input::all(), $rules);
         if ($validation->fails()) {
-            return $this->makeFailResponse("Property creation could not complete due to validation error(s).", $validation->messages()->getMessages());
+            return $this->makeResponse($validation->messages(), 400, "Request failed in Property resource validation.");
         } else {
             $property = new Property();
             $property->name = Input::get("name");
@@ -82,7 +80,7 @@ class PropertyController extends \BaseController {
             $property->types()->sync(Input::get('types', array()));
             $property->save();
 
-            return $this->makeSuccessResponse("Property creation successful", $property->toArray());
+            return $this->makeResponse($property, 201, "Property resource created.");
         }
     }
 
@@ -101,27 +99,27 @@ class PropertyController extends \BaseController {
         }
 
         $withs = Input::get('with', array(
-            "types",
-            "address",
-            "creator.photo",
-            "editor.photo",
-            "agent.photo",
-            "photo",
-            "amenities.photo",
-            "tags",
-            "features",
-            "specs",
-            "details",
-            "photos",
-            "publisher",
-            "units.photo",
-            "units.details"
+                    "types",
+                    "address",
+                    "creator.photo",
+                    "editor.photo",
+                    "agent.photo",
+                    "photo",
+                    "amenities.photo",
+                    "tags",
+                    "features",
+                    "specs",
+                    "details",
+                    "photos",
+                    "publisher",
+                    "units.photo",
+                    "units.details"
         ));
 
         if ($property = Property::with($withs)->find($alias)) {
-            return $this->makeSuccessResponse("Property (ID = $id) fetched", $property->toArray());
+            return $this->makeResponse($property, 200, "Property resource fetched.");
         }
-        return $this->makeFailResponse("Property (ID = $id) does not exist");
+        return $this->makeResponse(null, 404, "Property resource not found.");
     }
 
     /**
@@ -148,9 +146,9 @@ class PropertyController extends \BaseController {
 
             $property->updated_by = Auth::user()->id;
             $property->save();
-            return $this->makeSuccessResponse("Property (ID = $id) updated", $property->toArray());
+            return $this->makeResponse($property, 200, "Property (ID = $id) resource updated.");
         } else {
-            return $this->makeFailResponse("Property (ID = $id) does not exist.");
+            return $this->makeResponse(null, 404, "Property resource not found.");
         }
     }
 
@@ -165,9 +163,9 @@ class PropertyController extends \BaseController {
             $property->deleted_by = Auth::id();
             $property->save();
             $property->delete();
-            return $this->makeSuccessResponse("Property (ID = $id) deleted");
+            return $this->makeResponse(null, 204, "Property (ID = $id) resource deleted.");
         } else {
-            return $this->makeFailResponse("Property does not exist.");
+            return $this->makeResponse(null, 404, "Property resource not found.");
         }
     }
 
@@ -183,7 +181,7 @@ class PropertyController extends \BaseController {
             "unpublished" => Property::unpublished()->count(),
             "overdue" => Property::overdue()->count(),
         );
-        return $this->makeSuccessResponse("Proeprty Report", $counts);
+        return $this->makeResponse($count, 200, "Proeprty Report");
     }
 
     /**
@@ -200,7 +198,7 @@ class PropertyController extends \BaseController {
             );
             $validation = Validator::make(Input::all(), $rules);
             if ($validation->fails()) {
-                return $this->makeFailResponse("Publish property could not complete due to validation error(s).", $validation->messages()->getMessages());
+                return $this->makeResponse($validation->messages(), 400, "Request failed in Property publication resource validation.");
             } else {
                 $start = date("Y-m-d H:i:s", strtotime(Input::get('publish_start')));
                 $end = null;
@@ -212,10 +210,10 @@ class PropertyController extends \BaseController {
                 $property->published_by = Auth::id();
                 $property->save();
 
-                return $this->makeSuccessResponse("Property (ID = $id) published", $property->toArray());
+                return $this->makeResponse($property, 200, "Property (ID=$id) resource published.");
             }
         } else {
-            return $this->makeFailResponse("Property (ID = $id) does not exist.");
+            return $this->makeResponse(null, 404, "Property resource not found.");
         }
     }
 
@@ -231,7 +229,7 @@ class PropertyController extends \BaseController {
         );
         $validation = Validator::make(Input::all(), $rules);
         if ($validation->fails()) {
-            return $this->makeFailResponse("Photo upload of User (ID = $id) failed due to validation errors.", $validation->messages()->getMessages());
+            return $this->makeResponse($validation->messages(), 400, "Request failed in Property Photo resource validation.");
         } else {
             if ($property = Property::find($id)) {
                 $data = Input::get('photo');
@@ -245,13 +243,13 @@ class PropertyController extends \BaseController {
                 $property->updated_by = Auth::id();
                 $property->save();
 
-                return $this->makeSuccessResponse("Photo upload of Property (ID = $id) was successful", $photo->toArray());
+                return $this->makeResponse($photo, 201, "Property Photo resource saved.");
             } else {
-                return $this->makeFailResponse("Property does not exist");
+                return $this->makeResponse(null, 404, "Property resource not found.");
             }
         }
     }
-    
+
     /**
      * Updates or Create Details resource for a Property resource.
      * 
@@ -278,15 +276,15 @@ class PropertyController extends \BaseController {
                 if (is_null($details)) {
                     $details = new CommonDetails();
                 }
-                
-                foreach($rules as $field => $rule) {
-                    if($this->hasInput($field)) {
+
+                foreach ($rules as $field => $rule) {
+                    if ($this->hasInput($field)) {
                         $details->$field = Input::get($field);
                     }
                 }
                 $details->save();
                 $property->common_details_id = $details->id;
-                
+
                 $property->save();
                 return $this->makeResponse($details, 200, "Property Unit resource saved.");
             }
@@ -294,6 +292,5 @@ class PropertyController extends \BaseController {
             return $this->makeResponse(null, 404, "Property Unit resource not found.");
         }
     }
-
 
 }

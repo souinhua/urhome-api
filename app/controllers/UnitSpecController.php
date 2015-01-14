@@ -9,11 +9,11 @@ class UnitSpecController extends \BaseController {
      * @return Response
      */
     public function index($unitId) {
-        if ($unit = Unit::find($unitId)) {
+        if ($unit = Unit::with("specs")->find($unitId)) {
             $specs = $unit->specs;
-            return $this->makeSuccessResponse("Unit specs fetched.", $specs->toArray());
+            return $this->makeResponse($specs, 200, "Unit Specs fetched.");
         } else {
-            return $this->makeFailResponse("Unit does not exist.");
+            return $this->makeResponse(null, 404, "Unit does not exist.");
         }
     }
 
@@ -31,7 +31,7 @@ class UnitSpecController extends \BaseController {
             );
             $validation = Validator::make(Input::all(), $rules);
             if ($validation->fails()) {
-                return $this->makeFailResponse("Spec creation failed due to validation error(s).", $validation->messages()->getMessages());
+                return $this->makeResponse($validation->messages(), 404, "Request failed due to Unit Spec resource validation.");
             } else {
                 $spec = new Spec();
                 $spec->variable = Input::get("variable");
@@ -40,10 +40,10 @@ class UnitSpecController extends \BaseController {
                 
                 $unit->specs()->attach($spec->id);
                 $unit->save();
-                return $this->makeSuccessResponse("Unit Spec created.", $spec->toArray());
+                return $this->makeResponse($unit, 201, "Unit Spec response created.");
             }
         } else {
-            return $this->makeFailResponse("Unit does not exist.");
+            return $this->makeResponse(null, 404, "Unit does not exist.");
         }
     }
 
@@ -65,12 +65,12 @@ class UnitSpecController extends \BaseController {
                 }
                 $spec->save();
 
-                return $this->makeSuccessResponse("Unit Spec updated.", $spec->toArray());
+                return $this->makeSuccessResponse($spec, 200, "Unit Spec resource updated.");
             } else {
-                return $this->makeFailResponse("Spec does not exist.");
+                return $this->makeResponse(null, 404, "Spec does resource not found.");
             }
         } else {
-            return $this->makeFailResponse("Unit does not exist.");
+            return $this->makeResponse(null, 404, "Unit resource not found.");
         }
     }
 
@@ -87,9 +87,9 @@ class UnitSpecController extends \BaseController {
             $spec = Spec::find($specId);
             $spec->delete();
 
-            return $this->makeSuccessResponse("Unit Spec deleted.", $spec->toArray());
+            return $this->makeResponse(null, 204, "Unit Spec resource deleted.");
         } else {
-            return $this->makeFailResponse("Unit does not exist.");
+            return $this->makeResponse(null, 404, "Unit does not exist.");
         }
     }
 

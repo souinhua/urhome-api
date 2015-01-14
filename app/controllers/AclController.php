@@ -14,7 +14,6 @@ class AclController extends BaseController {
      */
     public function index() {
         $acls = ACL::all();
-        
         return $this->makeResponse($acls, 200, "ACLs Fetched.");
     }
     
@@ -26,10 +25,10 @@ class AclController extends BaseController {
      */
     public function show($id) {
         if($acl = ACL::find($id)) {
-            return $this->makeSuccessResponse("ACL (ID = $id) fetched.", $acl->toArray());
+            return $$this->makeResponse($acl, 200, "ACL (ID= $id) resource fethced.");
         }
         else {
-            return $this->makeFailResponse("ACL does not exist.");
+            return $this->makeResponse(null, 404, "ACL resource not found.");
         }
     }
     

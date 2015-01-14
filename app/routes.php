@@ -43,8 +43,16 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
 
     Route::get("properties/{propertyId}/photos/count", 'PropertyPhotoController@count');
     Route::resource('properties.photos', 'PropertyPhotoController');
+    
+    /**
+     * Property Amenities
+     */
+    Route::match(array("POST", "PUT"),"properties/{propertyId}/amenities/{amenityId}/photo", "PropertyAmenityController@photo");
     Route::resource('properties.amenities', 'PropertyAmenityController');
 
+    /**
+     * Property Units
+     */
     Route::post("properties/{propertyId}/units/{unitId}/main-photo", 'PropertyUnitController@mainPhoto');
     Route::post("properties/{properytId}/units/{unitId}/details", 'PropertyUnitController@details');
     Route::put("properties/{properytId}/units/{unitId}/details", 'PropertyUnitController@details');
@@ -75,12 +83,6 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
      * Types Resource Routes
      */
     Route::resource('addresses', 'AddressController');
-
-    /*
-     * Amenity Resource Routes
-     */
-    Route::resource('amenities', 'AmenityController');
-    Route::post('amenities/{id}/photo', 'AmenityController@savePhoto');
 
     /*
      * Feature Resource Routes
