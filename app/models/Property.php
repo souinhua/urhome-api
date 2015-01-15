@@ -18,13 +18,13 @@ class Property extends Eloquent {
     public function scopePublished($query) {
         $dateStr = date("Y-m-d H:i:s", time());
         $date = DB::getPdo()->quote($dateStr);
-        return $query->whereRaw("publish_start IS NOT NULL AND if(publish_end IS NOT NULL, publish_end < ?, TRUE))", array($date));
+        return $query->whereRaw("publish_start IS NOT NULL AND if(publish_end IS NOT NULL, publish_end < ?, TRUE)", array($date));
     }
     
     public function scopeOverdue($query) {
         $dateStr = date("Y-m-d H:i:s", time());
         $date = DB::getPdo()->quote($dateStr);
-        return $query->whereRaw("publish_start IS NOT NULL AND if(publish_end IS NOT NULL, publish_end > ?, TRUE))", array($date));
+        return $query->whereRaw("publish_start IS NOT NULL AND if(publish_end IS NOT NULL, publish_end > ?, TRUE)", array($date));
     }
     
     /*
