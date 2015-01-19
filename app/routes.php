@@ -11,17 +11,7 @@
   |
  */
 Route::get('/', function() {
-    $date = date("Y-m-d H:i:s", time());
-    
-    $data = Property::published();
-
-    echo '<pre style="font-size: 10px;border: 1px solid #ddd">';
-    print_r($data->get());
-    echo "</pre>";
-    
-    echo '<pre style="font-size: 10px;border: 1px solid #ddd">';
-    print_r(Property::overdue()->get());
-    echo "</pre>";
+    return Response::json("Welcome to Urhome API");
 });
 
 Route::get("docs", function() {
@@ -50,11 +40,11 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
 
     Route::get("properties/{propertyId}/photos/count", 'PropertyPhotoController@count');
     Route::resource('properties.photos', 'PropertyPhotoController');
-    
+
     /**
      * Property Amenities
      */
-    Route::match(array("POST", "PUT"),"properties/{propertyId}/amenities/{amenityId}/photo", "PropertyAmenityController@photo");
+    Route::match(array("POST", "PUT"), "properties/{propertyId}/amenities/{amenityId}/photo", "PropertyAmenityController@photo");
     Route::resource('properties.amenities', 'PropertyAmenityController');
 
     /**
@@ -65,6 +55,9 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::put("properties/{properytId}/units/{unitId}/details", 'PropertyUnitController@details');
     Route::resource('properties.units', 'PropertyUnitController');
 
+    /*
+     * Property Tags
+     */
     Route::resource("properties.tags", "PropertyTagController");
 
     /*
@@ -86,21 +79,6 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
      */
     Route::resource('types', 'TypeController');
 
-    /*
-     * Types Resource Routes
-     */
-    Route::resource('addresses', 'AddressController');
-
-    /*
-     * Feature Resource Routes
-     */
-    Route::resource('features', 'FeatureController');
-
-    /**
-     * Specifications
-     */
-    Route::resource('specs', 'SpecController');
-
     /**
      * Unit Features
      */
@@ -112,7 +90,13 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
      * Developer Resource
      */
     Route::resource('developers', 'DeveloperController');
-    
+
+    /*
+     * Content Resource
+     */
+    Route::match(array("PUT", "POST"), 'contents/{id}/main-photo', 'ContentController@mainPhoto');
+    Route::put('contents/{id}/publish', 'ContentController@publish');
+    Route::delete('contents/{id}/publish', 'ContentController@unpublish');
     Route::resource('contents', 'ContentController');
 });
 
