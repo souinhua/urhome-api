@@ -43,6 +43,9 @@ class PhotoManager {
         } else if ($model instanceof \Unit) {
             $path = "properties/$model->property_id/units/$model->id/$fileName";
             $tags = "unit";
+        } else if ($model instanceof \Content) {
+            $path = "contents/$model->id/$fileName";
+            $tags = "content";
         }
 
         \Cloudinary\Uploader::rename($public_id, $path, array("overwrite" => true));
