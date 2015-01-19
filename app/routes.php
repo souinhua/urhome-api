@@ -112,6 +112,8 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
      * Developer Resource
      */
     Route::resource('developers', 'DeveloperController');
+    
+    Route::resource('contents', 'ContentController');
 });
 
 Route::post('oauth/token', function() {
