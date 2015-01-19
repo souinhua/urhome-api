@@ -291,5 +291,31 @@ class PropertyController extends \BaseController {
             return $this->makeResponse(null, 404, "Property Unit resource not found.");
         }
     }
+    
+    
+    public function address($id) {
+        if($property = Property::find($id)) {
+            $address = $property->address;
+            if(is_null($address)) {
+                $address = new Address();
+            }
+            
+            $fields = array("address","street","city","province","zip","lng","lat","zoom","accessibility");
+            foreach($fields as $field) {
+                if($this->hasInput($field)) {
+                    $address->$field = Input::get($field);
+                }
+            }
+            $address->save();
+            
+            $property->address_id = $address->id;
+            $property->save();
+            
+            return $this->makeResponse($address, 200, "Property Address resource saved.");
+        }
+        else {
+            return $this->makeResponse(null, 404, "Property resource not found.");
+        }
+    }
 
 }

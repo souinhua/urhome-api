@@ -32,6 +32,9 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::post('properties/{id}/publish', 'PropertyController@publish');
     Route::post("properties/{id}/details", "PropertyController@details");
     Route::put("properties/{id}/details", "PropertyController@details");
+    
+    Route::match("POST","PUT","properties/{id}/address", "PropertyController@address");
+    
     Route::resource('properties', 'PropertyController');
 
     Route::resource('properties.feature', 'PropertyFeatureController');
@@ -40,6 +43,8 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
 
     Route::get("properties/{propertyId}/photos/count", 'PropertyPhotoController@count');
     Route::resource('properties.photos', 'PropertyPhotoController');
+    
+    
 
     /**
      * Property Amenities
