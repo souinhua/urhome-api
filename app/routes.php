@@ -33,7 +33,7 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::post("properties/{id}/details", "PropertyController@details");
     Route::put("properties/{id}/details", "PropertyController@details");
     
-    Route::match("POST","PUT","properties/{id}/address", "PropertyController@address");
+    Route::match(array("POST","PUT"),"properties/{id}/address", "PropertyController@address");
     
     Route::resource('properties', 'PropertyController');
 
