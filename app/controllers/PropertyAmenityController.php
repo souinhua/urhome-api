@@ -30,7 +30,7 @@ class PropertyAmenityController extends BaseController {
      * @return Response
      */
     public function show($propertyId, $amenityId) {
-        if ($amenity = Property::find($propertyId)->amenities()->find($amenityId)) {
+        if ($amenity = Property::find($propertyId)->amenities()->with('photo')->find($amenityId)) {
             return $this->makeResponse($amenity, 200, "Property Amenities resource fetched.");
         } else {
             return $this->makeResponse(null, 404, "Property Amenity resource not found.");
