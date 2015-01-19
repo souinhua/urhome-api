@@ -56,8 +56,6 @@ class PropertyController extends \BaseController {
             "description" => "required",
             "status" => "required|in:rfo,so,ps",
             "transaction" => "required|in:sale,rent",
-//            "address_as_name" => "in:1,0",
-            "address" => "required|numeric|exists:address,id",
             "types" => "required|array"
         );
         $validation = Validator::make(Input::all(), $rules);
@@ -71,7 +69,6 @@ class PropertyController extends \BaseController {
             $property->status = Input::get("status");
             $property->transaction = Input::get("transaction");
             $property->address_as_name = Input::get("address_as_name", false);
-            $property->address_id = Input::get("address");
 
             $property->created_by = Auth::user()->id;
             $property->save();
@@ -292,7 +289,12 @@ class PropertyController extends \BaseController {
         }
     }
     
-    
+    /**
+     * Stores or Updates a Property Address resource
+     * 
+     * @param int $id
+     * @return Response
+     */
     public function address($id) {
         if($property = Property::find($id)) {
             $address = $property->address;
