@@ -47,7 +47,6 @@ class ContentController extends \BaseController {
             "abstract" => "required",
             "body" => "required",
             "type" => "required|in:article,event,news,ad,testimonial,video,photo,list",
-            "photo" => "required|cloudinary_photo"
         );
         $validation = Validator::make(Input::all(), $rules);
         if ($validation->fails()) {
