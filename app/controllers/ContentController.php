@@ -61,7 +61,7 @@ class ContentController extends \BaseController {
     public function show($id) {
         $with = Input::get('with', array('photo'));
         if ($content = Content::with($with)->find($id)) {
-            return $$this->makeResponse($content, 200, "Content resource (ID = $id) fetched.");
+            return $this->makeResponse($content, 200, "Content resource (ID = $id) fetched.");
         } else {
             return $this->makeResponse(null, 404, "Content resource not found.");
         }
