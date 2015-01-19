@@ -2,19 +2,6 @@
 
 class ContentController extends \BaseController {
 
-    private $allowedFields;
-
-    function __construct() {
-        $this->allowedFields = array(
-            "title",
-            "abstract",
-            "body",
-            "publish_start",
-            "publish_end",
-            "photo_id"
-        );
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -53,11 +40,12 @@ class ContentController extends \BaseController {
             return $this->makeResponse($validation->messages(), 400, "Request failed in Content resource validation.");
         } else {
             $content = new Content();
-            foreach ($this->allowedFields as $field) {
-                if (Input::has($field)) {
-                    $content->$field = Input::get($field);
-                }
-            }
+            
+            $content->title = Input::get("title");
+            $content->type = Input::get("type");
+            $content->abstract = Input::get("abstract");
+            $content->body = Input::get("body");
+            
             $content->created_by = Auth::id();
             $content->save();
             return $this->makeResponse($content, 201, "Content resource created.");
