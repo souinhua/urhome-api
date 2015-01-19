@@ -8,7 +8,7 @@ class ContentController extends \BaseController {
      * @return Response
      */
     public function index() {
-        $with = Input::get('with', array('photo'));
+        $with = Input::get('with', array('photo','creator'));
         
         $query = Content::with($with);
         
@@ -59,7 +59,7 @@ class ContentController extends \BaseController {
      * @return Response
      */
     public function show($id) {
-        $with = Input::get('with', array('photo'));
+        $with = Input::get('with', array('photo','creator'));
         if ($content = Content::with($with)->find($id)) {
             return $this->makeResponse($content, 200, "Content resource (ID = $id) fetched.");
         } else {
