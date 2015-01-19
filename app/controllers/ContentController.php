@@ -75,11 +75,15 @@ class ContentController extends \BaseController {
      */
     public function update($id) {
         if ($content = Content::find($id)) {
-            foreach ($this->allowedFields as $field) {
+            
+            $fields = array("title","abstract","body","type");
+            
+            foreach ($fields as $field) {
                 if (Input::has($field)) {
                     $content->$field = Input::get($field);
                 }
             }
+            
             $content->updated_by = Auth::id();
             $content->save();
             return $this->makeResponse($content, 200, "Content resource (ID = $id) updated.");
