@@ -42,15 +42,15 @@ class Content extends Eloquent{
     }
     
     public function creator() {
-        return $this->hasOne("Person", "id", "created_by");
+        return $this->hasOne("User", "id", "created_by");
     }
     
     public function editor() {
-        return $this->hasOne("Person", "id", "updated_by");
+        return $this->hasOne("User", "id", "updated_by");
     }
     
     public function publisher() {
-        return $this->hasOne("Person", "id", "published_by");
+        return $this->hasOne("User", "id", "published_by");
     }
     
     public function properties() {
