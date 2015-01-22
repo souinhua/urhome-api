@@ -60,7 +60,15 @@ class ContentController extends \BaseController {
      */
     public function show($id) {
         $with = Input::get('with', array('photo','creator'));
-        if ($content = Content::with($with)->find($id)) {
+        
+        if(is_numeric($id)) {
+            $content = Content::with($with)->find($id);
+        }
+        else {
+            $content = Content::with($with)->whereRaw("LOWER(CONCAT(REPLACE(title, ' ', '-'), '-', id))")->first();
+        }
+        
+        if (!is_null($content)) {
             return $this->makeResponse($content, 200, "Content resource (ID = $id) fetched.");
         } else {
             return $this->makeResponse(null, 404, "Content resource not found.");
