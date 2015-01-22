@@ -22,15 +22,19 @@ class Content extends Eloquent{
      */
     
     public function scopeUnpublished($query) {
-        return $query->where('publish_start','=',null)->where('publish_end','=',null);
+        return $query->whereNull('publish_start')->whereNull('publish_end');
     }
-    
+
     public function scopePublished($query) {
-        return $query->whereNotNull('publish_start')->where('publish_end','<', date('Y-m-d H:i:s', time()));
+        $dateStr = date("Y-m-d H:i:s", time());
+        $date = DB::getPdo()->quote($dateStr);
+        return $query->whereRaw("publish_start IS NOT NULL AND if(publish_end IS NOT NULL, publish_end < ?, TRUE)", array($date));
     }
-    
+
     public function scopeOverdue($query) {
-        return $query->where('publish_end','<', date('Y-m-d H:i:s', time()));
+        $dateStr = date("Y-m-d H:i:s", time());
+        $date = DB::getPdo()->quote($dateStr);
+        return $query->whereRaw("publish_start IS NOT NULL AND if(publish_end IS NOT NULL, publish_end > ?, TRUE)", array($date));
     }
     
     /*
