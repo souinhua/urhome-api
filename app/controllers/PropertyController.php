@@ -142,7 +142,6 @@ class PropertyController extends \BaseController {
                 "status" => "in:rfo,so,ps",
                 "transaction" => "in:sale,rent",
                 "types" => "array",
-                "slug" => "max:256",
                 "agent_id" => "exists:user,id",
                 "developer_id" => "exists:developer,id"
             );
@@ -151,7 +150,7 @@ class PropertyController extends \BaseController {
             if ($validation->fails()) {
                 return $this->makeResponse($validation->messages(), 400, "Request failed in Property resource validation.");
             } else {
-                $fields = array("name", "tagline", "address_as_name", "description", "status", "transaction", "slug", "agent_id", "agent_message", "developer_id");
+                $fields = array("name", "tagline", "address_as_name", "description", "status", "transaction", "agent_id", "agent_message", "developer_id");
                 foreach ($fields as $field) {
                     if ($this->hasInput($field)) {
                         $property->$field = Input::get($field);
