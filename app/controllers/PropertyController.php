@@ -88,13 +88,6 @@ class PropertyController extends \BaseController {
      * @return Response
      */
     public function show($id) {
-        $alias = $id;
-        if (!is_numeric($id)) {
-            $explode = explode("-", $alias);
-            $count = count($explode);
-            $alias = $explode[$count - 1];
-        }
-
         $withs = Input::get('with', array(
                     "types",
                     "address",
@@ -112,8 +105,15 @@ class PropertyController extends \BaseController {
                     "units.photo",
                     "units.details"
         ));
+        
+        if (!is_numeric($id)) {
+            $property = Property::with($withs)->find($id);
+        }
+        else {
+            $property = Property::with($withs)->where('slug','=',$id)->first();
+        }
 
-        if ($property = Property::with($withs)->find($alias)) {
+        if (!is_null($property)) {
             return $this->makeResponse($property, 200, "Property resource fetched.");
         }
         return $this->makeResponse(null, 404, "Property resource not found.");
