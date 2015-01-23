@@ -75,10 +75,6 @@ class PropertyController extends \BaseController {
 
             // Link Types
             $property->types()->sync(Input::get('types', array()));
-
-            // Slugging
-            $slug = "$property->name-$property->id";
-            $property->slug = Str::slug($slug);
             $property->save();
 
             return $this->makeResponse($property, 201, "Property resource created.");
@@ -131,29 +127,36 @@ class PropertyController extends \BaseController {
      */
     public function update($id) {
         if ($property = Property::find($id)) {
-            $property->name = Input::get("name", $property->name);
-            $property->tagline = Input::get("tagline", $property->tagline);
-            $property->description = Input::get("description", $property->description);
-            $property->status = Input::get("status", $property->status);
-            $property->transaction = Input::get("transaction", $property->transaction);
-            $property->address_as_name = Input::get("address_as_name", $property->address_as_name);
-            $property->address_id = Input::get("address", $property->address_id);
-            $property->agent_id = Input::get("agent_id", $property->agent_id);
-            $property->agent_message = Input::get("agent_message", $property->agent_message);
+            $rules = array(
+                "name" => "max:128|required_if:address_as_name, 0",
+                "tagline" => "max:256",
+                "status" => "in:rfo,so,ps",
+                "transaction" => "in:sale,rent",
+                "types" => "array",
+                "slug" => "max:256",
+                "agent_id" => "exists:user,id",
+                "developer_id" => "exists:developer,id"
+            );
 
-            if (Input::has('types')) {
-                $property->types()->sync(Input::get('types', array()));
+            $validation = Validator::make(Input::all(), $rules);
+            if ($validation->fails()) {
+                return $this->makeResponse($validation->messages(), 400, "Request failed in Property resource validation.");
+            } else {
+                $fields = array("name","tagline","address_as_name","description","status","transaction","slug","agent_id","agent_message","developer_id");
+                foreach($fields as $field) {
+                    if($this->hasInput($field)) {
+                        $property->$field = Input::get($field);
+                    }
+                }
+
+                if (Input::has('types')) {
+                    $property->types()->sync(Input::get('types', array()));
+                }
+
+                $property->updated_by = Auth::user()->id;
+                $property->save();
+                return $this->makeResponse($property, 200, "Property (ID = $id) resource updated.");
             }
-
-            $property->updated_by = Auth::user()->id;
-
-            if (Input::has("name")) {
-                $slug = "$property->name-$property->id";
-                $property->slug = Str::slug($slug);
-            }
-
-            $property->save();
-            return $this->makeResponse($property, 200, "Property (ID = $id) resource updated.");
         } else {
             return $this->makeResponse(null, 404, "Property resource not found.");
         }

@@ -5,7 +5,7 @@ class Property extends Eloquent {
     use SoftDeletingTrait;
 
     protected $table = "property";
-    protected $appends = array("published", "overdue", "unpublished", "alias", "status_name", "photos_count", "address_name");
+    protected $appends = array("published", "overdue", "unpublished", "alias", "status_name", "photos_count");
 
     /*
      * Property Scopes
@@ -107,20 +107,7 @@ class Property extends Eloquent {
     }
 
     public function getAliasAttribute() {
-        $alias = null;
-        if ($this->address_as_name) {
-            $address = $this->address;
-            if (!is_null($address)) {
-                $addressStr = "$address->address $address->city $address->zip $this->id";
-                $alias = str_replace(trim($addressStr), " ", "-");
-            }
-        } else {
-            $address = $this->address;
-            if (!is_null($address)) {
-                $alias = strtolower(str_replace(" ", "-", trim("$this->name-$address->city-$this->id")));
-            }
-        }
-        return $alias;
+        return $this->slug;
     }
 
     public function getStatusNameAttribute() {
@@ -143,16 +130,6 @@ class Property extends Eloquent {
         }
         $count += $this->photos->count();
         return $count;
-    }
-
-    public function getAddressNameAttribute() {
-        if ($this->address_as_name) {
-            $address = $this->address;
-            $name = "$address->address, $address->city $address->zip";
-            return $name;
-        } else {
-            return $this->name;
-        }
     }
 
 }
