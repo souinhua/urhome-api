@@ -75,6 +75,16 @@ class PropertyController extends \BaseController {
 
             // Link Types
             $property->types()->sync(Input::get('types', array()));
+
+            // Slugging
+            if (isset($property->address) && !is_null($property->address)) {
+                $address = $property->address;
+                if ($property->address_as_name) {
+                    $property->slug = Str::slug("$address->address-$address->city-$property->id");
+                } else {
+                    $property->slug = Str::slug("$property->name-$address->city-$property->id");
+                }
+            }
             $property->save();
 
             return $this->makeResponse($property, 201, "Property resource created.");
@@ -105,12 +115,11 @@ class PropertyController extends \BaseController {
                     "units.photo",
                     "units.details"
         ));
-        
+
         if (is_numeric($id)) {
             $property = Property::with($withs)->find($id);
-        }
-        else {
-            $property = Property::with($withs)->where('slug','=',$id)->first();
+        } else {
+            $property = Property::with($withs)->where('slug', '=', $id)->first();
         }
 
         if (!is_null($property)) {
@@ -142,9 +151,9 @@ class PropertyController extends \BaseController {
             if ($validation->fails()) {
                 return $this->makeResponse($validation->messages(), 400, "Request failed in Property resource validation.");
             } else {
-                $fields = array("name","tagline","address_as_name","description","status","transaction","slug","agent_id","agent_message","developer_id");
-                foreach($fields as $field) {
-                    if($this->hasInput($field)) {
+                $fields = array("name", "tagline", "address_as_name", "description", "status", "transaction", "slug", "agent_id", "agent_message", "developer_id");
+                foreach ($fields as $field) {
+                    if ($this->hasInput($field)) {
                         $property->$field = Input::get($field);
                     }
                 }
@@ -154,6 +163,17 @@ class PropertyController extends \BaseController {
                 }
 
                 $property->updated_by = Auth::user()->id;
+
+                // Slugging
+                if (isset($property->address) && !is_null($property->address)) {
+                    $address = $property->address;
+                    if ($property->address_as_name) {
+                        $property->slug = Str::slug("$address->address-$address->city-$property->id");
+                    } else {
+                        $property->slug = Str::slug("$property->name-$address->city-$property->id");
+                    }
+                }
+
                 $property->save();
                 return $this->makeResponse($property, 200, "Property (ID = $id) resource updated.");
             }
@@ -325,6 +345,15 @@ class PropertyController extends \BaseController {
             $address->save();
 
             $property->address_id = $address->id;
+
+            // Slugging
+            $address = $property->address;
+            if ($property->address_as_name) {
+                $property->slug = Str::slug("$address->address-$address->city-$property->id");
+            } else {
+                $property->slug = Str::slug("$property->name-$address->city-$property->id");
+            }
+
             $property->save();
 
             return $this->makeResponse($address, 200, "Property Address resource saved.");
