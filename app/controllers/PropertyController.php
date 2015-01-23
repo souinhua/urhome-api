@@ -75,16 +75,6 @@ class PropertyController extends \BaseController {
 
             // Link Types
             $property->types()->sync(Input::get('types', array()));
-
-            // Slugging
-            if (isset($property->address) && !is_null($property->address)) {
-                $address = $property->address;
-                if ($property->address_as_name) {
-                    $property->slug = Str::slug("$address->address-$address->city-$property->id");
-                } else {
-                    $property->slug = Str::slug("$property->name-$address->city-$property->id");
-                }
-            }
             $property->save();
 
             return $this->makeResponse($property, 201, "Property resource created.");
