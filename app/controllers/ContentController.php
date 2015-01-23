@@ -8,18 +8,18 @@ class ContentController extends \BaseController {
      * @return Response
      */
     public function index() {
-        $with = Input::get('with', array('photo','creator'));
-        
+        $with = Input::get('with', array('photo', 'creator'));
+
         $query = Content::with($with);
-        
+
         $limit = Input::get("limit", 1000);
         $offset = Input::get("offset", 0);
-        
+
         $count = $query->count();
         $contents = $query->take($limit)->skip($offset)->get();
-        
+
         return $this->makeResponse($contents, 200, "Content resources fetched.", array(
-            "X-Total-Count" => $count
+                    "X-Total-Count" => $count
         ));
     }
 
@@ -40,14 +40,18 @@ class ContentController extends \BaseController {
             return $this->makeResponse($validation->messages(), 400, "Request failed in Content resource validation.");
         } else {
             $content = new Content();
-            
+
             $content->title = Input::get("title");
             $content->type = Input::get("type");
             $content->abstract = Input::get("abstract");
             $content->body = Input::get("body");
-            
+
             $content->created_by = Auth::id();
             $content->save();
+
+            $content->slug = Str::slug("$content->title-$content->id");
+            $content->save();
+
             return $this->makeResponse($content, 201, "Content resource created.");
         }
     }
@@ -59,15 +63,14 @@ class ContentController extends \BaseController {
      * @return Response
      */
     public function show($id) {
-        $with = Input::get('with', array('photo','creator'));
-        
-        if(is_numeric($id)) {
+        $with = Input::get('with', array('photo', 'creator'));
+
+        if (is_numeric($id)) {
             $content = Content::with($with)->find($id);
-        }
-        else {
+        } else {
             $content = Content::with($with)->whereRaw("LOWER(CONCAT(REPLACE(title, ' ', '-'), '-', id))")->first();
         }
-        
+
         if (!is_null($content)) {
             return $this->makeResponse($content, 200, "Content resource (ID = $id) fetched.");
         } else {
@@ -83,15 +86,19 @@ class ContentController extends \BaseController {
      */
     public function update($id) {
         if ($content = Content::find($id)) {
-            
-            $fields = array("title","abstract","body","type");
-            
+
+            $fields = array("title", "abstract", "body", "type");
+
             foreach ($fields as $field) {
                 if (Input::has($field)) {
                     $content->$field = Input::get($field);
                 }
             }
-            
+
+            if (Input::has("title")) {
+                $content->slug = Str::slug("$content->title-$content->id");
+            }
+
             $content->updated_by = Auth::id();
             $content->save();
             return $this->makeResponse($content, 200, "Content resource (ID = $id) updated.");
@@ -111,9 +118,9 @@ class ContentController extends \BaseController {
             $content->deleted_by = Auth::id();
             $content->save();
             $content->delete();
-            return $this->makeResponse(null, 204 ,"Content (ID = $id) deleted");
+            return $this->makeResponse(null, 204, "Content (ID = $id) deleted");
         } else {
-            return $this->makeResponse(null, 404,"Content resource not found.");
+            return $this->makeResponse(null, 404, "Content resource not found.");
         }
     }
 
@@ -145,7 +152,7 @@ class ContentController extends \BaseController {
                 return $this->makeSuccessResponse($content, 200, "Content resource (ID = $id) published.");
             }
         } else {
-            return $this->makeFailResponse(null, 404,"Content resource (ID = $id) does not exist.");
+            return $this->makeFailResponse(null, 404, "Content resource (ID = $id) does not exist.");
         }
     }
 
@@ -165,7 +172,7 @@ class ContentController extends \BaseController {
 
             return $this->makeSuccessResponse($content, 200, "Content resource (ID = $id) unpublished.");
         } else {
-            return $this->makeFailResponse(null, 404,"Content resource (ID = $id) does not exist.");
+            return $this->makeFailResponse(null, 404, "Content resource (ID = $id) does not exist.");
         }
     }
 
@@ -192,7 +199,7 @@ class ContentController extends \BaseController {
                 $content->photo_id = $photo->id;
                 $content->updated_by = Auth::id();
                 $content->save();
-                
+
                 return $this->makeResponse($photo, 201, "Cloudainry photo resource created.");
             }
         } else {

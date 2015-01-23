@@ -15,7 +15,7 @@ class PropertyController extends \BaseController {
             "address_as_name",
             "address_id"
         );
-        
+
         $this->beforeFilter('auth', array('except' => ['index', 'show']));
         $this->beforeFilter('admin', array('only' => ['publish', 'unpublish']));
     }
@@ -27,9 +27,9 @@ class PropertyController extends \BaseController {
      */
     public function index() {
         $withs = array_merge(array('address', 'types'), Input::get("with", array()));
-        
+
         $query = Property::with($withs);
-        if(Auth::guest()) {
+        if (Auth::guest()) {
             $query = $query->published();
         }
 
@@ -73,7 +73,12 @@ class PropertyController extends \BaseController {
             $property->created_by = Auth::user()->id;
             $property->save();
 
+            // Link Types
             $property->types()->sync(Input::get('types', array()));
+
+            // Slugging
+            $slug = "$property->name-$property->id";
+            $property->slug = Str::slug($slug);
             $property->save();
 
             return $this->makeResponse($property, 201, "Property resource created.");
@@ -141,6 +146,12 @@ class PropertyController extends \BaseController {
             }
 
             $property->updated_by = Auth::user()->id;
+
+            if (Input::has("name")) {
+                $slug = "$property->name-$property->id";
+                $property->slug = Str::slug($slug);
+            }
+
             $property->save();
             return $this->makeResponse($property, 200, "Property (ID = $id) resource updated.");
         } else {
@@ -288,7 +299,7 @@ class PropertyController extends \BaseController {
             return $this->makeResponse(null, 404, "Property Unit resource not found.");
         }
     }
-    
+
     /**
      * Stores or Updates a Property Address resource
      * 
@@ -296,26 +307,25 @@ class PropertyController extends \BaseController {
      * @return Response
      */
     public function address($id) {
-        if($property = Property::find($id)) {
+        if ($property = Property::find($id)) {
             $address = $property->address;
-            if(is_null($address)) {
+            if (is_null($address)) {
                 $address = new Address();
             }
-            
-            $fields = array("address","street","city","province","zip","lng","lat","zoom","accessibility");
-            foreach($fields as $field) {
-                if($this->hasInput($field)) {
+
+            $fields = array("address", "street", "city", "province", "zip", "lng", "lat", "zoom", "accessibility");
+            foreach ($fields as $field) {
+                if ($this->hasInput($field)) {
                     $address->$field = Input::get($field);
                 }
             }
             $address->save();
-            
+
             $property->address_id = $address->id;
             $property->save();
-            
+
             return $this->makeResponse($address, 200, "Property Address resource saved.");
-        }
-        else {
+        } else {
             return $this->makeResponse(null, 404, "Property resource not found.");
         }
     }
