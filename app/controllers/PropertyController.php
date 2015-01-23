@@ -106,7 +106,7 @@ class PropertyController extends \BaseController {
                     "units.details"
         ));
         
-        if (!is_numeric($id)) {
+        if (is_numeric($id)) {
             $property = Property::with($withs)->find($id);
         }
         else {
