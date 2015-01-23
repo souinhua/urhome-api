@@ -62,7 +62,7 @@ class UserController extends \BaseController {
             $user->acl_id = Input::get('acl_id');
 
             $user->password = Hash::make(Input::get("password"));
-            $user->created_by = Auth::user()->id;
+            $user->created_by = Auth::id();
             
             $user->account_type = Input::get("account_type");
             $user->save();
