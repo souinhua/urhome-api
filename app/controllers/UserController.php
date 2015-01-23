@@ -49,6 +49,7 @@ class UserController extends \BaseController {
             "password" => "required|min:6",
             "conf_password" => "required|min:6|same:password",
             "acl_id" => "required|exists:acl,id",
+            "account_type" => "required|in:urhome,facebook,google"
         );
         $validation = Validator::make(Input::all(), $rules);
         if ($validation->fails()) {
@@ -62,6 +63,8 @@ class UserController extends \BaseController {
 
             $user->password = Hash::make(Input::get("password"));
             $user->created_by = Auth::user()->id;
+            
+            $user->account_type = Input::get("account_type");
             $user->save();
 
             return $this->makeResponse($user, 201, "User resource created.");
