@@ -68,7 +68,7 @@ class ContentController extends \BaseController {
         if (is_numeric($id)) {
             $content = Content::with($with)->find($id);
         } else {
-            $content = Content::with($with)->whereRaw("LOWER(CONCAT(REPLACE(title, ' ', '-'), '-', id))")->first();
+            $content = Content::with($with)->where("slug", "=", $id)->first();
         }
 
         if (!is_null($content)) {
