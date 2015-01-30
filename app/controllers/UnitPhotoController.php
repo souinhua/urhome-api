@@ -43,7 +43,6 @@ class UnitPhotoController extends BaseController {
                 $photo = PhotoManager::createCloudinary($data['public_id'], $unit, Input::get('caption'), $data);
 
                 $unit->photos()->attach($photo->id);
-                $unit->updated_by = Auth::id();
                 $unit->save();
 
                 return $this->makeResponse($photo, 201, "Unit Photo resource created.");
