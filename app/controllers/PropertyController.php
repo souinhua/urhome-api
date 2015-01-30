@@ -389,16 +389,14 @@ class PropertyController extends \BaseController {
 
                 $count = $query->count();
                 $properties = $query->take($limit)->skip($offset)->get();
+            } else {
+                $properties = array();
+                $count = 0;
+            }
 
-                return $this->makeResponse($properties, 200, "Property resources related to Property (ID = $id) fetched.", array(
-                            "X-Total-Count" => $count
-                ));
-            }
-            else {
-                return $this->makeResponse(array(), 200, "Property resources related to Property (ID = $id) fetched.", array(
-                            "X-Total-Count" => 0
-                ));
-            }
+            return $this->makeResponse($properties, 200, "Property resources related to Property (ID = $id) fetched.", array(
+                        "X-Total-Count" => $count
+            ));
         } else {
             return $this->makeResponse(null, 404, "Property resource not found.");
         }
