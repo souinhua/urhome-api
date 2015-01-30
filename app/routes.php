@@ -90,7 +90,8 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::resource('units.features', 'UnitFeatureController');
     Route::resource('units.specs', 'UnitSpecController');
     Route::resource("units.tags", "UnitTagController");
-
+    Route::resource("units.photos", "UnitPhotoController");
+    
     /*
      * Developer Resource
      */
