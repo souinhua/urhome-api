@@ -28,6 +28,7 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
      * Property Resource Routes
      */
     Route::get('properties/report', 'PropertyController@report');
+    Route::get('properties/{id}/related', 'PropertyController@related');
     Route::post('properties/{id}/main-photo', 'PropertyController@mainPhoto');
     Route::post('properties/{id}/publish', 'PropertyController@publish');
     Route::post("properties/{id}/details", "PropertyController@details");
