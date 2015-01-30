@@ -380,18 +380,25 @@ class PropertyController extends \BaseController {
                 $ids[] = $pId->id;
             }
 
-            $with = Input::get("with", ["address", "types"]);
-            $query = Property::with($with)->whereIn('id', $ids);
+            if (isset($ids[0])) {
+                $with = Input::get("with", ["address", "types"]);
+                $query = Property::with($with)->whereIn('id', $ids);
 
-            $limit = Input::get("limit", 1000);
-            $offset = Input::get("offset", 0);
+                $limit = Input::get("limit", 1000);
+                $offset = Input::get("offset", 0);
 
-            $count = $query->count();
-            $properties = $query->take($limit)->skip($offset)->get();
-            
-            return $this->makeResponse($properties, 200, "Property resources related to Property (ID = $id) fetched.", array(
-                    "X-Total-Count" => $count
-        ));
+                $count = $query->count();
+                $properties = $query->take($limit)->skip($offset)->get();
+
+                return $this->makeResponse($properties, 200, "Property resources related to Property (ID = $id) fetched.", array(
+                            "X-Total-Count" => $count
+                ));
+            }
+            else {
+                return $this->makeResponse(array(), 200, "Property resources related to Property (ID = $id) fetched.", array(
+                            "X-Total-Count" => 0
+                ));
+            }
         } else {
             return $this->makeResponse(null, 404, "Property resource not found.");
         }
