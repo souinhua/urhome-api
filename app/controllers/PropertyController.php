@@ -372,7 +372,8 @@ class PropertyController extends \BaseController {
                             . " INNER JOIN property_type pt ON pt.property_id = p.id "
                             . "WHERE "
                             . " a.city = ? "
-                            . " AND pt.type_id IN(?)", array($city, implode(",", $types)));
+                            . " AND pt.type_id IN(?) "
+                            . "AND p.id != ?", array($city, implode(",", $types), $property->id));
 
             $ids = array();
             foreach ($data as $pId) {
