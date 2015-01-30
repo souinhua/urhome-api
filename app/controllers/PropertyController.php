@@ -390,7 +390,8 @@ class PropertyController extends \BaseController {
             $properties = $query->take($limit)->skip($offset)->get();
             
             return $this->makeResponse($properties, 200, "Property resources related to Property (ID = $id) fetched.", array(
-                    "X-Total-Count" => $count
+                    "X-Total-Count" => $count,
+                    "X-SQL" => $query->toSql()
         ));
         } else {
             return $this->makeResponse(null, 404, "Property resource not found.");
