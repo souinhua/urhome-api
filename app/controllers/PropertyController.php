@@ -373,7 +373,7 @@ class PropertyController extends \BaseController {
                             . "WHERE "
                             . " a.city = ? "
                             . " AND pt.type_id IN(?) "
-                            . "AND p.id != ?", array($city, implode(",", $types), $property->id));
+                            . " AND p.id != ?", array($city, implode(",", $types), $property->id));
 
             $ids = array();
             foreach ($data as $pId) {
@@ -381,7 +381,7 @@ class PropertyController extends \BaseController {
             }
 
             $with = Input::get("with", ["address", "types"]);
-            $query = Property::with($with)->whereRaw("id IN(?)", [implode(",",$ids)]);
+            $query = Property::with($with)->whereIn('id', $ids);
 
             $limit = Input::get("limit", 1000);
             $offset = Input::get("offset", 0);
@@ -390,8 +390,7 @@ class PropertyController extends \BaseController {
             $properties = $query->take($limit)->skip($offset)->get();
             
             return $this->makeResponse($properties, 200, "Property resources related to Property (ID = $id) fetched.", array(
-                    "X-Total-Count" => $count,
-                    "X-SQL" => $query->toSql()
+                    "X-Total-Count" => $count
         ));
         } else {
             return $this->makeResponse(null, 404, "Property resource not found.");
