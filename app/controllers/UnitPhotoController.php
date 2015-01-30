@@ -16,9 +16,24 @@ class UnitPhotoController extends BaseController {
     public function index($unitId) {
         if ($unit = Unit::find($unitId)) {
             $photos = $unit->photos;
-            return $this->makeResponse($photos, 200, "Unit Photo resource fetched.");
+            return $this->makeResponse($photos, 200, "Unit Photo resources fetched.");
         } else {
             return $this->makeResponse(null, 404, "Unit resource not found.");
+        }
+    }
+    /**
+     * Return the Photo resource
+     * 
+     * @param int $unitId
+     * @param int $photoId
+     * @return Photo
+     */
+    public function show($unitId, $photoId) {
+        if($photo = Unit::find($unitId)->photos()->find($photoId)) {
+            return $this->makeResponse($photo, 200, "Unit Photo resource fetched.");
+        }
+        else {
+            return $this->makeResponse(null, 404, "Unit Photo resource not found.");
         }
     }
 
