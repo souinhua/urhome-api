@@ -380,7 +380,7 @@ class PropertyController extends \BaseController {
             }
 
             $with = Input::get("with", ["address", "types"]);
-            $query = Property::with($with)->whereRaw("IN(?)", [implode(",",$ids)]);
+            $query = Property::with($with)->whereRaw("id IN(?)", [implode(",",$ids)]);
 
             $limit = Input::get("limit", 1000);
             $offset = Input::get("offset", 0);
