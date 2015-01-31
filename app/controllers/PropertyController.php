@@ -16,7 +16,7 @@ class PropertyController extends \BaseController {
             "address_id"
         );
 
-        $this->beforeFilter('auth', array('except' => ['index', 'show']));
+        $this->beforeFilter('auth', array('except' => ['index', 'show','related']));
         $this->beforeFilter('admin', array('only' => ['publish', 'unpublish']));
     }
 
