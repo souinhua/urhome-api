@@ -107,9 +107,9 @@ class PropertyController extends \BaseController {
         ));
 
         if (is_numeric($id)) {
-            $property = Property::with($withs)->find($id);
+            $property = Property::with($withs)->remember(60)->find($id);
         } else {
-            $property = Property::with($withs)->where('slug', '=', $id)->first();
+            $property = Property::with($withs)->remember(60)->where('slug', '=', $id)->first();
         }
 
         if (!is_null($property)) {
