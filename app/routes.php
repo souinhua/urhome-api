@@ -15,9 +15,6 @@ Route::get('/', function() {
 });
 
 Route::get("flush", function() {
-    echo '<pre>';
-    print_r(Cache::getMemory());
-    echo '</pre>';
     
     Cache::flush();
 });
