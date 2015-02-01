@@ -18,8 +18,8 @@ class PropertyController extends \BaseController {
 
         $this->beforeFilter('auth', array('except' => ['index', 'show','related']));
         $this->beforeFilter('admin', array('only' => ['publish', 'unpublish']));
-    }
-
+    }   
+    
     /**
      * Display a listing of the resource.
      *
