@@ -30,13 +30,15 @@ class Property extends Eloquent {
     public function scopeProvince($query, $province) {
         return $query
                 ->join('address','property.address_id','=','address.id')
-                ->where('address.province','LIKE',"%$province%");
+                ->where('address.province','LIKE',"%$province%")
+                ->select('property.*');
     }
     
     public function scopeCity($query, $city) {
         return $query
                 ->join('address','property.address_id','=','address.id')
-                ->where('address.city','LIKE',"%$city%");
+                ->where('address.city','LIKE',"%$city%")
+                ->select('property.*');
     }
 
     public function scopeType($query, array $type) {
@@ -44,7 +46,8 @@ class Property extends Eloquent {
                         ->join('property_type', 'property.id', '=', 'property_type.property_id')
                         ->join('type', 'property_type.type_id', '=', 'type.id')
                         ->whereIn('type.id', $type)
-                        ->orWhereIn('type.slug', $type);
+                        ->orWhereIn('type.slug', $type)
+                        ->select('property.*');
     }
 
     /*
