@@ -26,28 +26,30 @@ class Property extends Eloquent {
         $date = DB::getPdo()->quote($dateStr);
         return $query->whereRaw("publish_start IS NOT NULL AND if(publish_end IS NOT NULL, publish_end < ?, TRUE)", array($date));
     }
-    
+
     public function scopeProvince($query, $province) {
         return $query
-                ->join('address','property.address_id','=','address.id')
-                ->where('address.province','LIKE',"%$province%")
-                ->select('property.*');
+                        ->join('address', 'property.address_id', '=', 'address.id')
+                        ->where('address.province', 'LIKE', "%$province%")
+                        ->select('property.*');
     }
-    
+
     public function scopeCity($query, $city) {
         return $query
-                ->join('address','property.address_id','=','address.id')
-                ->where('address.city','LIKE',"%$city%")
-                ->select('property.*');
+                        ->join('address', 'property.address_id', '=', 'address.id')
+                        ->where('address.city', 'LIKE', "%$city%")
+                        ->select('property.*');
     }
 
     public function scopeType($query, array $type) {
-        return $query
+        $q = $query
                         ->join('property_type', 'property.id', '=', 'property_type.property_id')
                         ->join('type', 'property_type.type_id', '=', 'type.id')
-                        ->whereIn('type.id', $type)
-                        ->orWhereIn('type.slug', $type)
-                        ->select('property.*');
+                        ->where(function($query) use ($type) {
+                            $query->whereIn('type.id', $type)
+                            ->orWhereIn('type.slug', $type);
+                        })->select('property.*');
+        return $q;
     }
 
     /*
