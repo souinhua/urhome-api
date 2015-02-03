@@ -177,7 +177,8 @@ class PropertyUnitController extends \BaseController {
      * @return API Response
      */
     public function details($propertyId, $unitId) {
-        if ($unit = Property::find($propertyId)->units()->find($unitId)) {
+        $property = Property::find($propertyId);
+        if ($unit = $property->units()->find($unitId)) {
 
             $rules = array(
                 "bed" => "numeric",
@@ -207,6 +208,7 @@ class PropertyUnitController extends \BaseController {
                 $unit->common_details_id = $details->id;
 
                 $unit->save();
+                $this->updatePricing($property, Input::get("min_price",null), Input::get("max_price",null));
 
                 return $this->makeResponse($details, 200, "Property Unit resource saved.");
             }
