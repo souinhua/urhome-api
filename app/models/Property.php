@@ -116,7 +116,7 @@ class Property extends Eloquent {
         } else if ($this->status == 'ps') {
             $statusName = "Preselling";
         } else if ($this->status == 'so') {
-            $statusName = "Sold Out";
+            $statusName = "Sold/Sold Out";
         } else {
             $statusName = "Unavailable";
         }
@@ -142,7 +142,7 @@ class Property extends Eloquent {
         }
     }
 
-    public function getMinPrice() {
+    public function getMinPriceAttribute() {
         $price = null;
         if (!is_null($this->units)) {
             $data = DB::select("select min(ud.min_price) min from property p inner join unit u on u.property_id = p.id inner join common_details ud on u.common_details_id = ud.id where p.id = $this->id");
