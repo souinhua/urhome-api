@@ -43,11 +43,11 @@ class PropertyController extends \BaseController {
         }
         
         if(Input::has('city')) {
-            $query->province(Input::get('city'));
+            $query->city(Input::get('city'));
         }
         
         if(Input::has('type')) {
-            $query->province(Input::get('type', array()));
+            $query->type(Input::get('type', array()));
         }
 
         $limit = Input::get("limit", 1000);
