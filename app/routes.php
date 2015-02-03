@@ -110,6 +110,11 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::put('contents/{id}/publish', 'ContentController@publish');
     Route::delete('contents/{id}/publish', 'ContentController@unpublish');
     Route::resource('contents', 'ContentController');
+    
+    /*
+     * Address resource
+     */
+    Route::get("address/properties","AddressController@properties");
 });
 
 Route::post('oauth/token', function() {
