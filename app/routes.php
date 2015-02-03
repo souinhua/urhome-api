@@ -11,7 +11,7 @@
   |
  */
 Route::get('/', function() {
-    $data = Property::type('condominium')->get();
+    $data = Property::type(['condominium'])->get();
     var_dump($data);
 });
 
