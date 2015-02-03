@@ -249,6 +249,9 @@ class PropertyUnitController extends \BaseController {
             $details->min_price = $minPrice;
             $details->max_price = $maxPrice;
             $details->save();
+            
+            $property->common_details_id = $details->id;
+            $property->save();
         }
     }
 
