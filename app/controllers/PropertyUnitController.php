@@ -237,8 +237,13 @@ class PropertyUnitController extends \BaseController {
                     $maxPrice = $unit->details->max_price;
                 }
             }
-
-            $details = $property->details;
+            if(!is_null($property->details)) {
+                $details = $property->details;
+            }
+            else {
+                $details = new CommonDetails();
+            }
+            
             $details->min_price = $minPrice;
             $details->max_price = $maxPrice;
             $details->save();
