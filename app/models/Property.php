@@ -5,7 +5,7 @@ class Property extends Eloquent {
     use SoftDeletingTrait;
 
     protected $table = "property";
-    protected $appends = array("published", "overdue", "unpublished", "alias", "status_name", "photos_count", "address_name", "min_price");
+    protected $appends = array("published", "overdue", "unpublished", "alias", "status_name", "photos_count", "address_name", "min_price", "max_price");
 
     /*
      * Property Scopes
@@ -146,6 +146,20 @@ class Property extends Eloquent {
         $price = null;
         if (!is_null($this->units)) {
             $data = DB::select("select min(ud.min_price) min from property p inner join unit u on u.property_id = p.id inner join common_details ud on u.common_details_id = ud.id where p.id = $this->id");
+            if(isset($data[0])) {
+                $price = $data[0]->min;
+            }
+            
+        } else if (!is_null($this->details)) {
+            $price = $this->details->min_price;
+        }
+        return $price;
+    }
+    
+    public function getMaxPriceAttribute() {
+        $price = null;
+        if (!is_null($this->units)) {
+            $data = DB::select("select max(ud.max_price) min from property p inner join unit u on u.property_id = p.id inner join common_details ud on u.common_details_id = ud.id where p.id = $this->id");
             if(isset($data[0])) {
                 $price = $data[0]->min;
             }
