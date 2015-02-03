@@ -11,7 +11,7 @@
   |
  */
 Route::get('/', function() {
-    $data = Property::type(['condominium'])->get();
+    $data = Property::province("mactan")->get();
     var_dump($data);
 });
 

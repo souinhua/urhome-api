@@ -32,6 +32,23 @@ class PropertyController extends \BaseController {
         if (Auth::guest()) {
             $query = $query->published();
         }
+        
+        /*
+         * =====================================================================
+         *                              Filters
+         * =====================================================================
+         */
+        if(Input::has('province')) {
+            $query->province(Input::get('province'));
+        }
+        
+        if(Input::has('city')) {
+            $query->province(Input::get('province'));
+        }
+        
+        if(Input::has('type')) {
+            $query->province(Input::get('type', array()));
+        }
 
         $limit = Input::get("limit", 1000);
         $offset = Input::get("offset", 0);
