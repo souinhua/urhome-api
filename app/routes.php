@@ -11,7 +11,8 @@
   |
  */
 Route::get('/', function() {
-    return Response::json("Welcome to Urhome API");
+    $data = Property::type('condominium')->get();
+    var_dump($data);
 });
 
 Route::get("flush", function() {
