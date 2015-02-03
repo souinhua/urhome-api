@@ -64,6 +64,7 @@ class PropertyController extends \BaseController {
             if (Input::has('max_price')) {
                 $query = $query->where("common_details.max_price","<=",Input::get("max_price"));
             }
+            $query = $query->select('property.*');
         }
         
         if(Input::has("bed") || Input::has("bath")) {
@@ -90,6 +91,7 @@ class PropertyController extends \BaseController {
                     $query = $query->where("common_details.bath","=", $bath);
                 }
             }
+            $query = $query->select('property.*');
         }
 
         /*
