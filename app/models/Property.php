@@ -32,7 +32,7 @@ class Property extends Eloquent {
                         ->join('property_type', 'property.id', '=', 'property_type.property_id')
                         ->join('type', 'property_type.type_id', '=', 'type.id')
                         ->whereIn('type.id', $type)
-                        ->orWhere('type.slug', $type);
+                        ->orWhereIn('type.slug', $type);
     }
 
     /*
