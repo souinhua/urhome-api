@@ -57,7 +57,8 @@ class PropertyController extends \BaseController {
         $properties = $query->take($limit)->skip($offset)->get();
 
         return $this->makeResponse($properties, 200, "Property resources fetched.", array(
-                    "X-Total-Count" => $count
+                    "X-Total-Count" => $count,
+                    "X-SQL" => $query->toSql()
         ));
     }
 
