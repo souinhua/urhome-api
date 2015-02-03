@@ -15,7 +15,6 @@ Route::get('/', function() {
 });
 
 Route::get("flush", function() {
-    
     Cache::flush();
 });
 
