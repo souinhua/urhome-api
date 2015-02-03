@@ -184,7 +184,9 @@ class PropertyUnitController extends \BaseController {
                 "bath" => "numeric",
                 "parking" => "numeric",
                 "area" => "numeric",
-                "furnish" => "in:full,semi,none"
+                "furnish" => "in:full,semi,none",
+                "min_price" => "numeric",
+                "max_price" => "numeric"
             );
 
             $validation = Validator::make(Input::all(), $rules);
