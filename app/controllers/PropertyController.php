@@ -69,25 +69,25 @@ class PropertyController extends \BaseController {
         if(Input::has("bed") || Input::has("bath")) {
             $query = $query
                     ->join("unit","property.id","=","unit.property_id")
-                    ->join("common_details ud","ud.id","=","unit.common_details_id");
+                    ->join("common_details ud","common_details.id","=","unit.common_details_id");
             
             if(Input::has("bed")) {
                 $bed = Input::get("bed");
                 if($bed >= 3) {
-                    $query = $query->where("ud.bed",">=", $bed);
+                    $query = $query->where("common_details.bed",">=", $bed);
                 }
                 else {
-                    $query = $query->where("ud.bed","=", $bed);
+                    $query = $query->where("common_details.bed","=", $bed);
                 }
             }
             
             if(Input::has("bath")) {
                 $bath = Input::get("bath");
                 if($bath >= 3) {
-                    $query = $query->where("ud.bath",">=", $bath);
+                    $query = $query->where("common_details.bath",">=", $bath);
                 }
                 else {
-                    $query = $query->where("ud.bath","=", $bath);
+                    $query = $query->where("common_details.bath","=", $bath);
                 }
             }
         }
