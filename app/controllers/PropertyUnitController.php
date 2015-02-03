@@ -32,6 +32,8 @@ class PropertyUnitController extends \BaseController {
                 "parking" => "required|numeric",
                 "area" => "required|numeric",
                 "furnish" => "required|in:none,semi,full",
+                "min_price" => "required|numeric",
+                "max_price" => "numeric",
             );
 
             $validation = Validator::make(Input::all(), $rules);
@@ -49,11 +51,16 @@ class PropertyUnitController extends \BaseController {
                 $details->parking = Input::get("parking");
                 $details->area = Input::get("area");
                 $details->furnish = Input::get("furnish");
+                $details->area = Input::get("min_price");
+                $details->furnish = Input::get("max_price");
                 $details->save();
 
                 $unit->common_details_id = $details->id;
                 $unit->save();
-                return $this->makeResponse($unit, 201,"Property Units resource created.");
+                
+                $this->updatePricing($property, Input::get("min_price",null), Input::get("max_price",null));
+
+                return $this->makeResponse($unit, 201, "Property Units resource created.");
             }
         } else {
             return $this->makeResponse(null, 404, "Property resource not found.");
@@ -93,7 +100,7 @@ class PropertyUnitController extends \BaseController {
                 }
 
                 $details = $unit->details;
-                foreach (array("bed", "bath", "parking", "furnish", "area") as $dField) {
+                foreach (array("bed", "bath", "parking", "furnish", "area", "min_price", "max_price") as $dField) {
                     if ($this->hasInput($dField)) {
                         $details->$dField = Input::get($dField);
                     }
@@ -101,6 +108,8 @@ class PropertyUnitController extends \BaseController {
 
                 $details->save();
                 $unit->save();
+                
+                $this->updatePricing($property, Input::get("min_price",null), Input::get("max_price",null));
                 return $this->makeResponse($unit, 200, "Unit resource (ID = $unitId) updated");
             } else {
                 return $this->makeResponse(null, 404, "Unit resource not found.");
@@ -117,11 +126,10 @@ class PropertyUnitController extends \BaseController {
      * @return Response
      */
     public function destroy($propertyId, $unitId) {
-        if($unit = Property::find($propertyId)->units()->find($unitId)) {
+        if ($unit = Property::find($propertyId)->units()->find($unitId)) {
             $unit->delete();
             return $this->makeResponse(null, 204, "Property Unit (ID = $unitId) resource deleted.");
-        }
-        else {
+        } else {
             return $this->makeResponse(null, 404, "Property Unit resource not found.");
         }
     }
@@ -187,21 +195,51 @@ class PropertyUnitController extends \BaseController {
                 if (is_null($details)) {
                     $details = new CommonDetails();
                 }
-                
-                foreach($rules as $field => $rule) {
-                    if($this->hasInput($field)) {
+
+                foreach ($rules as $field => $rule) {
+                    if ($this->hasInput($field)) {
                         $details->$field = Input::get($field);
                     }
                 }
                 $details->save();
                 $unit->common_details_id = $details->id;
-                
+
                 $unit->save();
-                
+
                 return $this->makeResponse($details, 200, "Property Unit resource saved.");
             }
         } else {
             return $this->makeResponse(null, 404, "Property Unit resource not found.");
+        }
+    }
+
+    /**
+     * Updates Price of a Property if property.unit_price is set.
+     * 
+     * @param Property $property
+     * @param number $minPrice
+     * @param number $maxPrice
+     */
+    private function updatePricing(Property $property, $minPrice, $maxPrice) {
+        if ($property->unit_price) {
+            $minPrice = Input::get("min_price");
+            foreach ($property->units as $unit) {
+                if ($unit->details->min_price < $minPrice) {
+                    $minPrice = $unit->details->min_price;
+                }
+            }
+
+            $maxPrice = Input::get("max_price");
+            foreach ($property->units as $unit) {
+                if ($unit->details->max_price > $maxPrice) {
+                    $maxPrice = $unit->details->max_price;
+                }
+            }
+
+            $details = $property->details;
+            $details->min_price = $minPrice;
+            $details->max_price = $maxPrice;
+            $details->save();
         }
     }
 

@@ -16,39 +16,61 @@ class PropertyController extends \BaseController {
             "address_id"
         );
 
-        $this->beforeFilter('auth', array('except' => ['index', 'show','related']));
+        $this->beforeFilter('auth', array('except' => ['index', 'show', 'related']));
         $this->beforeFilter('admin', array('only' => ['publish', 'unpublish']));
-    }   
-    
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return Response
      */
     public function index() {
-        $withs = array_merge(array('address', 'types'), Input::get("with", array()));
+        $withs = Input::get("with", array("address", "types"));
 
         $query = Property::with($withs);
         if (Auth::guest()) {
             $query = $query->published();
         }
-        
+
         /*
          * =====================================================================
          *                              Filters
          * =====================================================================
          */
-        if(Input::has('province')) {
-            $query = $query->province(Input::get('province'));
+        if (Input::has('province') || Input::has('city')) {
+            // Joins Address table for the location filter
+            $query = $query->join("address", "property.address_id", "=", "address.id")->select('property.*');;
+            if (Input::has('province')) {
+                $query = $query->province(Input::get('province'));
+            }
+
+            if (Input::has('city')) {
+                $query = $query->city(Input::get('city'));
+            }
         }
-        
-        if(Input::has('city')) {
-            $query = $query->city(Input::get('city'));
-        }
-        
-        if(Input::has('type')) {
+
+        if (Input::has('type')) {
             $query = $query->type(Input::get('type', array()));
         }
+
+        if (Input::has('min_price') || Input::has('max_price')) {
+            // Joins CommonDetails table for the location filter
+            $query = $query->join("common_details", "property.common_details_id", "=", "common_details.id")->select('property.*');
+            if (Input::has('min_price')) {
+                $query = $query->where("common_details.min_price",">=",Input::get("min_price"));
+            }
+
+            if (Input::has('max_price')) {
+                $query = $query->where("common_details.max_price",">=",Input::get("min_price"));
+            }
+        }
+
+        /*
+         * =====================================================================
+         *                              Pagination
+         * =====================================================================
+         */
 
         $limit = Input::get("limit", 1000);
         $offset = Input::get("offset", 0);
@@ -302,7 +324,9 @@ class PropertyController extends \BaseController {
                 "bath" => "numeric",
                 "parking" => "numeric",
                 "area" => "numeric",
-                "furnish" => "in:full,semi,none"
+                "furnish" => "in:full,semi,none",
+                "min_price" => "numeric",
+                "max_price" => "numeric",
             );
 
             $validation = Validator::make(Input::all(), $rules);
