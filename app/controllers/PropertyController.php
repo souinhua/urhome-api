@@ -69,7 +69,7 @@ class PropertyController extends \BaseController {
         if(Input::has("bed") || Input::has("bath")) {
             $query = $query
                     ->join("unit","property.id","=","unit.property_id")
-                    ->join("common_details ud","common_details.id","=","unit.common_details_id");
+                    ->join("common_details","common_details.id","=","unit.common_details_id");
             
             if(Input::has("bed")) {
                 $bed = Input::get("bed");
