@@ -355,6 +355,12 @@ class PropertyController extends \BaseController {
                 "furnish" => "in:full,semi,none",
                 "min_price" => "numeric",
                 "max_price" => "numeric",
+                "min_bed" => "numeric",
+                "max_bed" => "numeric",
+                "min_bath" => "numeric",
+                "max_bath" => "numeric",
+                "min_area" => "numeric",
+                "max_area" => "numeric",
             );
 
             $validation = Validator::make(Input::all(), $rules);
