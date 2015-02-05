@@ -40,7 +40,7 @@ class PropertyController extends \BaseController {
          */
         if (Input::has('province') || Input::has('city')) {
             // Joins Address table for the location filter
-            $query = $query->join("address", "property.address_id", "=", "address.id")->select('property.*');;
+            $query = $query->join("address", "property.address_id", "=", "address.id")->select('property.*');
             if (Input::has('province')) {
                 $query = $query->province(Input::get('province'));
             }
@@ -54,44 +54,34 @@ class PropertyController extends \BaseController {
             $query = $query->type(Input::get('type', array()));
         }
 
-        if (Input::has('min_price') || Input::has('max_price')) {
-            // Joins CommonDetails table for the location filter
+        if (Input::has('min_price') || Input::has('max_price') || Input::has('bed') || Input::has('bath')) {
             $query = $query->join("common_details", "property.common_details_id", "=", "common_details.id")->select('property.*');
+
             if (Input::has('min_price')) {
-                $query = $query->where("common_details.min_price",">=",Input::get("min_price"));
+                $query = $query->where("common_details.min_price", "<=", Input::get("min_price"));
             }
 
             if (Input::has('max_price')) {
-                $query = $query->where("common_details.max_price","<=",Input::get("max_price"));
+                $query = $query->where("common_details.max_price", ">=", Input::get("max_price"));
             }
-            $query = $query->select('property.*');
-        }
-        
-        if(Input::has("bed") || Input::has("bath")) {
-            $query = $query
-                    ->join("unit","property.id","=","unit.property_id")
-                    ->join("common_details","common_details.id","=","unit.common_details_id");
-            
-            if(Input::has("bed")) {
+
+            if (Input::has('bed')) {
                 $bed = Input::get("bed");
-                if($bed >= 3) {
-                    $query = $query->where("common_details.bed",">=", $bed);
-                }
-                else {
-                    $query = $query->where("common_details.bed","=", $bed);
-                }
+                $query = $query->where(function($query) use ($bed) {
+                    $query
+                            ->where("common_details.min_bed",">=", $bed)
+                            ->where("common_details.max_bed","<=", $bed);
+                });
             }
             
-            if(Input::has("bath")) {
+            if (Input::has('bath')) {
                 $bath = Input::get("bath");
-                if($bath >= 3) {
-                    $query = $query->where("common_details.bath",">=", $bath);
-                }
-                else {
-                    $query = $query->where("common_details.bath","=", $bath);
-                }
+                $query = $query->where(function($query) use ($bath) {
+                    $query
+                            ->where("common_details.min_bath",">=", $bath)
+                            ->where("common_details.max_bath","<=", $bath);
+                });
             }
-            $query = $query->select('property.*');
         }
 
         /*
