@@ -58,15 +58,11 @@ class PropertyController extends \BaseController {
             $query = $query->join("common_details", "property.common_details_id", "=", "common_details.id")->select('property.*');
 
             if (Input::has('min_price')) {
-                $query = $query->where(function($query) {
-                    $query
-                            ->where("common_details.min_price", "<=", Input::get("min_price"))
-                            ->where("common_details.max_price", ">=", Input::get("min_price"));
-                });
+                $query = $query->where("common_details.min_price", ">=", Input::get("min_price"));
             }
 
             if (Input::has('max_price')) {
-                $query = $query->where("common_details.max_price", ">=", Input::get("max_price"));
+                $query = $query->where("common_details.max_price", "<=", Input::get("max_price"));
             }
 
             if (Input::has('bed')) {
