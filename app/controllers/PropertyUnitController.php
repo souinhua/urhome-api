@@ -51,8 +51,8 @@ class PropertyUnitController extends \BaseController {
                 $details->parking = Input::get("parking");
                 $details->area = Input::get("area");
                 $details->furnish = Input::get("furnish");
-                $details->area = Input::get("min_price");
-                $details->furnish = Input::get("max_price");
+                $details->min_price = Input::get("min_price");
+                $details->max_price = Input::get("max_price");
                 $details->save();
 
                 $unit->common_details_id = $details->id;
