@@ -57,8 +57,6 @@ class PropertyUnitController extends \BaseController {
 
                 $unit->common_details_id = $details->id;
                 $unit->save();
-                
-                $this->updatePricing($property, Input::get("min_price",null), Input::get("max_price",null));
 
                 return $this->makeResponse($unit, 201, "Property Units resource created.");
             }
@@ -109,7 +107,6 @@ class PropertyUnitController extends \BaseController {
                 $details->save();
                 $unit->save();
                 
-                $this->updatePricing($property, Input::get("min_price",null), Input::get("max_price",null));
                 return $this->makeResponse($unit, 200, "Unit resource (ID = $unitId) updated");
             } else {
                 return $this->makeResponse(null, 404, "Unit resource not found.");
@@ -208,51 +205,10 @@ class PropertyUnitController extends \BaseController {
                 $unit->common_details_id = $details->id;
 
                 $unit->save();
-                $this->updatePricing($property, Input::get("min_price",null), Input::get("max_price",null));
-
                 return $this->makeResponse($details, 200, "Property Unit resource saved.");
             }
         } else {
             return $this->makeResponse(null, 404, "Property Unit resource not found.");
         }
     }
-
-    /**
-     * Updates Price of a Property if property.unit_price is set.
-     * 
-     * @param Property $property
-     * @param number $minPrice
-     * @param number $maxPrice
-     */
-    private function updatePricing(Property $property, $minPrice, $maxPrice) {
-        if ($property->unit_price) {
-            $minPrice = Input::get("min_price");
-            foreach ($property->units as $unit) {
-                if ($unit->details->min_price < $minPrice) {
-                    $minPrice = $unit->details->min_price;
-                }
-            }
-
-            $maxPrice = Input::get("max_price");
-            foreach ($property->units as $unit) {
-                if ($unit->details->max_price > $maxPrice) {
-                    $maxPrice = $unit->details->max_price;
-                }
-            }
-            if(!is_null($property->details)) {
-                $details = $property->details;
-            }
-            else {
-                $details = new CommonDetails();
-            }
-            
-            $details->min_price = $minPrice;
-            $details->max_price = $maxPrice;
-            $details->save();
-            
-            $property->common_details_id = $details->id;
-            $property->save();
-        }
-    }
-
 }
