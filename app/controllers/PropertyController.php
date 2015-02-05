@@ -69,8 +69,8 @@ class PropertyController extends \BaseController {
                 $bed = Input::get("bed");
                 $query = $query->where(function($query) use ($bed) {
                     $query
-                            ->where("common_details.min_bed",">=", $bed)
-                            ->where("common_details.max_bed","<=", $bed);
+                            ->where("common_details.min_bed","<=", $bed)
+                            ->where("common_details.max_bed",">=", $bed);
                 });
             }
             
@@ -78,8 +78,8 @@ class PropertyController extends \BaseController {
                 $bath = Input::get("bath");
                 $query = $query->where(function($query) use ($bath) {
                     $query
-                            ->where("common_details.min_bath",">=", $bath)
-                            ->where("common_details.max_bath","<=", $bath);
+                            ->where("common_details.min_bath","<=", $bath)
+                            ->where("common_details.max_bath",">=", $bath);
                 });
             }
         }
