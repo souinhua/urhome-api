@@ -27,18 +27,6 @@ class Property extends Eloquent {
         return $query->whereRaw("publish_start IS NOT NULL AND if(publish_end IS NOT NULL, publish_end < ?, TRUE)", array($date));
     }
 
-    public function scopeProvince($query, $province) {
-        return $query
-                        ->where('address.province', 'LIKE', "%$province%")
-                        ->select('property.*');
-    }
-
-    public function scopeCity($query, $city) {
-        return $query
-                        ->where('address.city', 'LIKE', "%$city%")
-                        ->select('property.*');
-    }
-
     public function scopeType($query, array $type) {
         return $query
                         ->join('property_type', 'property.id', '=', 'property_type.property_id')

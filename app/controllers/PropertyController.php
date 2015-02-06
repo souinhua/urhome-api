@@ -38,16 +38,18 @@ class PropertyController extends \BaseController {
          *                              Filters
          * =====================================================================
          */
-        if (Input::has('province') || Input::has('city')) {
+        if (Input::has('place')) {
             // Joins Address table for the location filter
             $query = $query->join("address", "property.address_id", "=", "address.id")->select('property.*');
-            if (Input::has('province')) {
-                $query = $query->province(Input::get('province'));
-            }
-
-            if (Input::has('city')) {
-                $query = $query->city(Input::get('city'));
-            }
+            $query = $query->where(function($query) {
+                $place = DB::getPdo()->quote(Input::has('place'));
+                $query
+                        ->whereRaw("lower(replace(concat(address.city,' ',address.province),' ','-')) = ?", array($place))
+                        ->orWhere("address.city", "LIKE", "%$place%")
+                        ->orWhere("address.province", "LIKE", "%$place%")
+                        ->orWhere("address.address", "LIKE", "%$place%")
+                        ->orWhere("address.zip", "=", $place);
+            });
         }
 
         if (Input::has('type')) {
