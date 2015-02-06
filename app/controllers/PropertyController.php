@@ -42,7 +42,7 @@ class PropertyController extends \BaseController {
             // Joins Address table for the location filter
             $query = $query->join("address", "property.address_id", "=", "address.id")->select('property.*');
             $query = $query->where(function($query) {
-                $place = DB::getPdo()->quote(Input::has('place'));
+                $place = DB::getPdo()->quote(Input::get('place'));
                 $query
                         ->whereRaw("lower(replace(concat(address.city,' ',address.province),' ','-')) = ?", array($place))
                         ->orWhere("address.city", "LIKE", "%$place%")
