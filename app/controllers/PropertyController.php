@@ -49,7 +49,8 @@ class PropertyController extends \BaseController {
                         ->orWhere("address.city", "LIKE", $likeValue)
                         ->orWhere("address.province", "LIKE", $likeValue)
                         ->orWhere("address.address", "LIKE", $likeValue)
-                        ->orWhere("address.zip", "=", Input::get('place'));
+                        ->orWhere("address.zip", "=", Input::get('place'))
+                        ->orWhereRaw("concat(address.address,', ', address.city,', ', address.province,' ', address.zip) LIKE ?", array(DB::getPdo()->quote('%'.Input::get('place').'%')));
             });
         }
 
