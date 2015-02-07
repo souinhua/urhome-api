@@ -49,7 +49,7 @@ class PropertyController extends \BaseController {
                         ->orWhere("address.city", "LIKE", $likeValue)
                         ->orWhere("address.province", "LIKE", $likeValue)
                         ->orWhere("address.address", "LIKE", $likeValue)
-                        ->orWhere("address.zip", "=", $place);
+                        ->orWhere("address.zip", "=", Input::get('place'));
             });
         }
 
