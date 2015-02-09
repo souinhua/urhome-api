@@ -44,9 +44,20 @@ class PropertyInquiryController extends \BaseController {
 
                 $inquiry->save();
                 $data['inquiry'] = $inquiry;
+                
                 $data['property'] = $property;
+                $data['propertyPhoto'] = $property->photo;
+                
                 $data['agent'] = $property->agent;
                 $data['agentPhotoUrl'] = $property->agent->photo->url;
+                
+                $types = array();
+                foreach($property->types as $type) {
+                    $types[] = $type->name;
+                }
+                
+                $data['types'] = implode(', ', $types);
+                
                 Mail::queue('emails.inquiry.inquiry', $data, function($message) use($inquiry, $property) {
                     $message
                             ->to($inquiry->email, $inquiry->name)
