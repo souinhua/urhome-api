@@ -19,14 +19,14 @@
                     Thank you,
                     <div style="margin: 10px 0">
                         <img src="http://res.cloudinary.com/urhome-ph/image/upload/c_crop,h_210,w_210,x_304,y_60/v1/users/1/1-2-1419534561" style="border-bottom: 5px solid orange;width: 40px;float:left;margin-right:10px"/>
-                        <label style="display:block;font-weight: bold;font-size: 18px"><??></label>
-                        <span style="color: #999999"><? print_r($property);?></span>
+                        <label style="display:block;font-weight: bold;font-size: 18px"><?= $agent['name']?></label>
+                        <span style="color: #999999"><?= $agent['title']?></span>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td style="background-color: #61BD6D;padding: 10px 20px;">
-                    <img src="http://res.cloudinary.com/urhome-ph/image/upload/v1423481696/assets/urhome-inverse-line-small.png" style="height: 30px"/>
+                    <img src="http://res.cloudinary.com/urhome-ph/image/upload/v1423481696/assets/urhome-inverse-line-small.png" style="width: 200px"/>
                 </td>
             </tr>
             <tr>
