@@ -56,7 +56,7 @@ return array(
 	|
 	*/
 
-	'from' => array('address' => "janssen.canturias@gmail.com", 'name' => "Janssen Canturias"),
+	'from' => array('address' => "nessnaj.yves@gmail.com", 'name' => "Souin Hua"),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -82,7 +82,7 @@ return array(
 	|
 	*/
 
-	'username' => "janssen.canturias@gmail.com",
+	'username' => "nessnaj.yves@gmail.com",
 
 	/*
 	|--------------------------------------------------------------------------
@@ -95,7 +95,7 @@ return array(
 	|
 	*/
 
-	'password' => "jfEp8U!4",
+	'password' => "sairutnac187",
 
 	/*
 	|--------------------------------------------------------------------------
