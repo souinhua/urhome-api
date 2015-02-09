@@ -36,6 +36,7 @@ class PropertyInquiryController extends \BaseController {
                 $inquiry->message = Input::get("message");
                 $inquiry->user_id = Auth::id();
                 $inquiry->property_id = $property->id;
+                $inquiry->requested_at = date("Y-m-d H:i:s", time());
 
                 if (Input::has("unit_id")) {
                     $inquiry->unit_id = Input::get("unit_id");
