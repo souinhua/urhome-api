@@ -28,7 +28,8 @@ return array(
 	|
 	*/
 
-	'host' => 'smtp.mailgun.org',
+//	'host' => 'smtp.mailgun.org',
+        'host' => 'smtp.gmail.com',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -41,7 +42,8 @@ return array(
 	|
 	*/
 
-	'port' => 587,
+//	'port' => 587,
+        'port' => 465,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -54,7 +56,7 @@ return array(
 	|
 	*/
 
-	'from' => array('address' => null, 'name' => null),
+	'from' => array('address' => "janssen.canturias@gmail.com", 'name' => "Janssen Canturias"),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -67,7 +69,7 @@ return array(
 	|
 	*/
 
-	'encryption' => 'tls',
+	'encryption' => 'ssl',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -80,7 +82,7 @@ return array(
 	|
 	*/
 
-	'username' => null,
+	'username' => "janssen.canturias@gmail.com",
 
 	/*
 	|--------------------------------------------------------------------------
@@ -93,7 +95,7 @@ return array(
 	|
 	*/
 
-	'password' => null,
+	'password' => "jfEp8U!4",
 
 	/*
 	|--------------------------------------------------------------------------
