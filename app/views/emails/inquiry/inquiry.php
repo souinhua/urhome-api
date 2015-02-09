@@ -8,7 +8,7 @@
         <table style="width: 650px;margin: 20px auto;background-color: #fff;box-shadow: 0px 1px 1px rgba(0,0,0,0.1)">
             <tr>
                 <td>
-                    Hi <?= $inquiry->name?>, <br/>
+                    Hi <?= print_r($inquiry)?>, <br/>
                     <br/>
                     Donec lobortis risus a elit. Etiam tempor. Ut ullamcorper, ligula eu tempor congue, eros 
                     est euismod turpis, id tincidunt sapien risus a quam. Maecenas fermentum consequat mi.<br/>
