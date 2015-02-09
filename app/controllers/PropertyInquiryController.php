@@ -36,7 +36,7 @@ class PropertyInquiryController extends \BaseController {
                 $inquiry->email = Input::get("email");
                 $inquiry->message = Input::get("message");
                 $inquiry->user_id = Auth::id();
-                $inquiry->property = $property->id;
+                $inquiry->property_id = $property->id;
                 
                 if(Input::has("unit_id")) {
                     $inquiry->unit_id = Input::get("unit_id");
