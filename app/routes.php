@@ -115,6 +115,11 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
      * Address resource
      */
     Route::get("address/properties","AddressController@properties");
+    
+    /**
+     * Property Inquery Resource
+     */
+    Route::resource("properties.inquiry", "PropertyInquiryController");
 });
 
 Route::post('oauth/token', function() {
