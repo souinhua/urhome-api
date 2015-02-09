@@ -119,7 +119,7 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     /**
      * Property Inquery Resource
      */
-    Route::resource("properties.inquiry", "PropertyInquiryController");
+    Route::resource("properties.inquiries", "PropertyInquiryController");
 });
 
 Route::post('oauth/token', function() {
