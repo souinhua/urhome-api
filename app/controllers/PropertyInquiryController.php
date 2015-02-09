@@ -44,6 +44,8 @@ class PropertyInquiryController extends \BaseController {
 
                 $inquiry->save();
                 $data['inquiry'] = $inquiry;
+                $data['property'] = $property;
+                $data['agent'] = $property->agent;
                 Mail::queue('emails.inquiry.inquiry', $data, function($message) use($inquiry, $property) {
                     $message
                             ->to($inquiry->email, $inquiry->name)
