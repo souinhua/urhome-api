@@ -10,7 +10,7 @@
                 <td style="padding:20px">
 
 
-                    Hi <?= $inquiry->name ?>, <br/>
+                    Hi <?= $inquiry['name'] ?>, <br/>
                     <br/>
                     Donec lobortis risus a elit. Etiam tempor. Ut ullamcorper, ligula eu tempor congue, eros 
                     est euismod turpis, id tincidunt sapien risus a quam. Maecenas fermentum consequat mi.<br/>
