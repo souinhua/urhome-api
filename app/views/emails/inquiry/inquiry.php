@@ -19,7 +19,7 @@
                     Thank you,
                     <div style="margin: 10px 0">
                         <img src="http://res.cloudinary.com/urhome-ph/image/upload/c_crop,h_210,w_210,x_304,y_60/v1/users/1/1-2-1419534561" style="border-bottom: 5px solid orange;width: 40px;float:left;margin-right:10px"/>
-                        <label style="display:block;font-weight: bold;font-size: 18px"><?= $inquiry->property->agent->name?></label>
+                        <label style="display:block;font-weight: bold;font-size: 18px"><??></label>
                         <span style="color: #999999"><? print_r($property);?></span>
                     </div>
                 </td>
