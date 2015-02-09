@@ -17,19 +17,18 @@ class PropertyInquiryController extends \BaseController {
      * @return Response
      */
     public function store($propertyId) {
-        if($property = Property::find($propertyId)) {
+        if ($property = Property::find($propertyId)) {
             $rules = array(
-                "name" => "required|max:64", 
-                "phone" => "required:max:64", 
+                "name" => "required|max:64",
+                "phone" => "required:max:64",
                 "email" => "required|email|max:64",
                 "message" => "required",
                 "unit_id" => "exists:unit,id|numeric"
             );
             $validation = Validator::make(Input::all(), $rules);
-            if($validation->fails()) {
+            if ($validation->fails()) {
                 return $this->makeResponse($validation->messages(), 400, "Failed in validation.");
-            }
-            else {
+            } else {
                 $inquiry = new Inquiry();
                 $inquiry->name = Input::get("name");
                 $inquiry->phone = Input::get("phone");
@@ -37,16 +36,23 @@ class PropertyInquiryController extends \BaseController {
                 $inquiry->message = Input::get("message");
                 $inquiry->user_id = Auth::id();
                 $inquiry->property_id = $property->id;
-                
-                if(Input::has("unit_id")) {
+
+                if (Input::has("unit_id")) {
                     $inquiry->unit_id = Input::get("unit_id");
                 }
-                
+
                 $inquiry->save();
+
+                $data['inquiry'] = $inquiry;
+                Mail::queue('emails.inquiry.inquiry', $data, function($message) use($inquiry, $property) {
+                    $message
+                            ->to($inquiry->email, $inquiry->name)
+                            ->subject("Urhome Inquiry: $property->address_name");
+                });
+
                 return $this->makeResponse($inquiry, 201, "Inquery resource saved.");
             }
-        }
-        else {
+        } else {
             return $this->makeResponse(null, 404, "Property resource not found.");
         }
     }
