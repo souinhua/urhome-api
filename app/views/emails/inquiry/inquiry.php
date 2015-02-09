@@ -18,14 +18,14 @@
                     <br/>
                     <div style="padding:10px;background-color:#f9f9f9;border-radius: 4px">
                         <a href="">
-                            <img src="<?= $propertyPhoto['url']?>" style="width:180px;float:left;margin-right: 10px"/>
+                            <img src="<?= $propertyPhoto['url']?>" style="width:200px;float:left;margin-right: 10px"/>
                         </a>
                         <h2 style="margin: 0px;font-weight: normal"><?= $property['address_name']?></h2>
                         <span style="color: #999999;display:block"><i><?= $property['tagline']?></i></span>
 
                         <span style="background-color: #999;color: #efefef;padding: 2px 10px;border-radius: 3px;font-size: 10px;display:inline-block"><?= $property['status_name']?></span>
                         <br/>
-                        <p><?= $types?></p>
+                        <p style="font-size: 12px"><?= $types?></p>
                         <br/>
                         <a href="<?= URL::to("http://urhome.dev/property/$alias")?>" style="margin: 10px 0;background-color: #FBA026;padding: 10px 15px;color: #ffffff;border-radius: 4px;text-decoration: none">View Details</a>
 
