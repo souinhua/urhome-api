@@ -98,7 +98,7 @@ class PropertyController extends \BaseController {
             "parking" => "numeric",
             "quantity" => "numeric",
             "property_id" => "exists:property,id",
-            "types" => "required"
+            "types" => "required|array"
         );
 
         $validation = Validator::make(Input::all(), $fields);
@@ -117,7 +117,7 @@ class PropertyController extends \BaseController {
             
             $property->save();
             if (Input::has("types")) {
-                $property->types()->sync(Input::get("types"));
+                $property->types()->sync(Input::get("types", array()));
             }
             $this->generateSlug($property);
             return $this->makeResponse($property, 201, "Property Resource created.");
