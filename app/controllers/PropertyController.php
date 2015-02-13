@@ -137,11 +137,11 @@ class PropertyController extends \BaseController {
         $address = $property->address;
         if (!is_null($address)) {
             if ($property->address_as_name) {
-                $name = "$address->address-$address->city";
+                $name = "$address->address-$address->city-$property->id";
             } else {
-                $name = "$property->name-$address->city";
+                $name = "$property->name-$address->city-$property->id";
             }
-            $slug = Str::slug("$name-$property->id", "-");
+            $slug = Str::slug($name);
             $property->slug = $slug;
             $property->save();
 
