@@ -114,12 +114,11 @@ class PropertyController extends \BaseController {
 
             $property->created_by_id = Auth::id();
             $property->updated_by_id = Auth::id();
-
+            
+            $property->save();
             if (Input::has("types")) {
                 $property->types()->sync(Input::get("types"));
             }
-
-            $property->save();
             $this->generateSlug($property);
             return $this->makeResponse($property, 201, "Property Resource created.");
         }
