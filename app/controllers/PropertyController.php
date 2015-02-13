@@ -6,16 +6,6 @@ class PropertyController extends \BaseController {
 
     function __construct() {
         parent::__construct();
-        $this->fillableFields = array(
-            "name",
-            "tagline",
-            "description",
-            "status",
-            "transaction",
-            "address_as_name",
-            "address_id"
-        );
-
         $this->beforeFilter('auth', array('except' => ['index', 'show', 'related']));
         $this->beforeFilter('admin', array('only' => ['publish', 'unpublish']));
     }
@@ -43,7 +33,7 @@ class PropertyController extends \BaseController {
             $query = $query->join("address", "property.address_id", "=", "address.id")->select('property.*');
             $query = $query->where(function($query) {
                 $place = DB::getPdo()->quote(Input::get('place'));
-                $likeValue = '%'.Input::get('place').'%';
+                $likeValue = '%' . Input::get('place') . '%';
                 $quotedLike = DB::getPdo()->quote($likeValue);
                 $query
                         ->whereRaw("lower(replace(concat(address.city,' ',address.province),' ','-')) = ?", array($place))
@@ -59,35 +49,7 @@ class PropertyController extends \BaseController {
             $query = $query->type(Input::get('type', array()));
         }
 
-        if (Input::has('min_price') || Input::has('max_price') || Input::has('bed') || Input::has('bath')) {
-            $query = $query->join("common_details", "property.common_details_id", "=", "common_details.id")->select('property.*');
-
-            if (Input::has('min_price')) {
-                $query = $query->where("common_details.min_price", ">=", Input::get("min_price"));
-            }
-
-            if (Input::has('max_price')) {
-                $query = $query->where("common_details.max_price", "<=", Input::get("max_price"));
-            }
-
-            if (Input::has('bed')) {
-                $bed = Input::get("bed");
-                $query = $query->where(function($query) use ($bed) {
-                    $query
-                            ->where("common_details.min_bed", "<=", $bed)
-                            ->where("common_details.max_bed", ">=", $bed);
-                });
-            }
-
-            if (Input::has('bath')) {
-                $bath = Input::get("bath");
-                $query = $query->where(function($query) use ($bath) {
-                    $query
-                            ->where("common_details.min_bath", "<=", $bath)
-                            ->where("common_details.max_bath", ">=", $bath);
-                });
-            }
-        }
+        
 
         /*
          * =====================================================================
@@ -113,34 +75,73 @@ class PropertyController extends \BaseController {
      * @return Response
      */
     public function store() {
-        $rules = array(
-            "name" => "max:128|required_if:address_as_name, 0",
-            "tagline" => "max:256",
-            "description" => "required",
+        $fields = array(
+            "name" => "required_without:address_as_name|max:128",
+            "tagline" => "max:128",
+            "address_as_name" => "in:0,1",
+            "description" => "max:1024",
             "status" => "required|in:rfo,so,ps",
             "transaction" => "required|in:sale,rent",
-            "types" => "required|array"
+            "agent_id" => "required|exists:user,id",
+            "address_id" => "required|exists:address,id",
+            "developer_id" => "exists:developer,id",
+            "agent_message" => "max:1024",
+            "min_bed" => "numeric",
+            "max_bed" => "numeric",
+            "min_bath" => "numeric",
+            "max_bath" => "numeric",
+            "min_area" => "numeric",
+            "max_area" => "numeric",
+            "min_price" => "numeric",
+            "max_price" => "numeric",
+            "furnish" => "required|in:semi,full,none",
+            "parking" => "numeric",
+            "quantity" => "numeric",
+            "property_id" => "exists:property,id"
         );
-        $validation = Validator::make(Input::all(), $rules);
+
+        $validation = Validator::make(Input::all(), $fields);
         if ($validation->fails()) {
-            return $this->makeResponse($validation->messages(), 400, "Request failed in Property resource validation.");
+            return $this->makeResponse($validation->messages(), 409, "Validation failed.");
         } else {
             $property = new Property();
-            $property->name = Input::get("name");
-            $property->tagline = Input::get("tagline");
-            $property->description = Input::get("description");
-            $property->status = Input::get("status");
-            $property->transaction = Input::get("transaction");
-            $property->address_as_name = Input::get("address_as_name", false);
+            foreach ($fields as $field => $rules) {
+                if (Input::has($field)) {
+                    $property->$field = Input::get($field);
+                }
+            }
 
-            $property->created_by = Auth::user()->id;
+            $property->created_by_id = Auth::id();
+            $property->updated_by_id = Auth::id();
+
             $property->save();
+            $this->generateSlug($property);
+            return $this->makeResponse($property, 201, "Property Resource created.");
+        }
+    }
 
-            // Link Types
-            $property->types()->sync(Input::get('types', array()));
+    /**
+     * Generates a unique slug of this Property resource
+     * 
+     * @param Property $property
+     * @return boolean|slug
+     */
+    private function generateSlug(Property $property) {
+        $address = $property->address;
+        if (!is_null($address)) {
+            if ($property->address_as_name) {
+                $name = "$address->address-$address->city";
+            } else {
+                $name = "$property->name-$address->city";
+            }
+            $slug = Str::slug("$name-$property->id", "-");
+            $property->slug = $slug;
             $property->save();
-
-            return $this->makeResponse($property, 201, "Property resource created.");
+            
+            return $slug;
+        }
+        else {
+            return false;
         }
     }
 
@@ -151,23 +152,7 @@ class PropertyController extends \BaseController {
      * @return Response
      */
     public function show($id) {
-        $withs = Input::get('with', array(
-                    "types",
-                    "address",
-                    "creator.photo",
-                    "editor.photo",
-                    "agent.photo",
-                    "photo",
-                    "amenities.photo",
-                    "tags",
-                    "features",
-                    "specs",
-                    "details",
-                    "photos",
-                    "publisher",
-                    "units.photo",
-                    "units.details"
-        ));
+        $withs = Input::get('with', array("types", "address"));
 
         if (is_numeric($id)) {
             $property = Property::with($withs)->remember(15)->find($id);
@@ -189,45 +174,46 @@ class PropertyController extends \BaseController {
      */
     public function update($id) {
         if ($property = Property::find($id)) {
-            $rules = array(
-                "name" => "max:128|required_if:address_as_name, 0",
-                "tagline" => "max:256",
+            $fields = array(
+                "name" => "required_without:address_as_name|max:128",
+                "tagline" => "max:128",
+                "address_as_name" => "in:0,1",
+                "description" => "max:1024",
                 "status" => "in:rfo,so,ps",
                 "transaction" => "in:sale,rent",
-                "types" => "array",
                 "agent_id" => "exists:user,id",
-                "developer_id" => "exists:developer,id"
+                "address_id" => "exists:address,id",
+                "developer_id" => "exists:developer,id",
+                "agent_message" => "max:1024",
+                "min_bed" => "numeric",
+                "max_bed" => "numeric",
+                "min_bath" => "numeric",
+                "max_bath" => "numeric",
+                "min_area" => "numeric",
+                "max_area" => "numeric",
+                "min_price" => "numeric",
+                "max_price" => "numeric",
+                "furnish" => "in:semi,full,none",
+                "parking" => "numeric",
+                "quantity" => "numeric",
+                "property_id" => "exists:property,id"
             );
 
-            $validation = Validator::make(Input::all(), $rules);
+            $validation = Validator::make(Input::all(), $fields);
             if ($validation->fails()) {
-                return $this->makeResponse($validation->messages(), 400, "Request failed in Property resource validation.");
+                return $this->makeResponse($validation->messages(), 409, "Validation failed.");
             } else {
-                $fields = array("name", "tagline", "address_as_name", "description", "status", "transaction", "agent_id", "agent_message", "developer_id");
-                foreach ($fields as $field) {
+                foreach ($fields as $field => $rules) {
                     if ($this->hasInput($field)) {
                         $property->$field = Input::get($field);
                     }
                 }
 
-                if (Input::has('types')) {
-                    $property->types()->sync(Input::get('types', array()));
-                }
-
-                $property->updated_by = Auth::user()->id;
-
-                // Slugging
-                if (!is_null($property->address)) {
-                    $address = $property->address;
-                    if ($property->address_as_name) {
-                        $property->slug = Str::slug("$address->address-$address->city-$property->id");
-                    } else {
-                        $property->slug = Str::slug("$property->name-$address->city-$property->id");
-                    }
-                }
-
+                $property->updated_by_id = Auth::id();
                 $property->save();
-                return $this->makeResponse($property, 200, "Property (ID = $id) resource updated.");
+                
+                $this->generateSlug($property);
+                return $this->makeResponse($property, 200, "Property Resource updated.");
             }
         } else {
             return $this->makeResponse(null, 404, "Property resource not found.");
@@ -242,7 +228,7 @@ class PropertyController extends \BaseController {
      */
     public function destroy($id) {
         if ($property = Property::find($id)) {
-            $property->deleted_by = Auth::id();
+            $property->deleted_by_id = Auth::id();
             $property->save();
             $property->delete();
             return $this->makeResponse(null, 204, "Property (ID = $id) resource deleted.");
@@ -289,7 +275,7 @@ class PropertyController extends \BaseController {
                 }
                 $property->publish_start = $start;
                 $property->publish_end = $end;
-                $property->published_by = Auth::id();
+                $property->published_by_id = Auth::id();
                 $property->save();
 
                 return $this->makeResponse($property, 200, "Property (ID=$id) resource published.");
@@ -317,69 +303,18 @@ class PropertyController extends \BaseController {
                 $data = Input::get('photo');
                 $photo = PhotoManager::createCloudinary($data['public_id'], $property, Input::get('caption'), $data);
 
-                if (!is_null($property->photo)) {
-                    $property->photo->delete();
+                if (!is_null($property->mainPhoto)) {
+                    $property->mainPhoto->delete();
                 }
 
-                $property->photo_id = $photo->id;
-                $property->updated_by = Auth::id();
+                $property->main_photo_id = $photo->id;
+                $property->updated_by_id = Auth::id();
                 $property->save();
 
                 return $this->makeResponse($photo, 201, "Property Photo resource saved.");
             } else {
                 return $this->makeResponse(null, 404, "Property resource not found.");
             }
-        }
-    }
-
-    /**
-     * Updates or Create Details resource for a Property resource.
-     * 
-     * @param int $propertyId
-     * @param int $unitId
-     * @return API Response
-     */
-    public function details($propertyId) {
-        if ($property = Property::find($propertyId)) {
-
-            $rules = array(
-                "bed" => "numeric",
-                "bath" => "numeric",
-                "parking" => "numeric",
-                "area" => "numeric",
-                "furnish" => "in:full,semi,none",
-                "min_price" => "numeric",
-                "max_price" => "numeric",
-                "min_bed" => "numeric",
-                "max_bed" => "numeric",
-                "min_bath" => "numeric",
-                "max_bath" => "numeric",
-                "min_area" => "numeric",
-                "max_area" => "numeric",
-            );
-
-            $validation = Validator::make(Input::all(), $rules);
-            if ($validation->fails()) {
-                return $this->makeResponse($validation->messages(), 400, "Request failed in Property Unit resource validation.");
-            } else {
-                $details = $property->details;
-                if (is_null($details)) {
-                    $details = new CommonDetails();
-                }
-
-                foreach ($rules as $field => $rule) {
-                    if ($this->hasInput($field)) {
-                        $details->$field = Input::get($field);
-                    }
-                }
-                $details->save();
-                $property->common_details_id = $details->id;
-
-                $property->save();
-                return $this->makeResponse($details, 200, "Property Unit resource saved.");
-            }
-        } else {
-            return $this->makeResponse(null, 404, "Property Unit resource not found.");
         }
     }
 
@@ -405,16 +340,9 @@ class PropertyController extends \BaseController {
             $address->save();
 
             $property->address_id = $address->id;
+            $property->updated_by_id = Auth::id();
 
-            // Slugging
-            if ($property->address_as_name) {
-                $property->slug = Str::slug("$address->address-$address->city-$property->id");
-            } else {
-                $property->slug = Str::slug("$property->name-$address->city-$property->id");
-            }
-
-            $property->save();
-
+            $this->generateSlug($property);
             return $this->makeResponse($address, 200, "Property Address resource saved.");
         } else {
             return $this->makeResponse(null, 404, "Property resource not found.");

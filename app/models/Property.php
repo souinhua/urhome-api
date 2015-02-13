@@ -5,7 +5,7 @@ class Property extends Eloquent {
     use SoftDeletingTrait;
 
     protected $table = "property";
-    protected $appends = array("published", "overdue", "unpublished", "alias", "status_name", "photos_count", "address_name");
+    protected $appends = array("published", "overdue", "unpublished", "status_name", "photos_count", "address_name");
 
     /*
      * Property Scopes
@@ -49,20 +49,12 @@ class Property extends Eloquent {
         return $this->hasOne('Address', 'id', 'address_id');
     }
 
-    public function creator() {
-        return $this->hasOne('User', 'id', 'created_by');
-    }
-
-    public function editor() {
-        return $this->hasOne('User', 'id', 'updated_by');
-    }
-
     public function agent() {
         return $this->hasOne('User', 'id', 'agent_id');
     }
 
-    public function photo() {
-        return $this->hasOne('Photo', 'id', 'photo_id');
+    public function mainPhoto() {
+        return $this->hasOne('Photo', 'id', 'main_photo_id');
     }
 
     public function amenities() {
@@ -74,29 +66,16 @@ class Property extends Eloquent {
     }
 
     public function features() {
-        return $this->belongsToMany('Feature', 'property_feature', 'property_id', 'feature_id');
+        return $this->hasMany('Feature', 'property_id');
     }
 
     public function specs() {
-        return $this->belongsToMany('Spec', 'property_spec', 'property_id', 'spec_id');
-    }
-
-    public function details() {
-        return $this->hasOne('CommonDetails', 'id', 'common_details_id');
+        return $this->hasMany('Spec', 'property_id');
     }
 
     public function photos() {
         return $this->belongsToMany('Photo', 'property_photo', 'property_id', 'photo_id');
     }
-
-    public function publisher() {
-        return $this->hasOne("User", "id", "published_by");
-    }
-
-    public function units() {
-        return $this->hasMany("Unit", "property_id", 'id');
-    }
-
     /*
      * Custom Attributes
      */
@@ -114,10 +93,6 @@ class Property extends Eloquent {
         $time = time();
 
         return $publishEnd < $time && !is_null($this->publish_end);
-    }
-
-    public function getAliasAttribute() {
-        return $this->slug;
     }
 
     public function getStatusNameAttribute() {
