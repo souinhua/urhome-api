@@ -181,7 +181,7 @@ class PropertyController extends \BaseController {
     public function update($id) {
         if ($property = Property::find($id)) {
             $fields = array(
-                "name" => "required_without:address_as_name|max:128",
+                "name" => "max:128",
                 "tagline" => "max:128",
                 "address_as_name" => "in:0,1",
                 "description" => "max:1024",
