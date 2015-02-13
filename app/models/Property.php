@@ -52,6 +52,10 @@ class Property extends Eloquent {
     public function agent() {
         return $this->hasOne('User', 'id', 'agent_id');
     }
+    
+    public function createdBy() {
+        return $this->hasOne('User', 'id', 'created_by_id');
+    }
 
     public function mainPhoto() {
         return $this->hasOne('Photo', 'id', 'main_photo_id');
