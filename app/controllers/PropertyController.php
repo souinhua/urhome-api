@@ -118,6 +118,7 @@ class PropertyController extends \BaseController {
             
             $property->save();
             if (Input::has("types")) {
+                print_r(Input::get("types"));
                 $property->types()->sync(Input::get("types"));
             }
             $this->generateSlug($property);
@@ -215,7 +216,6 @@ class PropertyController extends \BaseController {
                 }
 
                 if (Input::has("types")) {
-                    print_r(Input::get("types"));
                     $property->types()->sync(Input::get("types"));
                 }
 
