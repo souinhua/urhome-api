@@ -107,6 +107,7 @@ class PropertyController extends \BaseController {
         } else {
             
             $property = new Property();
+            unset($fields['types']);
             foreach ($fields as $field => $rules) {
                 if (Input::has($field)) {
                     $property->$field = Input::get($field);
@@ -118,7 +119,6 @@ class PropertyController extends \BaseController {
             
             $property->save();
             if (Input::has("types")) {
-                print_r(Input::get("types"));
                 $property->types()->sync(Input::get("types"));
             }
             $this->generateSlug($property);
@@ -209,6 +209,7 @@ class PropertyController extends \BaseController {
             if ($validation->fails()) {
                 return $this->makeResponse($validation->messages(), 409, "Validation failed.");
             } else {
+                unset($fields['types']);
                 foreach ($fields as $field => $rules) {
                     if ($this->hasInput($field)) {
                         $property->$field = Input::get($field);
