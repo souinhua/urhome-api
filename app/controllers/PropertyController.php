@@ -121,7 +121,7 @@ class PropertyController extends \BaseController {
             if (Input::has("types")) {
                 $property->types()->sync(Input::get("types"));
             }
-            $this->generateSlug($property);
+            $this->generateSlug($property->id);
             return $this->makeResponse($property, 201, "Property Resource created.");
         }
     }
@@ -129,10 +129,11 @@ class PropertyController extends \BaseController {
     /**
      * Generates a unique slug of this Property resource
      * 
-     * @param Property $property
+     * @param int $propertyId
      * @return boolean|slug
      */
-    private function generateSlug(Property $property) {
+    private function generateSlug($propertyId) {
+        $property= Property::find($propertyId);
         $address = $property->address;
         if (!is_null($address)) {
             if ($property->address_as_name) {
@@ -223,7 +224,7 @@ class PropertyController extends \BaseController {
                 $property->updated_by_id = Auth::id();
                 $property->save();
 
-                $this->generateSlug($property);
+                $this->generateSlug($property->id);
                 return $this->makeResponse($property, 200, "Property Resource updated.");
             }
         } else {
@@ -352,8 +353,9 @@ class PropertyController extends \BaseController {
 
             $property->address_id = $address->id;
             $property->updated_by_id = Auth::id();
-
-            $this->generateSlug($property);
+            $property->save();
+            
+            $this->generateSlug($property->id);
             return $this->makeResponse($address, 200, "Property Address resource saved.");
         } else {
             return $this->makeResponse(null, 404, "Property resource not found.");
