@@ -98,7 +98,7 @@ class PropertyController extends \BaseController {
             "parking" => "numeric",
             "quantity" => "numeric",
             "property_id" => "exists:property,id",
-            "types" => "required|array"
+            "types" => "required"
         );
 
         $validation = Validator::make(Input::all(), $fields);
