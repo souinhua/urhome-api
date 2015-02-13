@@ -118,9 +118,9 @@ class PropertyController extends \BaseController {
             
             $property->save();
             if (Input::has("types")) {
-                $property->types()->sync(Input::get("types", array()));
+                $property->types()->sync(Input::get("types"));
             }
-//            $this->generateSlug($property);
+            $this->generateSlug($property);
             return $this->makeResponse($property, 201, "Property Resource created.");
         }
     }
@@ -215,6 +215,7 @@ class PropertyController extends \BaseController {
                 }
 
                 if (Input::has("types")) {
+                    print_r(Input::get("types"));
                     $property->types()->sync(Input::get("types"));
                 }
 
