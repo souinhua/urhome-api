@@ -62,7 +62,7 @@ class UserController extends \BaseController {
             $user->acl_id = Input::get('acl_id');
 
             $user->password = Hash::make(Input::get("password"));
-            $user->created_by = Auth::id();
+            $user->created_by_id = Auth::id();
             
             $user->account_type = Input::get("account_type");
             $user->save();
@@ -121,7 +121,7 @@ class UserController extends \BaseController {
                     $user->password = Hash::make(Input::get("password"));
                 }
 
-                $user->updated_by = Auth::user()->id;
+                $user->updated_by_id = Auth::user()->id;
                 $user->save();
                 
                 Cache::forget("user-$id");

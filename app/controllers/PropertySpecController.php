@@ -40,10 +40,10 @@ class PropertySpecController extends BaseController {
                 $spec = new Spec();
                 $spec->variable = Input::get('variable');
                 $spec->value = Input::get('value');
+                $spec->property_id = $property->id;
                 $spec->save();
 
-                $property->specs()->attach($spec->id);
-                $property->updated_by = Auth::id();
+                $property->updated_by_id = Auth::id();
                 $property->save();
 
                 return $this->makeResponse($spec, 201, "Property Specifications created");
@@ -65,9 +65,10 @@ class PropertySpecController extends BaseController {
         if (($property = Property::find($propertyId)) && ($spec = Spec::find($specId))) {
             $spec->variable = Input::get('variable', $spec->variable);
             $spec->value = Input::get('value', $spec->value);
+            $spec->property_id = $property->id;
             $spec->save();
 
-            $property->updated_by = Auth::id();
+            $property->updated_by_id = Auth::id();
             $property->save();
             
             return $this->makeResponse($spec, 200, "Property Spec resource updated");

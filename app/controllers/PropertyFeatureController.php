@@ -41,11 +41,12 @@ class PropertyFeatureController extends BaseController {
                 $feature = new Feature();
                 $feature->name = Input::get("name");
                 $feature->description = Input::get("description");
+                $feature->property_id = $property->id;
                 $feature->save();
 
-                $property->features()->attach($feature->id);
+                $property->updated_by_id = Auth::id();
                 $property->save();
-                $response = $this->makeResponse($features, 201, "Property Feature created.");
+                $response = $this->makeResponse($feature, 201, "Property Feature created.");
             }
         } else {
             $response = $this->makeResponse(null, 404, "Property resource does not exist.");
@@ -73,6 +74,7 @@ class PropertyFeatureController extends BaseController {
         if (($property = Property::find($propertyId)) && ($feature = Feature::find($featureId))) {
             $feature->name = Input::get("name");
             $feature->description = Input::get("description", $feature->description);
+            $feature->property_id = $property->id;
             $feature->save();
             return $this->makeSuccessResponse($feature, 200, "Feature (ID=$featureId) updated.");
         } else {
