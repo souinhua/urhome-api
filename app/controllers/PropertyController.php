@@ -105,7 +105,7 @@ class PropertyController extends \BaseController {
         if ($validation->fails()) {
             return $this->makeResponse($validation->messages(), 409, "Validation failed.");
         } else {
-            print_r(Input::all());
+            
             $property = new Property();
             foreach ($fields as $field => $rules) {
                 if (Input::has($field)) {
