@@ -49,7 +49,7 @@ class PropertyController extends \BaseController {
             $query = $query->type(Input::get('type', array()));
         }
 
-        
+
 
         /*
          * =====================================================================
@@ -97,7 +97,8 @@ class PropertyController extends \BaseController {
             "furnish" => "required|in:semi,full,none",
             "parking" => "numeric",
             "quantity" => "numeric",
-            "property_id" => "exists:property,id"
+            "property_id" => "exists:property,id",
+            "types" => "required|array"
         );
 
         $validation = Validator::make(Input::all(), $fields);
@@ -113,6 +114,10 @@ class PropertyController extends \BaseController {
 
             $property->created_by_id = Auth::id();
             $property->updated_by_id = Auth::id();
+
+            if (Input::has("types")) {
+                $property->types()->sync(Input::get("types"));
+            }
 
             $property->save();
             $this->generateSlug($property);
@@ -137,10 +142,9 @@ class PropertyController extends \BaseController {
             $slug = Str::slug("$name-$property->id", "-");
             $property->slug = $slug;
             $property->save();
-            
+
             return $slug;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -209,9 +213,13 @@ class PropertyController extends \BaseController {
                     }
                 }
 
+                if (Input::has("types")) {
+                    $property->types()->sync(Input::get("types"));
+                }
+
                 $property->updated_by_id = Auth::id();
                 $property->save();
-                
+
                 $this->generateSlug($property);
                 return $this->makeResponse($property, 200, "Property Resource updated.");
             }
