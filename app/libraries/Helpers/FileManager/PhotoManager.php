@@ -95,7 +95,7 @@ class PhotoManager {
         $photo->url = $url;
         $photo->secure_url = $sUrl;
         $photo->caption = $caption;
-        $photo->uploaded_by = $userId;
+        $photo->uploaded_by_id = $userId;
         $photo->save();
 
         return $photo;
