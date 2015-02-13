@@ -83,7 +83,7 @@ class PropertyController extends \BaseController {
             "status" => "required|in:rfo,so,ps",
             "transaction" => "required|in:sale,rent",
             "agent_id" => "required|exists:user,id",
-            "address_id" => "required|exists:address,id",
+            "address_id" => "exists:address,id",
             "developer_id" => "exists:developer,id",
             "agent_message" => "max:1024",
             "min_bed" => "numeric",
@@ -200,7 +200,8 @@ class PropertyController extends \BaseController {
                 "furnish" => "in:semi,full,none",
                 "parking" => "numeric",
                 "quantity" => "numeric",
-                "property_id" => "exists:property,id"
+                "property_id" => "exists:property,id",
+                "types" => "array"
             );
 
             $validation = Validator::make(Input::all(), $fields);
