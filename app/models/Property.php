@@ -80,6 +80,10 @@ class Property extends Eloquent {
     public function photos() {
         return $this->belongsToMany('Photo', 'property_photo', 'property_id', 'photo_id');
     }
+    
+    public function sub_properties() {
+        return $this->hasMany('Property', 'property_id');
+    }
     /*
      * Custom Attributes
      */
