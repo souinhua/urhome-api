@@ -45,15 +45,15 @@ class Content extends Eloquent{
         return $this->hasOne('Photo', 'id', 'photo_id');
     }
     
-    public function creator() {
-        return $this->hasOne("User", "id", "created_by");
+    public function created_by() {
+        return $this->hasOne("User", "id", "created_by_id");
     }
     
-    public function editor() {
-        return $this->hasOne("User", "id", "updated_by");
+    public function edited_by() {
+        return $this->hasOne("User", "id", "updated_by_id");
     }
     
-    public function publisher() {
+    public function published_by() {
         return $this->hasOne("User", "id", "published_by");
     }
     

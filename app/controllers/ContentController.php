@@ -8,7 +8,7 @@ class ContentController extends \BaseController {
      * @return Response
      */
     public function index() {
-        $with = Input::get('with', array('photo', 'creator'));
+        $with = Input::get('with', array('photo', 'created_by'));
 
         $query = Content::with($with);
 
