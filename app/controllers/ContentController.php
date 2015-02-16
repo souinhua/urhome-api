@@ -46,7 +46,7 @@ class ContentController extends \BaseController {
             $content->abstract = Input::get("abstract");
             $content->body = Input::get("body");
 
-            $content->created_by = Auth::id();
+            $content->created_by_id = Auth::id();
             $content->save();
 
             $content->slug = Str::slug("$content->title-$content->id");
@@ -99,7 +99,7 @@ class ContentController extends \BaseController {
                 $content->slug = Str::slug("$content->title-$content->id");
             }
 
-            $content->updated_by = Auth::id();
+            $content->updated_by_id = Auth::id();
             $content->save();
             return $this->makeResponse($content, 200, "Content resource (ID = $id) updated.");
         } else {
@@ -146,7 +146,7 @@ class ContentController extends \BaseController {
                 }
                 $content->publish_start = $start;
                 $content->publish_end = $end;
-                $content->publish_by = Auth::id();
+                $content->publish_by_id = Auth::id();
                 $content->save();
 
                 return $this->makeSuccessResponse($content, 200, "Content resource (ID = $id) published.");
@@ -167,7 +167,7 @@ class ContentController extends \BaseController {
         if ($content = Content::find($id)) {
             $content->publish_start = null;
             $content->publish_end = null;
-            $content->publish_by = null;
+            $content->publish_by_id = null;
             $content->save();
 
             return $this->makeSuccessResponse($content, 200, "Content resource (ID = $id) unpublished.");
@@ -197,7 +197,7 @@ class ContentController extends \BaseController {
                 $photo = PhotoManager::createCloudinary($data['public_id'], $content, Input::get('caption'), $data);
 
                 $content->photo_id = $photo->id;
-                $content->updated_by = Auth::id();
+                $content->updated_by_id = Auth::id();
                 $content->save();
 
                 return $this->makeResponse($photo, 201, "Cloudainry photo resource created.");
