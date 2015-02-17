@@ -23,7 +23,7 @@ class PropertyInquiryController extends \BaseController {
                 "phone" => "required:max:64",
                 "email" => "required|email|max:64",
                 "message" => "required",
-                "unit_id" => "exists:unit,id|numeric"
+                "sub_property_id" => "exists:property,id|numeric"
             );
             $validation = Validator::make(Input::all(), $rules);
             if ($validation->fails()) {
@@ -38,8 +38,8 @@ class PropertyInquiryController extends \BaseController {
                 $inquiry->property_id = $property->id;
                 $inquiry->requested_at = date("Y-m-d H:i:s", time());
 
-                if (Input::has("unit_id")) {
-                    $inquiry->unit_id = Input::get("unit_id");
+                if (Input::has("sub_property_id")) {
+                    $inquiry->sub_property_id = Input::get("sub_property_id");
                 }
 
                 $inquiry->save();
