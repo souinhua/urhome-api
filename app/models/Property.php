@@ -84,6 +84,10 @@ class Property extends Eloquent {
     public function sub_properties() {
         return $this->hasMany('Property', 'property_id');
     }
+    
+    public function parent_property() {
+        return $this->hasOne('Property', 'id', 'property_id');
+    }
     /*
      * Custom Attributes
      */
