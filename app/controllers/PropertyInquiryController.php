@@ -46,7 +46,7 @@ class PropertyInquiryController extends \BaseController {
                 $data['inquiry'] = $inquiry;
                 
                 $data['property'] = $property;
-                $data['propertyPhoto'] = $property->photo;
+                $data['propertyPhoto'] = $property->main_photo;
                 
                 $data['agent'] = $property->agent;
                 $data['agentPhotoUrl'] = $property->agent->photo->url;

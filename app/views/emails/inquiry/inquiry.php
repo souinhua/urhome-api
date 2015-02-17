@@ -8,7 +8,7 @@
         <table style="width: 650px;margin: 0 auto 5px auto;background-color: #fff;border-collapse:collapse;">
             <tr>
                 <td style="padding:20px">
-                    <?
+                    <?php
                     $alias = $property['slug'];
                     ?>
                     Hi <?= $inquiry['name'] ?>, <br/>
