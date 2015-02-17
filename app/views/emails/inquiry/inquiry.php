@@ -9,7 +9,7 @@
             <tr>
                 <td style="padding:20px">
                     <?
-                    $alias = $property['alias'];
+                    $alias = $property['slug'];
                     ?>
                     Hi <?= $inquiry['name'] ?>, <br/>
                     <br/>
