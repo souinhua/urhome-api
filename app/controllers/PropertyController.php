@@ -49,7 +49,7 @@ class PropertyController extends \BaseController {
             $query = $query->type(Input::get('type', array()));
         }
 
-
+        $query = $query->whereNull('property_id');
 
         /*
          * =====================================================================
