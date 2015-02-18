@@ -56,7 +56,14 @@ class PropertyController extends \BaseController {
                         ->from("property");
 
                 if (Input::has("bed")) {
-                    $query->where("bed", "=", Input::get("bed"));
+                    $bed = Input::get("bed");
+                    if($bed == 3) {
+                        $query->where("bed", ">=", $bed);
+                    }
+                    else {
+                        $query->where("bed", "=", $bed);
+                    }
+                    
                 }
 
                 if (Input::has("bath")) {
