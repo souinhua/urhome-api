@@ -71,19 +71,11 @@ class PropertyController extends \BaseController {
                 }
 
                 if (Input::has("min_price")) {
-                    $query->where(function($query) {
-                        $query
-                                ->where("min_price","<=",Input::get("min_price"))
-                                ->where("max_price",">=",Input::get("min_price"));
-                    });
+                    $query->where("property.min_price", ">=", Input::get("min_price"));
                 }
                 
                 if (Input::has("max_price")) {
-                    $query->where(function($query) {
-                        $query
-                                ->where("min_price","<=",Input::get("max_price"))
-                                ->where("max_price",">=",Input::get("max_price"));
-                    });
+                    $query->where("property.max_price", "<=", Input::get("max_price"));
                 }
             });
         }
