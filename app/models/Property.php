@@ -5,7 +5,7 @@ class Property extends Eloquent {
     use SoftDeletingTrait;
 
     protected $table = "property";
-    protected $appends = array("published", "overdue", "unpublished", "status_name", "photos_count", "address_name", "bed_range");
+    protected $appends = array("published", "overdue", "unpublished", "status_name", "photos_count", "address_name", "bed_range","bath_range");
 
     /*
      * Property Scopes
