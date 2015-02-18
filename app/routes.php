@@ -19,7 +19,7 @@ Route::get('/', function() {
                 ->from("property")
                 ->where("bed","=",$bed);
     });
-    
+    $query->whereNull('property_id');
     $properties = $query->get();
     echo "<pre>";
     echo $query->toSql();
