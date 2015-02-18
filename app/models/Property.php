@@ -52,7 +52,7 @@ class Property extends Eloquent {
     public function agent() {
         return $this->hasOne('User', 'id', 'agent_id');
     }
-    
+
     public function created_by() {
         return $this->hasOne('User', 'id', 'created_by_id');
     }
@@ -80,14 +80,15 @@ class Property extends Eloquent {
     public function photos() {
         return $this->belongsToMany('Photo', 'property_photo', 'property_id', 'photo_id');
     }
-    
+
     public function sub_properties() {
         return $this->hasMany('Property', 'property_id');
     }
-    
+
     public function parent_property() {
         return $this->hasOne('Property', 'id', 'property_id');
     }
+
     /*
      * Custom Attributes
      */
@@ -132,10 +133,16 @@ class Property extends Eloquent {
     public function getAddressNameAttribute() {
         if ($this->address_as_name) {
             $address = $this->address;
-            $name = "$address->address, $address->city $address->zip";
+            if (!is_null($address)) {
+                $name = "$address->address, $address->city $address->zip";
+            }
+            else {
+                $name = null;
+            }
             return $name;
         } else {
             return $this->name;
         }
     }
+
 }
