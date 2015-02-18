@@ -81,7 +81,12 @@ class PropertyController extends \BaseController {
                 }
 
                 if (Input::has("bath")) {
-                    $query->where("bath", "=", Input::get("bath"));
+                    $bath = Input::get("bath");
+                    if ($bath == 3) {
+                        $query->where("bath", ">=", $bath);
+                    } else {
+                        $query->where("bath", "=", $bath);
+                    }
                 }
 
                 if (Input::has("min_price")) {
