@@ -53,8 +53,7 @@ class PropertyController extends \BaseController {
                 $likeValue = '%' . Input::get('place') . '%';
                 $quotedLike = DB::getPdo()->quote($likeValue);
                 $query
-                        ->whereRaw("lower(replace(concat(address.city,' ',address.province),' ','-')) = ?", array($place))
-                        ->orWhere("address.city", "LIKE", $likeValue)
+                        ->where("address.city", "LIKE", $likeValue)
                         ->orWhere("address.province", "LIKE", $likeValue)
                         ->orWhere("address.address", "LIKE", $likeValue)
                         ->orWhere("address.zip", "=", Input::get('place'))
