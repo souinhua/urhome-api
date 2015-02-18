@@ -5,7 +5,7 @@ class Property extends Eloquent {
     use SoftDeletingTrait;
 
     protected $table = "property";
-    protected $appends = array("published", "overdue", "unpublished", "status_name", "photos_count", "address_name","bed_range");
+    protected $appends = array("published", "overdue", "unpublished", "status_name", "photos_count", "address_name", "bed_range");
 
     /*
      * Property Scopes
@@ -135,8 +135,7 @@ class Property extends Eloquent {
             $address = $this->address;
             if (!is_null($address)) {
                 $name = "$address->address, $address->city $address->zip";
-            }
-            else {
+            } else {
                 $name = null;
             }
             return $name;
@@ -144,20 +143,27 @@ class Property extends Eloquent {
             return $this->name;
         }
     }
-    
+
     public function getBedRangeAttribute() {
-        $query = DB::table("property")->where("property_id","=", $this->id);
+        return $this->getFieldRange("bed");
+    }
+
+    public function getBathRangeAttribute() {
+        return $this->getFieldRange("bath");
+    }
+
+    private function getFieldRange($field) {
+        $query = DB::table("property")->where("property_id", "=", $this->id);
         $subCount = $query->count();
-        if($subCount > 0) {
-            $max = $query->max('bed');
-            $min = $query->min('bed');
+        if ($subCount > 0) {
+            $max = $query->max($field);
+            $min = $query->min($field);
             $value = "$min - $max";
-            if($min == $max) {
+            if ($min == $max) {
                 $value = $min;
             }
-        }
-        else {
-            $value = $this->bed;
+        } else {
+            $value = $this->$field;
         }
         return $value;
     }
