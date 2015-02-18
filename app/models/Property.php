@@ -144,5 +144,22 @@ class Property extends Eloquent {
             return $this->name;
         }
     }
+    
+    public function getBedRangeAttribute() {
+        $query = DB::table("property")->where("property_id","=", $this->id);
+        $subCount = $query->count();
+        if($subCount > 0) {
+            $max = $query->max('bed');
+            $min = $query->min('bed');
+            $value = "$min - $max";
+            if($min == $max) {
+                $value = $min;
+            }
+        }
+        else {
+            $value = $this->bed;
+        }
+        return $value;
+    }
 
 }
