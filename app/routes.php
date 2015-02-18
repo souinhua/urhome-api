@@ -15,7 +15,7 @@ Route::get('/', function() {
     $bed = 1;
     $query = $query->whereIn("property.id", function($query) use ($bed){
         $query
-                ->selectRaw("select if(property_id is null, id, property_id) id")
+                ->selectRaw("if(property_id is null, id, property_id) id")
                 ->from("property")
                 ->where("bed","=",$bed);
     });
