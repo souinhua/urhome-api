@@ -22,7 +22,24 @@ class PropertyController extends \BaseController {
         if (Auth::guest()) {
             $query = $query->published();
         }
-
+        
+        /**
+         * ---------------------------------------------------------------------
+         * Validation
+         * ---------------------------------------------------------------------
+         */
+        $rules = array(
+            "bed" => "numeric", 
+            "bath" => "numeric", 
+            "min_price" => "numeric", 
+            "max_price" => "numeric",
+            "limit" => "numeric", 
+            "offset" => "numeric"
+        );
+        $validation = Validator::make(Input::all(), $rules);
+        if($validation->fails()) {
+            return $this->makeResponse($validation->messages(), 409, "Validation failed.");
+        }
         /*
          * ---------------------------------------------------------------------
          * Property Filters and Search
@@ -57,13 +74,11 @@ class PropertyController extends \BaseController {
 
                 if (Input::has("bed")) {
                     $bed = Input::get("bed");
-                    if($bed == 3) {
+                    if ($bed == 3) {
                         $query->where("bed", ">=", $bed);
-                    }
-                    else {
+                    } else {
                         $query->where("bed", "=", $bed);
                     }
-                    
                 }
 
                 if (Input::has("bath")) {
@@ -73,13 +88,13 @@ class PropertyController extends \BaseController {
                 if (Input::has("min_price")) {
                     $query->where("property.min_price", ">=", Input::get("min_price"));
                 }
-                
+
                 if (Input::has("max_price")) {
-                    $query->where(function($query) {
-                        $query
-                                ->where("min_price","<=",Input::get("max_price"))
-                                ->where("max_price","<=",Input::get("max_price"));
-                    });
+                    $max_price = Input::get("max_price");
+                    $query->whereRaw("if(property.max_price is null, (property.min_price <= ?), (property.max_price <= ?))", array(
+                        $max_price,
+                        $max_price
+                    ));
                 }
             });
         }
