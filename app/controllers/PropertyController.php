@@ -84,7 +84,7 @@ class PropertyController extends \BaseController {
             });
         }
 
-        $query = $query->whereNull('property_id');
+        $query = $query->whereNull('property.property_id');
 
         /*
          * ---------------------------------------------------------------------
