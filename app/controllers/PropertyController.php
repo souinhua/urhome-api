@@ -24,9 +24,9 @@ class PropertyController extends \BaseController {
         }
 
         /*
-         * =====================================================================
-         *                              Filters
-         * =====================================================================
+         * ---------------------------------------------------------------------
+         * Property Filters and Search
+         * ---------------------------------------------------------------------
          */
         if (Input::has('place')) {
             // Joins Address table for the location filter
@@ -49,12 +49,45 @@ class PropertyController extends \BaseController {
             $query = $query->type(Input::get('type', array()));
         }
 
+        if (Input::has("bed") || Input::has("bath") || Input::has("min_price") || Input::has("max_price")) {
+            $query = $query->whereIn("property.id", function($query) {
+                $query
+                        ->selectRaw("if(property_id is null, id, property_id) id")
+                        ->from("property");
+
+                if (Input::has("bed")) {
+                    $query->where("bed", "=", Input::get("bed"));
+                }
+
+                if (Input::has("bath")) {
+                    $query->where("bath", "=", Input::get("bath"));
+                }
+
+                if (Input::has("min_price")) {
+                    $query->where(function($query) {
+                        $query
+                                ->where("min_price","<=",Input::get("min_price"))
+                                ->where("max_price",">=",Input::get("min_price"));
+                    });
+                }
+                
+                if (Input::has("max_price")) {
+                    $query->where(function($query) {
+                        $query
+                                ->where("min_price","<=",Input::get("max_price"))
+                                ->where("max_price",">=",Input::get("max_price"));
+                    });
+                }
+            });
+        }
+
         $query = $query->whereNull('property_id');
 
         /*
-         * =====================================================================
-         *                              Pagination
-         * =====================================================================
+         * ---------------------------------------------------------------------
+         * Pagination
+         * ---------------------------------------------------------------------
+         * 
          */
 
         $limit = Input::get("limit", 1000);
@@ -102,7 +135,7 @@ class PropertyController extends \BaseController {
         if ($validation->fails()) {
             return $this->makeResponse($validation->messages(), 409, "Validation failed.");
         } else {
-            
+
             $property = new Property();
             unset($fields['types']);
             foreach ($fields as $field => $rules) {
@@ -113,7 +146,7 @@ class PropertyController extends \BaseController {
 
             $property->created_by_id = Auth::id();
             $property->updated_by_id = Auth::id();
-            
+
             $property->save();
             if (Input::has("types")) {
                 $property->types()->sync(Input::get("types"));
@@ -130,7 +163,7 @@ class PropertyController extends \BaseController {
      * @return boolean|slug
      */
     private function generateSlug($propertyId) {
-        $property= Property::find($propertyId);
+        $property = Property::find($propertyId);
         $address = $property->address;
         if (!is_null($address)) {
             if ($property->address_as_name) {
@@ -348,7 +381,7 @@ class PropertyController extends \BaseController {
             $property->address_id = $address->id;
             $property->updated_by_id = Auth::id();
             $property->save();
-            
+
             $this->generateSlug($property->id);
             return $this->makeResponse($address, 200, "Property Address resource saved.");
         } else {
