@@ -11,8 +11,19 @@
   |
  */
 Route::get('/', function() {
-    $data = Property::province("mactan")->get();
-    var_dump($data);
+    $query = Property::with("agent");
+    $bed = 1;
+    $query = $query->whereIn("property.id", function($query) use ($bed){
+        $query
+                ->selectRaw("select if(property_id is null, id, property_id) id")
+                ->from("property")
+                ->where("bed","=",$bed);
+    });
+    
+    $properties = $query->get();
+    echo "<pre>";
+    echo $query->toSql();
+    print_r($properties);
 });
 
 Route::get("flush", function() {
