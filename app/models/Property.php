@@ -5,7 +5,7 @@ class Property extends Eloquent {
     use SoftDeletingTrait;
 
     protected $table = "property";
-    protected $appends = array("published", "overdue", "unpublished", "status_name", "photos_count", "address_name");
+    protected $appends = array("published", "overdue", "unpublished", "status_name", "photos_count", "address_name","bed_range");
 
     /*
      * Property Scopes
@@ -123,7 +123,7 @@ class Property extends Eloquent {
 
     public function getPhotosCountAttribute() {
         $count = 0;
-        if (!is_null($this->photo)) {
+        if (!is_null($this->main_photo)) {
             $count++;
         }
         $count += $this->photos->count();
