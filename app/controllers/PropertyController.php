@@ -436,17 +436,14 @@ class PropertyController extends \BaseController {
             }
 
             $with = Input::get("with", array("types", "address", "main_photo"));
-            $query = Property::with($with);
-
-            $query->published()->whereIn("property.id", function($query) use($city, $types) {
-                $query
-                        ->select("property.id")
-                        ->from("property")
-                        ->join("address", "property.address_id", "=", "address.id")
-                        ->join("property_type", "property_type.property_id", "=", "property.id")
-                        ->whereIn("property_type.type_id", $types)
-                        ->where("address.city", "=", $city);
-            });
+            $query = Property::with($with)->published();
+            
+            $query
+                    ->join("address","address.id","=","property.address_id")
+                    ->join("property_type","property_type.property_id","=","property.id")
+                    ->whereIn("property_type.type_id", $types)
+                    ->where("address.city","=",$city)
+                    ->where("property.id","!=",$id);
 
             $limit = Input::get("limit", 1000);
             $offset = Input::get("offset", 0);
