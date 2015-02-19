@@ -440,7 +440,7 @@ class PropertyController extends \BaseController {
 
             $query->published()->whereIn("property.id", function($query) use($city, $types) {
                 $query
-                        ->select("id")
+                        ->select("property.id")
                         ->from("property")
                         ->join("address", "property.address_id", "=", "address.id")
                         ->join("property_type", "property_type.property_id", "=", "property.id")
