@@ -104,6 +104,13 @@ class PropertyController extends \BaseController {
         }
 
         $query = $query->whereNull('property.property_id');
+        /**
+         * ---------------------------------------------------------------------
+         * Ordering
+         * ---------------------------------------------------------------------
+         */
+        $query = $query->orderBy('published_start');
+        /**
 
         /*
          * ---------------------------------------------------------------------
