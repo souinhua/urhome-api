@@ -434,40 +434,20 @@ class PropertyController extends \BaseController {
             foreach ($property->types as $type) {
                 $types[] = $type->id;
             }
-
-            $data = DB::select(""
-                            . "SELECT DISTINCT "
-                            . " p.id "
-                            . "FROM property p "
-                            . " INNER JOIN address a ON a.id = p.address_id "
-                            . " INNER JOIN property_type pt ON pt.property_id = p.id "
-                            . "WHERE "
-                            . " a.city = ? "
-                            . " AND pt.type_id IN(?) "
-                            . " AND p.id != ?", array($city, implode(",", $types), $property->id));
-
-            $ids = array();
-            foreach ($data as $pId) {
-                $ids[] = $pId->id;
-            }
-
-            if (isset($ids[0])) {
-                $with = Input::get("with", ["address", "types"]);
-                $query = Property::with($with)->whereIn('id', $ids);
-
-                $limit = Input::get("limit", 1000);
-                $offset = Input::get("offset", 0);
-
-                $count = $query->count();
-                $properties = $query->take($limit)->skip($offset)->get();
-            } else {
-                $properties = array();
-                $count = 0;
-            }
-
-            return $this->makeResponse($properties, 200, "Property resources related to Property (ID = $id) fetched.", array(
-                        "X-Total-Count" => $count
-            ));
+            
+            $with = Input::get("with", array("types","address","main_photo"));
+            $query = Property::with($with);
+            
+            $query->published()->whereIn("property.id", function($query) use($city, $types) {
+                $query
+                        ->select("id")
+                        ->from("property")
+                        ->join("address","property.address_id","=","address.id")
+                        ->join("property_type","property_type.property_id","=","property.id")
+                        ->whereIn("property_type.type_id", $types)
+                        ->where("city","=", $city);
+            });
+            
         } else {
             return $this->makeResponse(null, 404, "Property resource not found.");
         }
