@@ -45,6 +45,10 @@ class PropertyController extends \BaseController {
          * Property Filters and Search
          * ---------------------------------------------------------------------
          */
+        if(Input::get("published")) {
+            $query = $query->published();
+        }
+        
         if (Input::has('place')) {
             // Joins Address table for the location filter
             $query = $query->join("address", "property.address_id", "=", "address.id")->select('property.*');
