@@ -158,7 +158,7 @@ class Property extends Eloquent {
         if ($subCount > 0) {
             $max = $query->max($field);
             $min = $query->min($field);
-            $value = "$min - $max";
+            $value = "$min-$max";
             if ($min == $max) {
                 $value = $min;
             }
