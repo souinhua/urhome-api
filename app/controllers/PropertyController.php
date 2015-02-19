@@ -22,22 +22,22 @@ class PropertyController extends \BaseController {
         if (Auth::guest()) {
             $query = $query->published();
         }
-        
+
         /**
          * ---------------------------------------------------------------------
          * Validation
          * ---------------------------------------------------------------------
          */
         $rules = array(
-            "bed" => "numeric", 
-            "bath" => "numeric", 
-            "min_price" => "numeric", 
+            "bed" => "numeric",
+            "bath" => "numeric",
+            "min_price" => "numeric",
             "max_price" => "numeric",
-            "limit" => "numeric", 
+            "limit" => "numeric",
             "offset" => "numeric"
         );
         $validation = Validator::make(Input::all(), $rules);
-        if($validation->fails()) {
+        if ($validation->fails()) {
             return $this->makeResponse($validation->messages(), 409, "Validation failed.");
         }
         /*
@@ -45,10 +45,10 @@ class PropertyController extends \BaseController {
          * Property Filters and Search
          * ---------------------------------------------------------------------
          */
-        if(Input::get("published")) {
+        if (Input::get("published")) {
             $query = $query->published();
         }
-        
+
         if (Input::has('place')) {
             // Joins Address table for the location filter
             $query = $query->join("address", "property.address_id", "=", "address.id")->select('property.*');
@@ -434,20 +434,29 @@ class PropertyController extends \BaseController {
             foreach ($property->types as $type) {
                 $types[] = $type->id;
             }
-            
-            $with = Input::get("with", array("types","address","main_photo"));
+
+            $with = Input::get("with", array("types", "address", "main_photo"));
             $query = Property::with($with);
-            
+
             $query->published()->whereIn("property.id", function($query) use($city, $types) {
                 $query
                         ->select("id")
                         ->from("property")
-                        ->join("address","property.address_id","=","address.id")
-                        ->join("property_type","property_type.property_id","=","property.id")
+                        ->join("address", "property.address_id", "=", "address.id")
+                        ->join("property_type", "property_type.property_id", "=", "property.id")
                         ->whereIn("property_type.type_id", $types)
-                        ->where("city","=", $city);
+                        ->where("city", "=", $city);
             });
-            
+
+            $limit = Input::get("limit", 1000);
+            $offset = Input::get("offset", 0);
+
+            $count = $query->count();
+            $properties = $query->take($limit)->skip($offset)->get();
+
+            return $this->makeResponse($properties, 200, "Similar Property resources of Property[$id] fetched.", array(
+                        "X-Total-Count" => $count
+            ));
         } else {
             return $this->makeResponse(null, 404, "Property resource not found.");
         }
