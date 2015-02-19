@@ -445,7 +445,7 @@ class PropertyController extends \BaseController {
                         ->join("address", "property.address_id", "=", "address.id")
                         ->join("property_type", "property_type.property_id", "=", "property.id")
                         ->whereIn("property_type.type_id", $types)
-                        ->where("city", "=", $city);
+                        ->where("property.city", "=", $city);
             });
 
             $limit = Input::get("limit", 1000);
