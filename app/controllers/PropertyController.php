@@ -109,8 +109,7 @@ class PropertyController extends \BaseController {
          * Ordering
          * ---------------------------------------------------------------------
          */
-        $query = $query->orderBy('published_start');
-        /**
+        $query = $query->orderBy('property.publish_start');
 
         /*
          * ---------------------------------------------------------------------
