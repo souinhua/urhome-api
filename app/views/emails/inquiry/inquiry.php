@@ -34,7 +34,7 @@
                     <br/>
                     Thank you,
                     <div style="margin: 10px 0">
-                        <img src="<?= $agentPhotoUrl?>" style="border-bottom: 5px solid #FBA026;width: 40px;float:left;margin-right:10px"/>
+                        <img src="<?= $agentPhotoUrl?>" alt="<?= $property['address_name']?>" style="border-bottom: 5px solid #FBA026;width: 40px;float:left;margin-right:10px"/>
                         <label style="display:block;font-weight: bold;font-size: 18px"><?= $agent['name']?></label>
                         <span style="color: #999999"><?= $agent['title']?></span>
                         <div style="clear:both"></div>

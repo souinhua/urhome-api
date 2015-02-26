@@ -3,15 +3,6 @@
 class PropertyInquiryController extends \BaseController {
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return Response
-     */
-    public function index() {
-        
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @return Response
@@ -60,6 +51,7 @@ class PropertyInquiryController extends \BaseController {
                 
                 Mail::queue('emails.inquiry.inquiry', $data, function($message) use($inquiry, $property) {
                     $message
+                            ->from("info@urhome.ph","Urhome.ph")
                             ->to($inquiry->email, $inquiry->name)
                             ->subject("Urhome Inquiry: $property->address_name");
                 });
@@ -70,35 +62,4 @@ class PropertyInquiryController extends \BaseController {
             return $this->makeResponse(null, 404, "Property resource not found.");
         }
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function show($id) {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function update($id) {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function destroy($id) {
-        //
-    }
-
 }

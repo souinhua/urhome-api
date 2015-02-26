@@ -12,7 +12,7 @@
  */
 
 App::before(function($request) {
-    //
+//    sleep(mt_rand(0, 1));
 });
 
 
@@ -22,8 +22,8 @@ App::after(function($request, $response) {
 
 App::singleton('oauth2', function() {
 
-//    $storage = new OAuth2\Storage\Pdo(array('dsn' => 'mysql:dbname=urhome_api_db;host=localhost', 'username' => 'root', 'password' => ''));
-    $storage = new OAuth2\Storage\Pdo(array('dsn' => 'mysql:dbname=urhome-api;host=urhome-api.mysql.eu1.frbit.com', 'username' => 'urhome-api', 'password' => 'LS9UNMrNeFymGJqU'));
+    $storage = new OAuth2\Storage\Pdo(array('dsn' => 'mysql:dbname=urhome-api;host=localhost', 'username' => 'root', 'password' => ''));
+//    $storage = new OAuth2\Storage\Pdo(array('dsn' => 'mysql:dbname=urhome-api;host=urhome-api.mysql.eu1.frbit.com', 'username' => 'urhome-api', 'password' => 'LS9UNMrNeFymGJqU'));
     $server = new OAuth2\Server($storage);
 
     $server->addGrantType(new OAuth2\GrantType\ClientCredentials($storage));

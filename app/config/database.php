@@ -26,7 +26,7 @@ return array(
 	|
 	*/
 
-	'default' => 'mysql-fortrabbit',
+	'default' => 'mysql',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -55,7 +55,7 @@ return array(
 		'mysql' => array(
 			'driver'    => 'mysql',
 			'host'      => 'localhost',
-			'database'  => 'urhome_api_db',
+			'database'  => 'urhome-api',
 			'username'  => 'root',
 			'password'  => '',
 			'charset'   => 'utf8',
