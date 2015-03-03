@@ -63,7 +63,7 @@ class ContentController extends \BaseController {
      * @return Response
      */
     public function show($id) {
-        $with = Input::get('with', array('photo', 'creator'));
+        $with = Input::get('with', array('photo', 'created_by'));
 
         if (is_numeric($id)) {
             $content = Content::with($with)->find($id);

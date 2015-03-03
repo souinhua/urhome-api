@@ -12,7 +12,7 @@
  */
 
 App::before(function($request) {
-//    sleep(mt_rand(0, 1));
+    sleep(mt_rand(0, 2));
 });
 
 

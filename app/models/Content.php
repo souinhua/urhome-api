@@ -37,6 +37,15 @@ class Content extends Eloquent{
         return $query->whereRaw("publish_start IS NOT NULL AND if(publish_end IS NOT NULL, publish_end < ?, TRUE)", array($date));
     }
     
+    public function scopeOfType($query, $type) {
+        if(is_array($type)) {
+            return $query->whereIn('property.type', $type);
+        }
+        else {
+            return $query->where('property.type','=', $type);
+        }
+    }
+    
     /*
      * Content Relationships 
      */
