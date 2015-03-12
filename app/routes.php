@@ -11,19 +11,7 @@
   |
  */
 Route::get('/', function() {
-    $query = Property::with("agent");
-    $bed = 1;
-    $query = $query->whereIn("property.id", function($query) use ($bed){
-        $query
-                ->selectRaw("if(property_id is null, id, property_id) id")
-                ->from("property")
-                ->where("bed","=",$bed);
-    });
-    $query->whereNull('property_id');
-    $properties = $query->get();
-    echo "<pre>";
-    echo $query->toSql();
-    print_r($properties);
+    
 });
 
 Route::get("flush", function() {
@@ -121,16 +109,20 @@ Route::group(array('prefix' => 'v1', "before" => array("json", "oauth")), functi
     Route::put('contents/{id}/publish', 'ContentController@publish');
     Route::delete('contents/{id}/publish', 'ContentController@unpublish');
     Route::resource('contents', 'ContentController');
-    
+
     /*
      * Address resource
      */
-    Route::get("address/properties","AddressController@properties");
-    
+    Route::get("address/properties", "AddressController@properties");
+
     /**
      * Property Inquery Resource
      */
     Route::resource("properties.inquiries", "PropertyInquiryController");
+
+    /**
+     * Events
+     */
 });
 
 Route::post('oauth/token', function() {

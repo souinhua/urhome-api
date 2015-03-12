@@ -8,13 +8,47 @@ class ContentController extends \BaseController {
      * @return Response
      */
     public function index() {
+        /**
+         * ---------------------------------------------------------------------
+         * Relationships
+         * ---------------------------------------------------------------------
+         */
         $with = Input::get('with', array('photo', 'created_by'));
-
         $query = Content::with($with);
 
+        /**
+         * ---------------------------------------------------------------------
+         * Filters
+         * ---------------------------------------------------------------------
+         */
+        if (Input::has("type")) {
+            $query->ofType(Input::get("type"));
+        }
+        
+        if(Input::get('published', false)) {
+            $query->published();
+        }
+        
+        /**
+         * ---------------------------------------------------------------------
+         * Ordering
+         * ---------------------------------------------------------------------
+         */
+        $query->orderBy('publish_start','desc');
+
+        /**
+         * ---------------------------------------------------------------------
+         * Pagination
+         * ---------------------------------------------------------------------
+         */
         $limit = Input::get("limit", 1000);
         $offset = Input::get("offset", 0);
 
+        /**
+         * ---------------------------------------------------------------------
+         * Query Execution
+         * ---------------------------------------------------------------------
+         */
         $count = $query->count();
         $contents = $query->take($limit)->skip($offset)->get();
 
@@ -31,10 +65,20 @@ class ContentController extends \BaseController {
     public function store() {
         $rules = array(
             "title" => "required|max:128",
-            "abstract" => "required",
+            "abstract" => "max:1024",
             "body" => "required",
             "type" => "required|in:article,event,news,ad,testimonial,video,photo,list",
         );
+
+        if (Input::get("type") == "event") {
+            $rules["event_start"] = "required|date";
+            $rules["event_end"] = "date";
+        }
+
+        if (Input::get("type") == "video") {
+            $rules["embed"] = "required";
+        }
+
         $validation = Validator::make(Input::all(), $rules);
         if ($validation->fails()) {
             return $this->makeResponse($validation->messages(), 400, "Request failed in Content resource validation.");
@@ -45,6 +89,15 @@ class ContentController extends \BaseController {
             $content->type = Input::get("type");
             $content->abstract = Input::get("abstract");
             $content->body = Input::get("body");
+
+            if (Input::get("type") == "event") {
+                $content->event_start = Input::get("event_start");
+                $content->event_end = Input::get("event_end");
+            }
+
+            if (Input::get("type") == "video") {
+                $content->embed = Input::get("embed");
+            }
 
             $content->created_by_id = Auth::id();
             $content->save();

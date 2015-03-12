@@ -12,19 +12,19 @@ class Property extends Eloquent {
      */
 
     public function scopeUnpublished($query) {
-        return $query->whereNull('publish_start')->whereNull('publish_end');
+        return $query->whereNull('property.publish_start')->whereNull('property.publish_end');
     }
 
     public function scopePublished($query) {
         $dateStr = date("Y-m-d H:i:s", time());
         $date = DB::getPdo()->quote($dateStr);
-        return $query->whereRaw("publish_start IS NOT NULL AND if(publish_end IS NOT NULL, publish_end > ?, TRUE)", array($date));
+        return $query->whereRaw("property.publish_start IS NOT NULL AND if(property.publish_end IS NOT NULL, property.publish_end > ?, TRUE)", array($date));
     }
 
     public function scopeOverdue($query) {
         $dateStr = date("Y-m-d H:i:s", time());
         $date = DB::getPdo()->quote($dateStr);
-        return $query->whereRaw("publish_start IS NOT NULL AND if(publish_end IS NOT NULL, publish_end < ?, TRUE)", array($date));
+        return $query->whereRaw("property.publish_start IS NOT NULL AND if(property.publish_end IS NOT NULL, property.publish_end < ?, TRUE)", array($date));
     }
 
     public function scopeType($query, array $type) {

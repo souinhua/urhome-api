@@ -39,10 +39,10 @@ class Content extends Eloquent{
     
     public function scopeOfType($query, $type) {
         if(is_array($type)) {
-            return $query->whereIn('property.type', $type);
+            return $query->whereIn('content.type', $type);
         }
         else {
-            return $query->where('property.type','=', $type);
+            return $query->where('content.type','=', $type);
         }
     }
     

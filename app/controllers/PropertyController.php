@@ -34,7 +34,8 @@ class PropertyController extends \BaseController {
             "min_price" => "numeric",
             "max_price" => "numeric",
             "limit" => "numeric",
-            "offset" => "numeric"
+            "offset" => "numeric",
+            "transaction" => "in:sale,rent"
         );
         $validation = Validator::make(Input::all(), $rules);
         if ($validation->fails()) {
@@ -70,44 +71,53 @@ class PropertyController extends \BaseController {
         }
 
         if (Input::has("bed") || Input::has("bath") || Input::has("min_price") || Input::has("max_price")) {
-            $query = $query->whereIn("property.id", function($query) {
-                $query
-                        ->selectRaw("if(property_id is null, id, property_id) id")
-                        ->from("property");
+            $query->select("property.*")
+                    ->distinct()
+                    ->leftJoin("property as sub", "sub.property_id", "=", "property.id")
+                    ->where(function($query) {
 
-                if (Input::has("bed")) {
-                    $bed = Input::get("bed");
-                    if ($bed == 3) {
-                        $query->where("bed", ">=", $bed);
-                    } else {
-                        $query->where("bed", "=", $bed);
-                    }
-                }
+                        if (Input::has("bed")) {
+                            $query->where(function($query) {
+                                $query
+                                ->where("property.bed", "=", Input::get("bed"))
+                                ->orWhere("sub.bed", "=", Input::get("bed"));
+                            });
+                        }
 
-                if (Input::has("bath")) {
-                    $bath = Input::get("bath");
-                    if ($bath == 3) {
-                        $query->where("bath", ">=", $bath);
-                    } else {
-                        $query->where("bath", "=", $bath);
-                    }
-                }
+                        if (Input::has("bath")) {
+                            $query->where(function($query) {
+                                $query
+                                ->where("property.bath", "=", Input::get("bath"))
+                                ->orWhere("sub.bath", "=", Input::get("bath"));
+                            });
+                        }
 
-                if (Input::has("min_price")) {
-                    $query->where("property.min_price", ">=", Input::get("min_price"));
-                }
+                        if (Input::has("min_price")) {
+                            $query->where(function($query) {
+                                $query->where("property.min_price", ">=", Input::get("min_price"));
+                            });
+                        }
 
-                if (Input::has("max_price")) {
-                    $max_price = Input::get("max_price");
-                    $query->whereRaw("if(property.max_price is null, (property.min_price <= ?), (property.max_price <= ?))", array(
-                        $max_price,
-                        $max_price
-                    ));
-                }
-            });
+                        if (Input::has("max_price")) {
+                            $max_price = Input::get("max_price");
+                            $query->whereRaw("if(property.max_price is null, (property.min_price <= ?), (property.max_price <= ?))", array(
+                                $max_price,
+                                $max_price
+                            ));
+                        }
+                    });
         }
 
-        $query = $query->whereNull('property.property_id');
+        if (Input::get("user_properties", false)) {
+            $query = $query
+                    ->where("property.created_by_id", "=", Auth::id())
+                    ->orWhere("property.agent_id", "=", Auth::id());
+        }
+
+        $query = $query
+                ->whereNull('property.property_id')
+                ->where('property.transaction', '=', Input::get('transaction', 'sale'));
+
         /**
          * ---------------------------------------------------------------------
          * Ordering
@@ -127,6 +137,24 @@ class PropertyController extends \BaseController {
 
         $count = $query->count();
         $properties = $query->take($limit)->skip($offset)->get();
+
+        /**
+         * ---------------------------------------------------------------------
+         * Filter Logging
+         * ---------------------------------------------------------------------
+         */
+        if (Input::get("log", false)) {
+            $filterLogId = DB::table("filter_log")->insertGetId(array(
+                "bed" => Input::get("bed", null),
+                "bath" => Input::get("bath", null),
+                "min_price" => Input::get("min_price", null),
+                "max_price" => Input::get("max_price", null),
+                "type" => implode(", ", Input::get("type", array())),
+                "previous_url" => Input::get("previous_url", null),
+                "user_id" => Auth::id(),
+                "place" => Input::get("place", null)
+            ));
+        }
 
         return $this->makeResponse($properties, 200, "Property resources fetched.", array(
                     "X-Total-Count" => $count,
@@ -430,25 +458,37 @@ class PropertyController extends \BaseController {
     public function related($id) {
         if ($property = Property::find($id)) {
             $city = $property->address->city;
+            $transaction = $property->transaction;
             $types = array();
             foreach ($property->types as $type) {
                 $types[] = $type->id;
             }
 
             $with = Input::get("with", array("types", "address", "main_photo"));
-            $query = Property::with($with)->published();
+            $query = Property::with($with)
+                    ->type($types)
+                    ->published()
+                    ->select("property.*")
+                    ->distinct()
+                    ->join("address", "address.id", "=", "property.address_id")
+                    ->where("address.city", "LIKE", "%$city%")
+                    ->where("property.transaction", "=", $transaction)
+                    ->where("property.id", "!=", $property->id)
+                    ->whereNull("property.property_id");
 
-            $query = $query->whereIn("property.id", function($query) use ($city, $types, $id) {
-                $query
-                        ->select("property.id")
-                        ->from("property")
-                        ->join("address", "address.id", "=", "property.address_id")
-                        ->join("property_type", "property_type.property_id", "=", "property.id")
-                        ->whereIn("property_type.type_id", $types)
-                        ->where("address.city", "=", $city)
-                        ->where("property.id", "!=", $id);
-            });
+            /**
+             * ---------------------------------------------------------------------
+             * Ordering
+             * ---------------------------------------------------------------------
+             */
+            $query = $query->orderBy('property.publish_start');
 
+            /*
+             * ---------------------------------------------------------------------
+             * Pagination
+             * ---------------------------------------------------------------------
+             * 
+             */
 
             $limit = Input::get("limit", 1000);
             $offset = Input::get("offset", 0);
